@@ -179,6 +179,8 @@ Put the result in **Compare → Second way**. For **Data rows**, use your step 1
 3. **Rows → Add → Construction.**
 4. **Values → Add → GSM (g/m2)**, then change **SUM** to **AVERAGE**. MEDIAN and STDEV are in the same list.
 5. To chart it, untick **Show totals** first (or you get a Grand Total bar), then **Insert → Chart**.
+
+![With Show totals ticked, the Grand Total row becomes a bar in the chart.](images/screens/sheets-pivot.png){.shot fig-alt="A pivot table of average GSM by construction with a Grand Total row, a column chart that includes a Grand Total bar, and the pivot editor's Rows card with Show totals ticked. The Grand Total row, the Grand Total bar and the Show totals checkbox are outlined in red."}
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
