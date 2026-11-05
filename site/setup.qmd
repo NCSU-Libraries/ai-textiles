@@ -1,0 +1,85 @@
+---
+title: "Set up"
+subtitle: "About 5 minutes. Do it before the session if you can; we'll also check it together at the start."
+---
+
+::: {.callout-note}
+## What you need
+
+- A laptop with Chrome, Edge, Firefox or Safari.
+- Your NC State email and Duo, to sign in.
+- Nothing to install, and no coding.
+:::
+
+## 1. Use your NC State account {#account}
+
+Gemini and Google Sheets work with any Google account, but only your NC State account is approved for university
+data. If your browser is also signed in to a personal Google account, links can open in the wrong one, and your copy
+of the sheet can land in the wrong Drive.
+
+The simplest way around that is a browser window that only knows your NC State account:
+
+::: {.panel-tabset}
+### Chrome
+
+1. Click your profile picture at the top right of Chrome, then **Add Chrome profile**.
+2. Sign in with your NC State email. NC State's sign-in page and Duo appear.
+3. Use this new window for the rest of the setup and for the session.
+
+### Other browsers
+
+Open a private window, go to [google.com](https://www.google.com), and sign in with your NC State email. Use that
+window for the rest of the setup and for the session.
+:::
+
+Already use Chrome with only your NC State account? Skip this step.
+
+## 2. Open Gemini once {#gemini}
+
+1. Go to [gemini.google.com]({{< var gemini.url >}}).
+2. If it asks you to sign in, use your NC State email.
+3. If a welcome screen appears, read it and continue.
+
+**It works when** you click your profile picture at the top right of Gemini and see your `@ncsu.edu` address.
+
+## 3. Make your copy of the practice sheet {#copy}
+
+1. Open the [copy link]({{< var sheet.copy >}}).
+2. Click **Make a copy**.
+
+The copy opens in your own Google Drive. Only you can see it unless you share it.
+
+**It works when** your copy has five tabs at the bottom: **Data**, **Dictionary**, **Work**, **Compare** and **About**.
+On the Data tab, click any cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> on a Mac or <kbd>Ctrl</kbd> +
+<kbd>↓</kbd> on Windows: the last row is {{< var data.last-row >}}, one header row plus {{< var data.rows >}} rows of
+data.
+
+## 4. Download the data for Gemini {#download}
+
+In the session, you'll upload the data to Gemini. Upload a CSV file rather than the whole spreadsheet: it holds just
+the data, so Gemini doesn't have to guess which tab you mean.
+
+From your copy, open the **Data** tab, then choose **File → Download → Comma Separated Values (.csv)**. Sheets
+downloads only the tab you're on. It's the same way you'll get your own data out of a spreadsheet later.
+
+Or download it here: [knitting-practice.csv]({{< var data.csv >}}){download=""} ({{< var data.csv-size >}}).
+
+Keep the file somewhere you can find it, like your Downloads folder.
+
+## 5. That's all until the session {#done}
+
+Don't upload anything to Gemini yet. We'll start by looking at the data ourselves for a few minutes.
+
+## If something goes wrong
+
+| What you see | What to do |
+| --- | --- |
+| Gemini or the copy page shows your personal account | Click your profile picture and switch to your NC State account, or use the window from step 1. |
+| Gemini says it isn't available for your account | Check that you're signed in with your NC State email. If it still won't open, write to [go.ncsu.edu/getdatahelp]({{< var help >}}). |
+| Your copy has only one tab, or yarn counts like `24/1` show as dates | You opened the CSV in Sheets instead of copying the sheet. Use the [copy link]({{< var sheet.copy >}}). |
+| You can't find your copy | It's in your Google Drive under **Recent**, named "Copy of" and the sheet's name. |
+| No time before the session | Come anyway. We'll do the setup together in the first few minutes. |
+
+<p class="small-muted">Checked on {{< var security.checked-date >}}. Gemini changes often; if a screen looks
+different, Google's <a href="{{< var security.upload-help >}}">Gemini help</a> wins. Help with your own setup:
+<a href="{{< var help >}}">go.ncsu.edu/getdatahelp</a>.</p>

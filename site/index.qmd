@@ -1,0 +1,78 @@
+---
+pagetitle: "AI-Assisted Data Exploration for Research"
+toc: false
+title-block-style: none
+---
+
+::: {.hero}
+<p class="small-muted" style="color:#BDBDBD;margin:0 0 .3rem">{{< var event.course >}} · NC State University Libraries</p>
+
+# AI-Assisted Data Exploration for Research
+
+<p class="when">{{< var event.date >}} · {{< var event.length >}} · {{< var event.where >}}</p>
+
+Use Gemini to get to know a spreadsheet of real factory data, and check every number it gives you.
+:::
+
+## What you'll leave with
+
+::: {.finish-line}
+<ul id="finish-line">
+<li><label><input type="checkbox" data-k="copy"> Your own copy of the practice sheet, open in Google Sheets</label></li>
+<li><label><input type="checkbox" data-k="summary"> Gemini's summary of the data and the problems it found, checked against the sheet</label></li>
+<li><label><input type="checkbox" data-k="build"> A formula, a pivot table and a chart, built with Gemini's help</label></li>
+<li><label><input type="checkbox" data-k="compare"> One number worked out two ways, and a reason for any difference</label></li>
+<li><label><input type="checkbox" data-k="security"> Knowing what's safe to share with an AI tool, and why your account matters</label></li>
+<li><label><input type="checkbox" data-k="own"> A plan for trying the same steps on your own data</label></li>
+</ul>
+:::
+
+<script>
+(() => {
+  const boxes = document.querySelectorAll('#finish-line input[type=checkbox]');
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('finish-line') || '{}'); } catch (e) {}
+  boxes.forEach((box) => {
+    box.checked = !!saved[box.dataset.k];
+    box.addEventListener('change', () => {
+      saved[box.dataset.k] = box.checked;
+      try { localStorage.setItem('finish-line', JSON.stringify(saved)); } catch (e) {}
+    });
+  });
+})();
+</script>
+
+## Before you come
+
+1. **Bring a laptop** and its charger.
+2. **Do the [setup](setup.qmd).** It takes about 5 minutes: sign in to Gemini with your NC State account, make your
+   copy of the practice sheet, and download one file.
+
+You don't need any coding experience. Couldn't do the setup ahead? We'll do it together at the start.
+
+## The materials
+
+::: {.cards}
+<a class="card-link" href="setup.html"><span class="card-title">Setup</span><span class="card-text">Your account, your copy of the sheet, and the file for Gemini</span></a>
+<a class="card-link" href="data.html"><span class="card-title">The practice data</span><span class="card-text">Where it comes from, what each column holds, and how to cite it</span></a>
+:::
+
+The hands-on steps, the data security guide and a one-page cheat sheet go up before the session.
+
+## About this session
+
+Most of the data you work with in classes and research ends up in a spreadsheet at some point. In this hands-on
+session, we'll work through a practice dataset in Google Sheets and ask Gemini to summarize it, point out problems,
+and help with formulas and charts. We'll also talk about data security, like what's safe to share with an AI tool and
+why it matters which account you use. Then we'll go over some recommended practices for using AI in exploratory data
+analysis, such as asking for formulas instead of just answers so you can check the math yourself. You don't need any
+coding experience. By the end, you should be able to try the same steps on your own data.
+
+## Get help
+
+- Questions about the session: [{{< var email >}}](mailto:{{< var email >}})
+- Help with access, accounts or your own data, before or after: [go.ncsu.edu/getdatahelp]({{< var help >}})
+
+<p class="small-muted">The practice data is real: production reports from a knitting factory, published by
+{{< var source.author >}} under {{< var source.license >}} (see <a href="data.html">The practice data</a>). Content on
+this site is licensed CC BY 4.0, and code MIT.</p>
