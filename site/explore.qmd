@@ -1,38 +1,31 @@
 ---
 title: "Explore"
-subtitle: "The session's hands-on steps, in order. About 30 minutes."
+subtitle: "The session's steps, in order. About 30 minutes."
 ---
 
-You'll describe the practice data to Gemini without sharing it, ask for the formulas you need, and run them in your
-own copy of the sheet. Gemini never sees a real row. It's how you'd work with data you can't upload, and it works just
-as well for data you could. Each step names the practice it shows; [Practices](practices.qmd) has them all on one
-page.
+Describe the data to Gemini, ask for formulas, and run them in your copy. Gemini never sees a real row.
 
 ::: {.callout-note}
 ## Before you start
 
-Have your copy of the practice sheet open, and [Gemini]({{< var gemini.url >}}) open with your NC State account. The
-[setup](setup.qmd) covers both.
+Open your copy of the practice sheet and [Gemini]({{< var gemini.url >}}), signed in with your NC State account. See
+[Setup](setup.qmd).
 :::
 
 ::: {.callout-tip}
 ## Pace
 
-Problems until minute 19, the summary until 25, the checks until 31. If you fall behind, move on to the next step;
-the extras can wait.
+Problems by minute 19, summary by 25, checks by 31. Behind? Move on; the extras can wait.
 :::
 
 ## <span class="step-badge">1</span> Look first, no AI {#look}
 
 [Practice: look first]{.practice}
 
-Before you ask Gemini anything, find out for yourself. You'll use the answers to check it.
-
-1. **How many rows of data?** On the Data tab, click a cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> on a
-   Mac or <kbd>Ctrl</kbd> + <kbd>↓</kbd> on Windows. Don't count the header.
-2. **How many columns, and what unit is each measurement in?** The column names and the Dictionary tab tell you.
-3. **What is one row?** Scroll the first rows. Is a row a fabric, a test sample, or a day's production? Then read the
-   second line of the Dictionary tab.
+1. **How many rows?** Click a cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> (Mac) or <kbd>Ctrl</kbd> +
+   <kbd>↓</kbd> (Windows). Don't count the header.
+2. **How many columns, in what units?** See the column names and the Dictionary tab.
+3. **What is one row?** Guess from the first rows, then check line 2 of the Dictionary tab.
 
 ::: {.callout-tip collapse="true"}
 ## Check your answers
@@ -41,25 +34,23 @@ Before you ask Gemini anything, find out for yourself. You'll use the answers to
 <span class="answer-label">Rows of data</span><span class="answer-value">{{< var data.rows >}}</span>
 :::
 
-There are {{< var data.columns >}} columns. One row is one lot knitted on one day, on a machine of a given brand and
-size, so the same fabric shows up on many rows. Production Qty is in kilograms; Reject Qty has no stated unit.
+{{< var data.columns >}} columns. One row is one lot knitted on one day, so the same fabric repeats. Production Qty
+is in kg; Reject Qty has no stated unit.
 :::
 
-## <span class="step-badge">2</span> Before you ask: data security {#security}
+## <span class="step-badge">2</span> Data security {#security}
 
 [Practice: mind the data]{.practice}
 
-1. In Gemini, check the bottom left: your name, with **Edu** under it, is your NC State account.
-2. Today you won't upload anything. You'll describe the data instead, which works for any data you're allowed to keep
-   in your NC State Google Drive.
-3. For your own data, the [decision guide](data-security.qmd#guide) takes a minute.
+1. In Gemini, check the bottom left for your name with **Edu** under it.
+2. You won't upload anything today; you'll describe the data. That works for any data you may keep in your NC State
+   Drive. For your own data, see the [decision guide](data-security.qmd#guide).
 
 ## <span class="step-badge">3</span> Describe the data {#describe}
 
 [Practices: say what Gemini is looking at · mind the data]{.practice}
 
-In Gemini, start a **New chat** and send this. It gives the sheet's layout, the header row, five made-up rows in the
-same format, and notes on the codes and units.
+Start a **New chat** in Gemini and send:
 
 ::: {.prompt}
 ```default
@@ -81,8 +72,8 @@ I'll ask for formulas one at a time and put them on a tab named Work. Keep your 
 :::
 
 ::: {.watch}
-Gemini should just say it's ready. Everything it knows about your data is in that message. For your own data, the
-same four things make its formulas fit: the layout, the header row, a few made-up rows, and notes on codes and units.
+Gemini should just say it's ready. For your own data, send the same four things: layout, header row, made-up rows,
+notes.
 :::
 
 ## <span class="step-badge">4</span> Find the problems {#problems}
@@ -95,38 +86,33 @@ What problems would you check for in data like this before analyzing it? For eac
 ```
 :::
 
-Put each formula in an empty cell on the **Work** tab, starting at A3, and see what it finds.
+Paste each formula into the **Work** tab, from A3 down.
 
 ::: {.watch}
-Gemini guessed which problems to look for; your formulas show whether they're there. Does each check fit what a row
-is? A check for repeated Lot values finds {{< var key.lots-repeat >}}, but a lot can run for several days, so repeats
-are expected. Which of the {{< var key.problems >}} problems did its checks miss?
+Does each check fit what a row is? Lots repeat by design. Which of the {{< var key.problems >}} problems did it miss?
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
 ## What it looked like when we tried it
 
-![Gemini's six checks, from the description alone. "Duplicate Lot IDs" counts {{< var key.lots-repeat >}} lots that repeat by design, and none of the checks looks for exact copies, the note in Reject Qty, the "nan" lots or the gauge of {{< var key.gauge-max >}}.](images/screens/gemini-problems.png){.shot fig-alt="Gemini's answer to the problems prompt: six numbered checks, each with a Google Sheets formula. Non-numeric text in Fabric Diameter, blank Reject Qty, dates stored as text, duplicate Lot IDs, Composition entries ending in a double percent sign, and production quantities of zero or less."}
+![Six checks from the description alone. "Duplicate Lot IDs" counts {{< var key.lots-repeat >}} lots that repeat by design. Nothing checks for exact copies, the note in Reject Qty, the "nan" lots or the gauge of {{< var key.gauge-max >}}.](images/screens/gemini-problems.png){.shot fig-alt="Gemini's answer to the problems prompt: six numbered checks, each with a Google Sheets formula. Non-numeric text in Fabric Diameter, blank Reject Qty, dates stored as text, duplicate Lot IDs, Composition entries ending in a double percent sign, and production quantities of zero or less."}
 :::
 
 ::: {.callout-tip collapse="true"}
 ## The {{< var key.problems >}} problems in this data
 
-1. **Reject Qty** is blank in {{< var key.reject-blank >}} rows. No rejects, or not recorded?
-2. **Reject Qty** holds a note instead of a number in row {{< var key.reject-note-row >}}: the factory correcting a
-   date.
+1. **Reject Qty** is blank in {{< var key.reject-blank >}} rows: no rejects, or not recorded?
+2. **Reject Qty** holds a note in row {{< var key.reject-note-row >}}, the factory correcting a date.
 3. **Fabric Diameter** says "any" in {{< var key.any-rows >}} rows.
 4. **Composition** is blank in {{< var key.composition-blank >}} rows and just "%" in
    {{< var key.composition-percent >}}.
-5. **{{< var key.repeated-rows >}} rows are exact copies** of an earlier row. Errors, or the same lot entered twice?
-   The table can't tell you; ask the data's owner before you drop them.
-6. **Lot** says "nan" in {{< var key.lot-nan >}} rows: a missing lot, written as text.
+5. **{{< var key.repeated-rows >}} rows are exact copies** of an earlier row. Ask the data's owner before dropping them.
+6. **Lot** says "nan" in {{< var key.lot-nan >}} rows, a missing lot written as text.
 7. **Machine Gauge** is {{< var key.gauge-max >}} in one row, a typo.
-8. **Yarn Count** mixes notations: cotton count (`30/1`), denier (`20/D`), filament yarns (`75D/72F`), and several
-   yarns in one cell.
+8. **Yarn Count** mixes notations: `30/1`, `20/D`, `75D/72F`, and several yarns per cell.
 
-Formulas for the ones Gemini's checks often miss. They give {{< var key.repeated-rows >}}, {{< var key.lot-nan >}},
-{{< var key.gauge-max >}} and 1:
+These find the ones Gemini often misses ({{< var key.repeated-rows >}}, {{< var key.lot-nan >}},
+{{< var key.gauge-max >}}, 1):
 
 ```default
 =ROWS(Data!A2:M{{< var data.last-row-n >}})-ROWS(UNIQUE(Data!A2:M{{< var data.last-row-n >}}))
@@ -146,19 +132,17 @@ Give me one formula that lists each Construction with its number of rows and its
 ```
 :::
 
-Paste the formula into an empty cell on the Work tab, with room below and to the right for the table it makes. Then
-follow Gemini's chart steps.
+Paste the formula into an empty part of the Work tab, then follow the chart steps.
 
 ::: {.watch}
-Does the table list all {{< var data.constructions >}} constructions? Gemini may label the count "Lot Count", but it
-counts rows, not lots. Rib's mean sits well above its median: flat-knit collars and cuffs weigh 700 g/m² and more.
-Write the mean GSM for **S/J** in the **First way** column of the **Compare** tab.
+All {{< var data.constructions >}} constructions there? A "Lot Count" column counts rows, not lots. Write the S/J mean
+in **Compare → First way**.
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
 ## What it looked like when we tried it
 
-![The table from Gemini's formula and the chart from its steps. The chart kept the title "Lot Count and Mean GSM" after the count was removed; double-click a title to change it.](images/screens/sheets-summary.png){.shot fig-alt="A table on the Work tab listing eight constructions with their row counts and mean GSM, and below it a column chart of mean GSM by construction, with 'other' and Rib the tallest bars."}
+![The table from Gemini's formula, and the chart from its steps. The chart kept its old title; double-click it to change it.](images/screens/sheets-summary.png){.shot fig-alt="A table on the Work tab listing eight constructions with their row counts and mean GSM, and below it a column chart of mean GSM by construction, with 'other' and Rib the tallest bars."}
 :::
 
 ::: {.callout-tip collapse="true"}
@@ -168,8 +152,7 @@ Write the mean GSM for **S/J** in the **First way** column of the **Compare** ta
 =QUERY(Data!F2:K{{< var data.last-row-n >}}, "SELECT F, COUNT(F), AVG(K) WHERE F IS NOT NULL GROUP BY F LABEL F 'Construction', COUNT(F) 'Rows', AVG(K) 'Mean GSM'")
 ```
 
-For the chart, select the table, choose **Insert → Chart**, pick **Column chart**, and remove the Rows series so only
-the means are left.
+Chart: select the table, **Insert → Chart**, **Column chart**, then remove the Rows series.
 :::
 
 ## <span class="step-badge">6</span> Check it a second way {#check}
@@ -182,37 +165,32 @@ Give me a different formula for the mean GSM of the rows whose Construction is e
 ```
 :::
 
-Write the result in the **Second way** column of the Compare tab. Then fill the **Data rows** row the same way: your
-count from step 1 as the first way, and `=COUNTA(Data!A2:A)` as the second. The **Match?** column rounds both before
-comparing.
+Put the result in **Compare → Second way**. For **Data rows**, use your step 1 count and `=COUNTA(Data!A2:A)`.
 
 ::: {.watch}
-"Exactly" matters: a pattern like `*S/J*` also catches LS/J, Lycra single jersey.
+"Exactly" matters: `*S/J*` also catches LS/J.
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
 ## A third way: a pivot table
 
-1. On the Data tab, click any cell in the data, then choose **Insert → Pivot table**. Keep **New sheet** and click
-   **Create**.
-2. If the editor has already filled in some fields, remove them.
-3. Next to **Rows**, click **Add** and choose **Construction**.
-4. Next to **Values**, click **Add** and choose **GSM (g/m2)**. It summarizes by **SUM**; change that to **AVERAGE**.
-   **MEDIAN** and **STDEV** are in the same list.
-5. To chart it, first untick **Show totals** under Rows, or the chart gets a Grand Total bar. Then click a cell in the
-   pivot table and choose **Insert → Chart**.
+1. Click a cell in the data, then **Insert → Pivot table → Create**.
+2. Remove any fields the editor filled in for you.
+3. **Rows → Add → Construction.**
+4. **Values → Add → GSM (g/m2)**, then change **SUM** to **AVERAGE**. MEDIAN and STDEV are in the same list.
+5. To chart it, untick **Show totals** first (or you get a Grand Total bar), then **Insert → Chart**.
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
 ## What a wrong number tells you
 
-| You got | What happened |
+| You got | Because |
 | --- | --- |
-| {{< var key.rows-with-header >}} rows | The formula counted the header row too. |
-| {{< var key.rows-dedup >}} rows | The {{< var key.repeated-rows >}} copied rows were dropped. |
-| {{< var key.sj-contains-mean >}} for S/J | The formula also caught LS/J, Lycra single jersey. |
-| {{< var key.reject-mean-zero >}} for Reject Qty | Blank cells were counted as zero. |
-| {{< var key.lots-repeat >}} repeated lots | Not an error: a lot can run for several days. |
+| {{< var key.rows-with-header >}} rows | The header was counted. |
+| {{< var key.rows-dedup >}} rows | The {{< var key.repeated-rows >}} copies were dropped. |
+| {{< var key.sj-contains-mean >}} for S/J | LS/J was caught too. |
+| {{< var key.reject-mean-zero >}} for Reject Qty | Blanks were counted as zero. |
+| {{< var key.lots-repeat >}} repeated lots | Not an error: lots run for days. |
 :::
 
 ## <span class="step-badge">7</span> What does a blank mean? {#blanks}
@@ -226,9 +204,8 @@ Write a formula for the mean Reject Qty. Should the blank cells count as zero?
 :::
 
 ::: {.watch}
-Gemini should offer two formulas: `AVERAGE`, which skips blanks, and a sum divided by the number of rows, which counts
-them as zero. Put both on the Compare tab's **Mean Reject Qty** row. They differ, and that's the point: which would you
-report, and how would you find out what a blank means here?
+Put both of Gemini's answers on the **Mean Reject Qty** row. They differ on purpose: which would you report, and how
+would you find out?
 :::
 
 ::: {.callout-tip collapse="true"}
@@ -246,25 +223,23 @@ report, and how would you find out what a blank means here?
 
 [Practices: look first · mind the data]{.practice}
 
-Fill in the [plan for your own data](practices.qmd#own-data) on a new tab in your copy, or on paper: what one row is,
-the units, the data's level, any agreements, whether you'd upload or describe it, and your first prompt.
+Fill in the [plan for your own data](practices.qmd#own-data), on a new tab or on paper.
 
 ## Extras
 
 ::: {.callout-note collapse="true" appearance="simple"}
 ## Clean up Composition with a list of values
 
-The Composition column was typed by hand, with {{< var data.spellings >}} different spellings. A list of the distinct
-entries is often fine to share when the rows aren't. Put this on the Work tab:
+Composition has {{< var data.spellings >}} spellings. A list of distinct entries is often fine to share when rows
+aren't:
 
 ```default
 =SORT(UNIQUE(Data!G2:G{{< var data.last-row-n >}}))
 ```
 
-Paste the list into Gemini and ask for a rule that groups the entries by the fibers they name, then for a formula
-column that applies it with `REGEXMATCH`. You're the fiber experts: does it read Lycra, Creora and "Ly" as elastane?
-CVC as cotton and polyester? "Sea-shell" as SeaCell? The dataset's author made a cleaned version too, and filed
-"95% Viscose-5% Elastan" under Polyester. Would you?
+Paste the list into Gemini and ask for a rule that groups entries by fiber, then a `REGEXMATCH` column that applies
+it. Does it know Lycra, Creora and "Ly" are elastane, CVC is cotton and polyester, and "Sea-shell" is SeaCell? The
+dataset's author filed "95% Viscose-5% Elastan" under Polyester. Would you?
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
@@ -276,9 +251,8 @@ Write one formula that lists each Construction with the mean, median and standar
 ```
 :::
 
-If Gemini uses `QUERY`, you'll get an error that starts "Unable to parse query string". `QUERY` can sum, count and
-average and find the minimum and maximum, but not the median or the standard deviation. Paste the error back and ask
-for another way. One that works, on one line:
+`QUERY` can't do median or standard deviation; it fails with "Unable to parse query string". Paste the error back.
+One that works:
 
 ```default
 =LET(c, SORT(UNIQUE(Data!F2:F{{< var data.last-row-n >}})), g, Data!K2:K{{< var data.last-row-n >}}, k, Data!F2:F{{< var data.last-row-n >}}, HSTACK(c, MAP(c, LAMBDA(x, AVERAGE(FILTER(g, k = x)))), MAP(c, LAMBDA(x, MEDIAN(FILTER(g, k = x)))), MAP(c, LAMBDA(x, STDEV(FILTER(g, k = x))))))
@@ -294,10 +268,9 @@ Write a formula for the correlation between Stitch Length and GSM for each Const
 ```
 :::
 
-Across all rows the correlation is close to zero ({{< var key.r-overall >}}), but some constructions show strong
-patterns in opposite directions: about {{< var key.r-interlock >}} for Interlock and {{< var key.r-pique >}} for
-Pique. Two cautions before you believe them. The same fabric repeats on many rows, and counted once each the patterns
-weaken. And the yarn changes too: heavier yarns go with longer stitches.
+Overall the correlation is near zero ({{< var key.r-overall >}}); within Interlock it's about {{< var key.r-interlock >}}
+and within Pique {{< var key.r-pique >}}. Be careful: the same fabric repeats on many rows, and heavier yarns go with
+longer stitches.
 :::
 
 ::: {.callout-note collapse="true" appearance="simple"}
@@ -316,14 +289,13 @@ Could each one really be answered from these columns?
 
 | What happens | Try |
 | --- | --- |
-| A formula shows `#REF!` | Its results need empty cells to spill into. Move it to an empty part of the Work tab. |
-| A formula shows `#N/A`, `#VALUE!` or `#ERROR!` | Paste the formula and the error message into Gemini. |
-| A formula uses the wrong column | Tell Gemini the right column letter, or paste the header row again. |
-| Gemini asks you to upload the file | Say you'll only share the structure, and ask for a formula instead. |
-| Gemini's menu names don't match Sheets | Tell it what you see; menus change. |
-| You're out of time | The numbers are in step 7. |
+| `#REF!` | Move the formula to an empty area; it needs room to spill. |
+| `#N/A`, `#VALUE!`, `#ERROR!` | Paste the formula and the error into Gemini. |
+| Wrong column | Give Gemini the right column letter. |
+| Gemini asks for the file | Say you'll only share the structure. |
+| Menus don't match | Tell Gemini what you see. |
+| Out of time | Use the numbers in step 7. |
 
-<p class="small-muted">Checked against the Gemini app and Google Sheets on {{< var gemini.checked-date >}}. They change
-often; if a screen looks different, Google's <a href="{{< var security.upload-help >}}">Gemini help</a> wins. Tell us
-how the session went: <a href="{{< var eval >}}">go.ncsu.edu/dss-workshop-eval</a>. Help with your own data:
-<a href="{{< var help >}}">go.ncsu.edu/getdatahelp</a>.</p>
+<p class="small-muted">Checked {{< var gemini.checked-date >}}; if a screen differs, Google's
+<a href="{{< var security.upload-help >}}">Gemini help</a> wins. Feedback:
+<a href="{{< var eval >}}">go.ncsu.edu/dss-workshop-eval</a>. Help: <a href="{{< var help >}}">go.ncsu.edu/getdatahelp</a>.</p>

@@ -1,79 +1,54 @@
 ---
 title: "Set up"
-subtitle: "About 5 minutes. Do it before the session if you can; we'll also check it together at the start."
+subtitle: "About 5 minutes. Do it before the session if you can."
 ---
 
-::: {.callout-note}
-## What you need
+You need a laptop and your NC State login. Nothing to install, no coding.
 
-- A laptop with Chrome, Edge, Firefox or Safari.
-- Your NC State email and Duo, to sign in.
-- Nothing to install, and no coding.
-:::
+## 1. Use your NC State account only {#account}
 
-## 1. Use your NC State account {#account}
-
-Gemini and Google Sheets work with any Google account, but only your NC State account is approved for university
-data. If your browser is also signed in to a personal Google account, links can open in the wrong one, and your copy
-of the sheet can land in the wrong Drive. The copy page in step 3 doesn't say which account it will use.
-
-The simplest way around that is a browser window that only knows your NC State account.
+Only your NC State account is approved for university data, and the copy link in step 3 doesn't say which account it
+uses. So use a window signed in to your NC State account only.
 
 ::: {.panel-tabset}
 ### Chrome
 
-1. Click your profile picture at the top right of Chrome, then **Add Chrome profile**.
-2. Sign in with your NC State email. NC State's sign-in page and Duo appear.
-3. Use this new window for the rest of the setup and for the session.
+Click your profile picture (top right) → **Add Chrome profile**, sign in with your NC State email, and use that
+window.
 
 ### Other browsers
 
-Open a private window, go to [google.com](https://www.google.com), and sign in with your NC State email. Use that
-window for the rest of the setup and for the session.
+Open a private window and sign in to [google.com](https://www.google.com) with your NC State email.
 :::
-
-Already use Chrome with only your NC State account? Skip this step.
 
 ## 2. Open Gemini once {#gemini}
 
-1. Go to [gemini.google.com]({{< var gemini.url >}}). If you see a page that says "Supercharge your creativity and
-   productivity", click **Chat with Gemini**.
-2. If it asks you to sign in, use your NC State email.
-3. The first time, a box explains how Gemini works at NC State. It says your conversations won't be used to train
-   Google's models. Read it and click **Use Gemini**.
+1. Go to [gemini.google.com]({{< var gemini.url >}}). On a landing page, click **Chat with Gemini**.
+2. Sign in with your NC State email if asked.
+3. On the first-time notice, click **Use Gemini**.
 
-**It works when** you see "Where should we start?" and, at the bottom left, your name with **Edu** under it.
+**It works when** you see "Where should we start?" and your name with **Edu** under it, at the bottom left.
 
 ![](images/screens/gemini-account.png){.shot width="300" fig-alt="The bottom left corner of Gemini: a blurred profile photo, the name Alp Tezbasaran, and the word Edu under it."}
 
-## 3. Make your copy of the practice sheet {#copy}
+## 3. Copy the practice sheet {#copy}
 
-1. Open the [copy link]({{< var sheet.copy >}}). It asks, "Would you like to make a copy of Knitting production data
-   (practice copy)?"
-2. Click **Make a copy**.
+Open the [copy link]({{< var sheet.copy >}}) and click **Make a copy**. The copy is yours alone.
 
-The copy opens in your own Google Drive, named "Copy of Knitting production data (practice copy)". Only you can see
-it unless you share it.
+**It works when** it has five tabs (**Data**, **Dictionary**, **Work**, **Compare**, **About**), and the Data tab
+ends at row {{< var data.last-row >}}.
 
-**It works when** your copy has five tabs at the bottom: **Data**, **Dictionary**, **Work**, **Compare** and **About**.
-On the Data tab, click any cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> on a Mac or <kbd>Ctrl</kbd> +
-<kbd>↓</kbd> on Windows: the last row is {{< var data.last-row >}}, one header row plus {{< var data.rows >}} rows of
-data.
-
-## 4. That's all until the session {#done}
-
-Don't ask Gemini about the data yet. We'll start by looking at it ourselves for a few minutes.
+That's all until the session.
 
 ## If something goes wrong
 
-| What you see | What to do |
+| Problem | Fix |
 | --- | --- |
-| Gemini or your copy shows your personal account | Switch to your NC State account, or use the window from step 1. In Gemini, your account is at the bottom left. |
-| Gemini says it isn't available for your account | Check that you're signed in with your NC State email. If it still won't open, write to [go.ncsu.edu/getdatahelp]({{< var help >}}). |
-| Your copy has only one tab, or yarn counts like `24/1` show as dates | You opened a downloaded file instead of copying the sheet. Use the [copy link]({{< var sheet.copy >}}). |
-| You can't find your copy | It's in your Google Drive under **Recent**. |
-| No time before the session | Come anyway. We'll do the setup together in the first few minutes. |
+| Gemini or the copy shows your personal account | Switch accounts, or use the window from step 1. |
+| Gemini isn't available | Check you're on your NC State email; then [go.ncsu.edu/getdatahelp]({{< var help >}}). |
+| One tab only, or `24/1` shows as a date | You opened a downloaded file. Use the [copy link]({{< var sheet.copy >}}). |
+| Can't find your copy | Google Drive → **Recent**. |
+| No time | Come anyway; we'll set up together. |
 
-<p class="small-muted">Checked against the Gemini app and Google Sheets on {{< var gemini.checked-date >}}. They change
-often; if a screen looks different, Google's <a href="{{< var security.upload-help >}}">Gemini help</a> wins. Help with
-your own setup: <a href="{{< var help >}}">go.ncsu.edu/getdatahelp</a>.</p>
+<p class="small-muted">Checked {{< var gemini.checked-date >}}; if a screen differs, Google's
+<a href="{{< var security.upload-help >}}">Gemini help</a> wins.</p>

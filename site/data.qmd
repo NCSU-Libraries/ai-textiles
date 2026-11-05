@@ -1,23 +1,19 @@
 ---
 title: "The practice data"
-subtitle: "Real production records from a knitting factory, with their problems left in."
+subtitle: "Real production records from a knitting factory, problems included."
 ---
 
 ## Where it comes from {#source}
 
-The practice data is {{< var data.rows >}} rows from a knitting factory's daily production reports, June 1 to
-August 28, 2022. {{< var source.author >}} of Daffodil International University published the reports on Mendeley
-Data, along with a cleaned version, under a {{< var source.license >}} license. We use it because it's the kind of
-spreadsheet researchers really get: typed by people under time pressure, with gaps and odd entries.
-
-The dataset's description says the reports are from 2023. The dates in the data itself are 2022.
+{{< var data.rows >}} rows from a knitting factory's daily production reports, June 1 to August 28, 2022, published
+by {{< var source.author >}} (Daffodil International University) on Mendeley Data under {{< var source.license >}}.
+The dataset's description says 2023; the dates in the data say 2022.
 
 **Cite it as:** {{< var source.citation >}} [{{< var data.doi >}}]({{< var data.doi >}})
 
 ## What one row is {#row}
 
-One lot knitted on one day, on a machine of a given brand and size. The table doesn't say which machine. The same
-lot can appear on several rows in a day, and the same fabric specification appears on many days.
+One lot knitted on one day, on a machine of a given brand and size. Lots and fabrics repeat across rows.
 
 ## The columns {#columns}
 
@@ -25,26 +21,19 @@ lot can appear on several rows in a day, and the same fabric specification appea
 
 ## What we changed {#changes}
 
-- We kept {{< var data.columns >}} of the 38 columns and gave them names with units.
-- **Composition** is the text as it was typed in the factory's report. The published, cleaned version groups the
-  blends into six categories, and it puts some of them in the wrong one. Working from the original text is the
-  realistic task.
-- We saved the file as UTF-8, removed invisible non-breaking spaces, and made the dates real dates.
+- Kept {{< var data.columns >}} of 38 columns and named them with units.
+- Kept **Composition** as typed in the factory's report. The published cleaned version files some blends in the wrong
+  category.
+- Saved as UTF-8, removed invisible spaces, made dates real dates.
 
-Nothing else is changed. Blanks, repeated rows and odd values are as the factory recorded them. Finding them is part
-of the session.
+Everything else is as the factory recorded it. Finding the problems is part of the session.
 
 ## Downloads {#downloads}
 
-- **Your own copy of the Google Sheet** (recommended): the [copy link]({{< var sheet.copy >}}). See
-  [Setup](setup.qmd#copy).
-- [knitting-practice.csv]({{< var data.csv >}}){download=""} ({{< var data.csv-size >}}): just the data, for
-  other tools.
+- **Your own copy of the Google Sheet:** the [copy link]({{< var sheet.copy >}}) (see [Setup](setup.qmd#copy)).
+- [knitting-practice.csv]({{< var data.csv >}}){download=""} ({{< var data.csv-size >}}): the data only.
 - [knitting-practice.xlsx]({{< var data.xlsx >}}){download=""} ({{< var data.xlsx-size >}}): all five tabs, for Excel
   or LibreOffice.
-- The original files, including the raw report: [Mendeley Data]({{< var source.page >}}).
+- The original files: [Mendeley Data]({{< var source.page >}}).
 
-## Reusing it {#reuse}
-
-The data is licensed {{< var source.license >}}: you can share and adapt it, as long as you credit
-{{< var source.author >}} and say what you changed. The list above covers our changes.
+Reuse it freely under {{< var source.license >}}: credit {{< var source.author >}} and say what you changed.

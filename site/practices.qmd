@@ -1,38 +1,34 @@
 ---
 title: "Practices"
-subtitle: "Recommended practices for exploring data with AI, on one page. Print it or keep it open in a tab."
+subtitle: "Recommended practices for exploring data with AI, on one page. Print it or keep it open."
 toc: false
 ---
 
 ## Before you ask
 
-1. **Look first.** Count the rows and columns, read the units, and decide what one row is. Those become your checks.
-2. **Work on a copy.** Keep the original file untouched, and note where the copy came from.
-3. **Mind the data.** Use your NC State account, know the data's level, and check any agreement. When in doubt,
-   describe the data instead of uploading it. [Data security](data-security.qmd) has a decision guide.
+1. **Look first.** Count rows and columns, read the units, decide what one row is.
+2. **Work on a copy.** Keep the original untouched.
+3. **Mind the data.** NC State account, the data's level, any agreement. When in doubt, describe instead of upload.
+   See [Data security](data-security.qmd).
 
 ## When you ask
 
-4. **Say what Gemini is looking at.** Tell it what one row is, the units, the tab name and the range, and paste a few
-   made-up rows in the same format.
-5. **Ask for one thing at a time.** Check it, then ask for the next.
-6. **Ask for formulas, not just answers.** You can check a formula and run it again. A number on its own, you can't.
+4. **Say what Gemini is looking at:** what a row is, the units, the tab and range, a few made-up rows.
+5. **One thing at a time.** Check it before you ask for the next.
+6. **Ask for formulas, not just answers.** A formula you can check and rerun.
 
 ## After it answers
 
-7. **Check numbers two ways,** such as two different formulas, a pivot table, or a few rows counted by hand.
-8. **Check each group too.** One overall number can hide groups that go in opposite directions.
-9. **Watch for quiet fixes,** like rows dropped as duplicates, blanks read as zero, text turned into numbers or dates,
-   or categories merged.
-10. **Keep a log** of your prompts, the answers you used, and what you changed.
-11. **Know when to ask a person.** Data Science Services helps with your own data at
-    [go.ncsu.edu/getdatahelp]({{< var help >}}).
+7. **Check numbers two ways:** two formulas, a pivot table, or a few rows by hand.
+8. **Check each group,** not just the overall number.
+9. **Watch for quiet fixes:** dropped rows, blanks read as zero, text turned into numbers or dates, merged
+   categories.
+10. **Keep a log** of prompts, answers and changes.
+11. **Ask a person when stuck:** [go.ncsu.edu/getdatahelp]({{< var help >}}).
 
 ## Prompts to adapt
 
-Fill in the brackets.
-
-**Describe your data, without sharing it:**
+**Describe your data:**
 
 ::: {.prompt}
 ```default
@@ -66,15 +62,13 @@ Give me a different formula for [the same number], so I can check the first one.
 
 ## Plan for your own data {#own-data}
 
-Answer these before you open Gemini with your own data. Write them on a new tab in your copy, or on paper.
-
 | Question | Your answer |
 | --- | --- |
 | What is one row? | |
-| What units are the measurements in? | |
-| What level is the data: green, yellow, red or purple? | |
-| Does an agreement limit sharing (IRB, data use agreement, NDA, sponsor, export control)? | |
-| Upload it, or describe it? | |
+| What units? | |
+| Level: green, yellow, red or purple? | |
+| Any agreement that limits sharing? | |
+| Upload, or describe? | |
 | Your first prompt | |
 
-<p class="small-muted">Content licensed CC BY 4.0. Questions about this page: <a href="mailto:{{< var email >}}">{{< var email >}}</a>.</p>
+<p class="small-muted">Content licensed CC BY 4.0. Questions: <a href="mailto:{{< var email >}}">{{< var email >}}</a>.</p>
