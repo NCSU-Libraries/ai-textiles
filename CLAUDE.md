@@ -25,21 +25,41 @@ folder is `textiles-seminar`.
   is its own local git repo: commit there with `git -C instructor`.
 
 **Design (decided 2026-11-05):**
+- **Describe the data; never upload it.** Alp's call after the spike: students describe the practice data to Gemini
+  (layout, header row, 5 made-up rows, notes on codes and units) and ask for formulas they run in their own copy.
+  Gemini never sees a real row. It's what you'd do with data you can't upload, and it meets every promise:
+  - Gemini summarizes through formulas and a pivot table.
+  - It points out likely problems, with formulas that find them.
+  - Students check each number two ways.
 - **The Gemini app, not Gemini inside Sheets.** NC State's approved AI list says some Workspace features, Sheets among
   them, need the paid AI Pro for Education add-on. Alp's NC State account shows no Gemini button in Sheets.
 - **Google Sheets only:** no Excel track, no Apps Script.
-- **Two routes, then one comparison.** Route A uploads the CSV to Gemini. Route B keeps the data in the sheet and
-  asks Gemini for formulas and pivot steps; it's what you do with data you can't upload. Students put one number from
-  each route on the sheet's Compare tab.
+- **Two ways, one number.** The sheet's Compare tab has "First way" and "Second way" columns: a formula and another
+  formula or a pivot table. The Reject Qty row differs on purpose, because blanks skipped and blanks as zero answer
+  different questions.
 - **Real data, one planted problem.** The Mendeley knitting dataset (CC BY 4.0), 13 columns. Composition is the text
-  as typed in the factory's raw report (290 spellings); every other quirk is the factory's own, kept and documented.
-- **Data security comes right before the upload**, in the room, not just on a page.
+  as typed in the factory's raw report (290 spellings); every other quirk is the factory's own. The answer key lists
+  the eight problems students can find with formulas.
+- **Data security comes right before Gemini sees anything,** in the room, not just on a page.
 - **The video comes last:** one captions-only walkthrough with chapters, built with dsti-python's tour pipeline from
   real screenshots. The day-of fallback never depends on it.
 
-**Run of show (40 min):** 0–4 welcome · 4–6 look first, no AI · 6–8 data security · 8–17 Route A · 17–27 Route B ·
-27–32 compare · 32–36 your own data · 36–40 questions and evaluation. Cut to 30: Alp runs Route A on the projector
-while students do Route B. Stretch to 45: the Composition cleaning extra and the correlation-by-group demo.
+**Run of show (40 min):**
+
+| Minutes | Segment |
+| --- | --- |
+| 0–4 | Welcome |
+| 4–6 | Look first, no AI |
+| 6–8 | Data security |
+| 8–11 | Describe the data |
+| 11–19 | Find the problems |
+| 19–25 | Summarize, with a chart |
+| 25–31 | Check it a second way, and what a blank means |
+| 31–36 | Your own data |
+| 36–40 | Questions and evaluation |
+
+- Cut to 30: Alp demos the problems step on the projector, and students skip the pivot table.
+- Stretch to 45: the Composition extra and the correlation-by-group extra.
 
 ## Layout
 
@@ -49,8 +69,8 @@ while students do Route B. Stretch to 45: the Composition cleaning extra and the
 | `site/_variables.yml` | Facts used on several pages. The block between the "generated" markers is written by `tools/make_data.py`; edit the rest by hand |
 | `site/_dictionary.md` | The data dictionary, generated; `data.qmd` includes it |
 | `site/_decision-guide.md` | The decision-guide SVG, included by `data-security.qmd` and the deck. Its words are also in `data-security.qmd`'s phone-only list: change both |
-| `site/explore.qmd` | The session page: look first, data security, Route A, Route B, compare, your own data. Draft until the spike |
-| `site/slides/index.qmd` | The deck: framing, data security, two routes, then reference slides after "Your turn" |
+| `site/explore.qmd` | The session page, eight steps: look first, data security, describe, problems, summary, second way, blanks, your own data |
+| `site/slides/index.qmd` | The deck: framing, data security, what Gemini sees, then reference slides after "Your turn" |
 | `site/downloads/knitting-practice.{csv,xlsx}` | The practice data, generated. The XLSX has Data, Dictionary, Work, Compare and About tabs |
 | `site/theme/` | NC State theme, copied from `../local-llms` |
 | `tools/make_data.py` | Downloads the Mendeley source (checksums pinned), builds the practice data and the answer key, writes the variables. Deterministic |
@@ -70,7 +90,8 @@ node tools/shoot.mjs shots.json  # headless Chrome screenshots
 
 ## Keeping things consistent
 
-- **Numbers come from the generated variables,** never typed into a page: `{{< var key.sj-mean >}}`, and so on. Change
+- **Numbers come from the generated variables,** never typed into a page: `{{< var key.sj-mean >}}`, and so on. Inside
+  formulas, use `data.last-row-n` (no thousands comma; `12,570` breaks a range). Change
   the data → rerun `make_data.py` → the pages follow. The private answer key explains every number and lists the
   wrong values students may get, with their causes.
 - **The shared Google Sheet** lives in Alp's NC State Drive (its `/copy` link is in `_variables.yml`). It's built by

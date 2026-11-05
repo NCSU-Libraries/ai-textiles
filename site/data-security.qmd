@@ -3,8 +3,8 @@ title: "Data security"
 subtitle: "What's safe to share with Gemini, and why your account matters. About 5 minutes to read."
 ---
 
-Before you upload anything to an AI tool, check three things: the account you're signed in with, how sensitive the
-data is, and whether anyone you got the data from limits how it can be shared.
+Before you share any data with an AI tool, check three things. Which account are you signed in with? How sensitive
+is the data? And does anyone you got it from limit how it can be shared?
 
 ## 1. Your account {#account}
 
@@ -14,53 +14,56 @@ with your NC State account", and it rejects the free public version for universi
 with a personal Google account.
 
 Under NC State's agreement with Google, your chats and uploaded files "won't be reviewed by human reviewers or
-otherwise used to improve generative AI models" ([Google's education FAQ]({{< var security.google-faq >}})).
+otherwise used to improve generative AI models" ([Google's education FAQ]({{< var security.google-faq >}})). Gemini
+says the same when you first open it, and adds that your Gemini Activity can't be turned off. Your chats are kept,
+so think before you paste.
 
-**To check:** click your profile picture at the top right of Gemini. It should show your `@ncsu.edu` address.
+**To check:** at the bottom left of Gemini, your name should have **Edu** under it.
 
 ## 2. How sensitive is the data? {#levels}
 
-NC State's [Data Management Framework]({{< var security.framework >}}) sorts university data into four levels:
+NC State's [Data Management Framework]({{< var security.framework >}}) sorts university data into four levels.
 
 | Level | What it means | Examples |
 | --- | --- | --- |
 | **Purple**, ultra-sensitive | Disclosure or loss poses the highest risk | Social Security numbers, passwords, encryption keys, biometrics |
 | **Red**, highly sensitive | A high risk | Driver's license and passport numbers, mother's maiden name, immigration numbers |
 | **Yellow**, moderately sensitive | A moderate to low risk | Date of birth, race, gender, transcripts |
-| **Green**, not sensitive | A low risk; could be shared with anyone | Published data, like this session's practice data |
+| **Green**, not sensitive | A low risk; it may be disclosed to anyone | Data that's already public, like this session's practice data |
 
-Data that nobody has classified counts as yellow until someone does. The data's steward decides its level: for
-research data, usually the PI.
+Data that nobody has classified must be treated as at least yellow until it is. The data's steward sets the level;
+for research data, ask your PI first.
 
 **Gemini, with your NC State login, is approved for data up to red. Never purple.**
 
 ## 3. Agreements come first {#agreements}
 
-A tool being approved doesn't cancel what an agreement says about the data. Ones textile researchers meet often:
+A tool being approved doesn't cancel what an agreement says about the data. These are the ones textile researchers
+meet most:
 
-- **An industry partner's data under a nondisclosure agreement:** production reports, recipes, test results. The
-  practice data is exactly this kind of report; its factory chose to publish it.
-- **Sponsored research:** the sponsor's terms can limit who processes the data.
-- **Human-subjects data,** such as surveys, interviews or fit studies: your IRB protocol and consent form say where
+- **An industry partner's data under a nondisclosure agreement,** like production reports, recipes or test results.
+  The practice data is exactly this kind of report; its factory chose to publish it.
+- **Sponsored research,** where the sponsor's terms can limit who processes the data.
+- **Human-subjects data,** such as surveys, interviews or fit studies. Your IRB protocol and consent form say where
   the data may go.
 - **A data use agreement** for data you got from another institution or company.
 - **Export-controlled** technical data.
 
 If an agreement limits sharing, or you're not sure, don't upload. Ask the PI, or whoever signed the agreement, first.
+When NC State's approved list and an agreement disagree, follow whichever is stricter.
 
-The rule of thumb: **follow the stricter of NC State's approved list and your agreements.**
+## 4. Describe it instead of uploading {#describe}
 
-## 4. When you can't upload: Route B {#route-b}
+You can get Gemini's help without sharing a single row. Describe the data's layout, paste the header row and a few
+made-up rows of the same kind, and ask for formulas, pivot-table steps or chart steps. You run them in your own
+sheet, so the data never leaves it. The [Explore](explore.qmd#describe) page practices this.
 
-You can still get Gemini's help without sharing the data. Give it the column headers and a few made-up rows of the
-same kind, and ask for formulas, pivot-table steps or chart steps. You run them in your own sheet, so the data never
-leaves it. The [Explore](explore.qmd#route-b) page practices this.
+This works for any data you're allowed to keep in your NC State Google Drive. If an agreement doesn't allow even
+that, ask before you use any cloud tool.
 
-Two things to watch:
-
-- Column names can be sensitive too, like a partner's product codes. Rename them before you paste.
-- A list of the distinct values in a column, from a formula like `=SORT(UNIQUE(G2:G))`, is often fine to share when
-  the rows aren't. Check that it doesn't reveal anything first.
+Column names can be sensitive too, like a partner's product codes, so rename them before you paste. A list of the
+distinct values in a column, from a formula like `=SORT(UNIQUE(G2:G))`, is often fine to share when the rows aren't.
+Check that it doesn't reveal anything first.
 
 ## 5. The decision guide {#guide}
 
@@ -71,14 +74,15 @@ Two things to watch:
    approved for university data.
 2. **Is any of it purple** (Social Security numbers, passwords, keys, biometrics)? Don't put it in any AI tool.
 3. **Could an agreement limit sharing** (IRB protocol, data use agreement, partner NDA, sponsor terms, export
-   control)? Route B only, with headers and made-up rows. Ask whoever signed the agreement first.
-4. **Otherwise,** for green, yellow or red data that nothing limits: Route A or B. Upload only the columns you need.
+   control)? Describe it only, with headers and made-up rows, and ask whoever signed the agreement first.
+4. **Otherwise,** for green, yellow or red data that nothing limits, you may upload it or describe it. If you upload,
+   include only the columns you need.
 :::
 
 ## For this session {#this-session}
 
-The practice data is published under a CC BY 4.0 license, so it's green, and you can upload it. Sign in with your
-NC State account anyway: it's the habit that matters for your own data.
+The practice data is already public, so it's green. We still describe it instead of uploading it, to practice what
+you'd do with data you can't share.
 
 <p class="small-muted">Checked against NC State's <a href="{{< var security.approved-list >}}">approved AI list</a>
 and <a href="{{< var security.framework >}}">Data Management Framework</a> on {{< var security.checked-date >}}. They

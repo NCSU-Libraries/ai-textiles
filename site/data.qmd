@@ -39,7 +39,7 @@ of the session.
 - **Your own copy of the Google Sheet** (recommended): the [copy link]({{< var sheet.copy >}}). See
   [Setup](setup.qmd#copy).
 - [knitting-practice.csv]({{< var data.csv >}}){download=""} ({{< var data.csv-size >}}): just the data, for
-  uploading to Gemini.
+  other tools.
 - [knitting-practice.xlsx]({{< var data.xlsx >}}){download=""} ({{< var data.xlsx-size >}}): all five tabs, for Excel
   or LibreOffice.
 - The original files, including the raw report: [Mendeley Data]({{< var source.page >}}).

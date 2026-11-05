@@ -9,7 +9,7 @@ students meet one realistic cleaning problem. The source's other quirks stay in 
     uv run --with pandas --with openpyxl python -I tools/make_data.py
 
 Writes:
-    site/downloads/knitting-practice.csv    the Data tab as UTF-8 CSV, for uploading to Gemini (Route A)
+    site/downloads/knitting-practice.csv    the Data tab as UTF-8 CSV, for other tools
     site/downloads/knitting-practice.xlsx   Data, Dictionary, Work, Compare and About tabs: the Google Sheet's source
     site/_variables.yml                     only the block between the "generated" markers
     site/_dictionary.md                     the Dictionary tab as a table, included by site/data.qmd
@@ -302,6 +302,13 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
             "rows_with_several_yarns": int(yarn.str.contains(",", regex=False).sum()),
             "distinct": int(yarn.nunique()),
         },
+        "lots": {"distinct": int(d[LOT].nunique()), "written_nan": int((d[LOT] == "nan").sum()),
+                 "rows_minus_distinct": ROWS - int(d[LOT].nunique())},
+        "gauge": {"values": sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique()),
+                  "max": int(pd.to_numeric(d[GAUGE]).max()),
+                  "rows_above_40": int((pd.to_numeric(d[GAUGE]) > 40).sum())},
+        "machine_diameter": {"min": int(pd.to_numeric(d[MC_DIA]).min()), "max": int(pd.to_numeric(d[MC_DIA]).max())},
+        "production_qty_zero_rows": int((pd.to_numeric(d[QTY]) <= 0).sum()),
         "gsm": {"overall": stats(con == con), "by_construction": by_construction},
         "correlation": correlation,
         "compare": {
@@ -319,6 +326,8 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
              "cause": "repeated rows dropped; rounded to one decimal it still matches"},
             {"stat": "reject_mean", "value": r(reject.fillna(0).mean(), 4),
              "cause": "blank Reject Qty cells were read as zero (and the note row too)"},
+            {"stat": "repeated_lots", "value": ROWS - int(d[LOT].nunique()),
+             "cause": "a check for repeated Lot values; a lot can run for several days, so repeats are expected"},
         ],
         "quality_issues": [
             f"Reject Qty: {int((d[REJECT] == '').sum()):,} blank cells. Zero rejects, or not recorded?",
@@ -326,7 +335,12 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
             f"Fabric Diameter: {int((d[FABRIC_DIA] == 'any').sum())} rows say \"any\"",
             f"Composition: {int((d[COMPOSITION] == '').sum())} blanks, "
             f"{int((d[COMPOSITION] == '%').sum())} that are just \"%\", and hundreds of spellings",
-            f"{repeated} rows repeat exactly. Errors, or the same lot entered twice? The table can't say",
+            f"{repeated} rows are exact copies of an earlier row. Errors, or the same lot entered twice? The table "
+            "can't say",
+            f"Lot says \"nan\" in {int((d[LOT] == 'nan').sum())} rows: a missing lot written as text",
+            f"Machine Gauge is {int(pd.to_numeric(d[GAUGE]).max()):,} in one row, a typo: the others run "
+            f"{sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique())[0]} to "
+            f"{sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique())[-2]}",
             "Yarn Count mixes notations: cotton count (30/1), denier (20/D), filament yarns (75D/72F), several yarns",
         ],
         "composition_rule": {
@@ -452,8 +466,7 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
     # Compare
     cmp_ = wb.create_sheet("Compare")
     cmp_["A1"], cmp_["A1"].font = "Compare the two routes", TITLE
-    header(cmp_, 3, ["Statistic", "Route A: Gemini (upload)", "Route B: your formula", "Compare to (decimals)",
-                     "Match?"])
+    header(cmp_, 3, ["Statistic", "First way", "Second way", "Compare to (decimals)", "Match?"])
     stats = [("Data rows, not counting the header", 0), ("Mean GSM for single jersey (S/J)", 1),
              ("Mean Reject Qty", 2), ("Your own:", 2), ("Your own:", 2)]
     for i, (label, places) in enumerate(stats, start=4):
@@ -461,9 +474,10 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
         cmp_.cell(row=i, column=4, value=places)
         cmp_.cell(row=i, column=5,
                   value=f'=IF(OR(B{i}="",C{i}=""),"",IF(ROUND(B{i},D{i})=ROUND(C{i},D{i}),"match","differs"))')
-    cmp_["A10"] = ("Type numbers, not text. Match? rounds both to the decimals in column D, so 0.23 and 0.2310 match. "
-                   "If a row says differs, the Explore page's 'What a wrong number tells you' table usually names "
-                   "the cause.")
+    cmp_["A10"] = ("Work out each number two ways, such as a formula and a pivot table, and type the results here as "
+                   "numbers. Match? rounds both to the decimals in column D, so 0.23 and 0.2310 match. Use the last "
+                   "two rows for any number of your own. If a row says differs, the Explore page's 'What a wrong "
+                   "number tells you' table usually names the cause.")
     cmp_["A10"].alignment = WRAP
     cmp_.merge_cells("A10:E10")
     cmp_.row_dimensions[10].height = 48
@@ -546,6 +560,7 @@ def write_variables(key: dict) -> None:
             "columns": str(key["columns"]),
             "range": key["range"],
             "last-row": f"{key['rows'] + 1:,}",
+            "last-row-n": str(key["rows"] + 1),  # no comma: for formulas like M2:M12570
             "first-date": f"{first:%B} {first.day}, {first.year}",
             "last-date": f"{last:%B} {last.day}, {last.year}",
             "csv": "downloads/knitting-practice.csv",
@@ -574,6 +589,12 @@ def write_variables(key: dict) -> None:
             "repeated-rows": str(key["repeated_rows"]),
             "rows-with-header": f"{key['rows'] + 1:,}",
             "rows-dedup": f"{key['rows'] - key['repeated_rows']:,}",
+            "lot-nan": str(key["lots"]["written_nan"]),
+            "lots-distinct": f"{key['lots']['distinct']:,}",
+            "lots-repeat": f"{key['lots']['rows_minus_distinct']:,}",
+            "gauge-max": f"{key['gauge']['max']:,}",
+            "qty-zero": str(key["production_qty_zero_rows"]),
+            "problems": str(len(key["quality_issues"])),
             "r-overall": fmt(c["overall"]["per_row"]["gsm_stitch"], 2),
             "r-interlock": fmt(c["Interlock"]["per_row"]["gsm_stitch"], 2),
             "r-pique": fmt(c["Pique"]["per_row"]["gsm_stitch"], 2),
@@ -624,7 +645,7 @@ def write_key_md(key: dict, path: Path) -> None:
         "| --- | --- | --- |",
     ]
     out += [f"| {w['value']:,} | {w['stat']} | {w['cause']} |" for w in key["wrong_values"]]
-    out += ["", "## Quality issues Route A should find", ""]
+    out += ["", "## The problems in this data (students find them with formulas)", ""]
     out += [f"{i}. {q}" for i, q in enumerate(key["quality_issues"], 1)]
     out += ["", "## GSM by construction", "",
             "| Construction | Rows | Mean | Median | SD | Min | Max | Specs | Mean per spec |",

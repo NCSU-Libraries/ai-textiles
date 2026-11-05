@@ -21,16 +21,22 @@ website:
     logo-alt: "NC State University Libraries"
     title: false
     collapse-below: lg
-    # Gate 0: only the pages students need before the session. Explore, Data security, Practices and Slides
-    # join the navbar at Gate 1.
     left:
       - href: index.qmd
         text: Home
       - href: setup.qmd
         text: Setup
+      - href: explore.qmd
+        text: Explore
+      - href: data-security.qmd
+        text: Data security
+      - href: practices.qmd
+        text: Practices
       - href: data.qmd
         text: Data
     right:
+      - href: slides/index.qmd
+        text: Slides
       - icon: github
         href: "https://github.com/NCSU-Libraries/ai-data-exploration"
         aria-label: "Source on GitHub"

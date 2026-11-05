@@ -25,7 +25,7 @@ sheet:
 
 gemini:
   url: "https://gemini.google.com"
-  checked-date: "TBD"                      # set after the spike: when the pages were checked against the Gemini app
+  checked-date: "November 5, 2026"         # when the pages were last checked against the Gemini app and Sheets
 
 # NC State's rules and Google's terms, as checked on security.checked-date. Recheck the day before the session.
 security:
@@ -47,6 +47,7 @@ data:
   columns: "13"
   range: "A1:M12570"
   last-row: "12,570"
+  last-row-n: "12570"
   first-date: "June 1, 2022"
   last-date: "August 28, 2022"
   csv: "downloads/knitting-practice.csv"
@@ -74,6 +75,12 @@ key:
   repeated-rows: "59"
   rows-with-header: "12,570"
   rows-dedup: "12,510"
+  lot-nan: "36"
+  lots-distinct: "1,884"
+  lots-repeat: "10,685"
+  gauge-max: "2,468"
+  qty-zero: "4"
+  problems: "8"
   r-overall: "0.10"
   r-interlock: "0.87"
   r-pique: "−0.87"

@@ -11,7 +11,7 @@ title-block-style: none
 
 <p class="when">{{< var event.date >}} · {{< var event.length >}} · {{< var event.where >}}</p>
 
-Use Gemini to get to know a spreadsheet of real factory data, and check every number it gives you.
+Use Gemini to analyze a spreadsheet of real factory data without sharing a single row of it, and check every number yourself.
 :::
 
 ## What you'll leave with
@@ -19,8 +19,8 @@ Use Gemini to get to know a spreadsheet of real factory data, and check every nu
 ::: {.finish-line}
 <ul id="finish-line">
 <li><label><input type="checkbox" data-k="copy"> Your own copy of the practice sheet, open in Google Sheets</label></li>
-<li><label><input type="checkbox" data-k="summary"> Gemini's summary of the data and the problems it found, checked against the sheet</label></li>
-<li><label><input type="checkbox" data-k="build"> A formula, a pivot table and a chart, built with Gemini's help</label></li>
+<li><label><input type="checkbox" data-k="problems"> The data's problems, found with formulas Gemini wrote</label></li>
+<li><label><input type="checkbox" data-k="summary"> A summary table and a chart, built with Gemini's help</label></li>
 <li><label><input type="checkbox" data-k="compare"> One number worked out two ways, and a reason for any difference</label></li>
 <li><label><input type="checkbox" data-k="security"> Knowing what's safe to share with an AI tool, and why your account matters</label></li>
 <li><label><input type="checkbox" data-k="own"> A plan for trying the same steps on your own data</label></li>
@@ -45,19 +45,21 @@ Use Gemini to get to know a spreadsheet of real factory data, and check every nu
 ## Before you come
 
 1. **Bring a laptop** and its charger.
-2. **Do the [setup](setup.qmd).** It takes about 5 minutes: sign in to Gemini with your NC State account, make your
-   copy of the practice sheet, and download one file.
+2. **Do the [setup](setup.qmd).** It takes about 5 minutes. You'll sign in to Gemini with your NC State account and
+   make your copy of the practice sheet.
 
 You don't need any coding experience. Couldn't do the setup ahead? We'll do it together at the start.
 
 ## The materials
 
 ::: {.cards}
-<a class="card-link" href="setup.html"><span class="card-title">Setup</span><span class="card-text">Your account, your copy of the sheet, and the file for Gemini</span></a>
+<a class="card-link" href="setup.html"><span class="card-title">Setup</span><span class="card-text">Your account and your copy of the practice sheet</span></a>
+<a class="card-link" href="explore.html"><span class="card-title">Explore</span><span class="card-text">The session's steps and prompts, ready to copy</span></a>
+<a class="card-link" href="data-security.html"><span class="card-title">Data security</span><span class="card-text">What's safe to share with Gemini, and a decision guide</span></a>
+<a class="card-link" href="practices.html"><span class="card-title">Practices</span><span class="card-text">Recommended practices and prompts, on one page</span></a>
 <a class="card-link" href="data.html"><span class="card-title">The practice data</span><span class="card-text">Where it comes from, what each column holds, and how to cite it</span></a>
+<a class="card-link" href="slides/index.html"><span class="card-title">Slides</span><span class="card-text">The session's slides</span></a>
 :::
-
-The hands-on steps, the data security guide and a one-page cheat sheet go up before the session.
 
 ## About this session
 

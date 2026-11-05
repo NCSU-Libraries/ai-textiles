@@ -24,7 +24,7 @@ format:
 
 1. Open your copy of the practice sheet
 2. Open Gemini, signed in with your NC State account
-3. Have `knitting-practice.csv` ready
+3. Open the Explore page
 
 <!-- When the go link exists, make it the statement above, put images/qr-session.svg beside it in a .two-col, and
      update the footer. -->
@@ -47,8 +47,8 @@ Our team comes from a variety of academic backgrounds, including nuclear enginee
 
 <ul class="finish" style="font-size:0.6em;line-height:1.35">
 <li>Your copy of the practice sheet, open</li>
-<li>Gemini's summary and the problems it found, checked</li>
-<li>A formula, a pivot table and a chart</li>
+<li>The data's problems, found with Gemini's formulas</li>
+<li>A summary table and a chart</li>
 <li>One number, worked out two ways</li>
 <li>What's safe to share, and why the account matters</li>
 <li>A plan for your own data</li>
@@ -105,60 +105,46 @@ A fabric, a test sample, or a day's production?
 :::
 :::
 
-[Check: profile picture → `@ncsu.edu`]{.muted}
+[Check: at the bottom left of Gemini, your name with Edu under it]{.muted}
 
 ## How sensitive is it?
 
 | <span class="level-dot" style="background:#6B2C91"></span>Purple | <span class="level-dot" style="background:#CC0000"></span>Red | <span class="level-dot" style="background:#E8B500"></span>Yellow | <span class="level-dot" style="background:#6F7D1C"></span>Green |
 | --- | --- | --- | --- |
-| SSNs, passwords, keys, biometrics | Passport and license numbers | Birth dates, transcripts | Published data |
+| SSNs, passwords, keys, biometrics | Passport and license numbers | Birth dates, transcripts | Already public data |
 
 [Gemini with your NC State login: approved up to red. Never purple.]{.statement style="font-size:0.7em"}
 
 [Agreements come first: IRB protocols, data use agreements, partner NDAs, sponsor terms, export control.]{.muted}
 
-## Two routes
+## What Gemini sees
 
 ```{=html}
-<svg viewBox="0 0 960 400" width="100%" role="img" aria-labelledby="routes-title" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif">
-  <title id="routes-title">Two routes: what Gemini sees</title>
+<svg viewBox="0 0 960 300" width="100%" role="img" aria-labelledby="sees-title" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif">
+  <title id="sees-title">What Gemini sees</title>
   <defs>
-    <marker id="rt-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#CC0000"/></marker>
-    <marker id="rt-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4156A1"/></marker>
-    <marker id="rt-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606A"/></marker>
+    <marker id="ws-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4156A1"/></marker>
+    <marker id="ws-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606A"/></marker>
   </defs>
   <g font-size="22" fill="#1F2328">
-    <!-- Route A -->
-    <text x="0" y="28" font-size="20" font-weight="800" fill="#CC0000">ROUTE A · UPLOAD</text>
-    <rect x="0" y="44" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
-    <text x="115" y="96" text-anchor="middle" font-weight="800">Your sheet</text>
-    <text x="115" y="128" text-anchor="middle" font-size="18" fill="#57606A">12,569 rows</text>
-    <line x1="240" y1="84" x2="710" y2="84" stroke="#CC0000" stroke-width="5" marker-end="url(#rt-red)"/>
-    <text x="475" y="72" text-anchor="middle" font-weight="700" fill="#CC0000">the whole file</text>
-    <line x1="710" y1="128" x2="240" y2="128" stroke="#57606A" stroke-width="3" marker-end="url(#rt-grey)"/>
-    <text x="475" y="156" text-anchor="middle" font-size="19" fill="#57606A">answers, charts, code</text>
-    <rect x="720" y="44" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
-    <text x="835" y="96" text-anchor="middle" font-weight="800">Gemini</text>
-    <text x="835" y="128" text-anchor="middle" font-size="18" fill="#57606A">NC State login</text>
-  </g>
-  <g class="fragment" font-size="22" fill="#1F2328">
-    <!-- Route B -->
-    <text x="0" y="238" font-size="20" font-weight="800" fill="#4156A1">ROUTE B · KEEP THE DATA IN THE SHEET</text>
-    <rect x="0" y="254" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
-    <text x="115" y="306" text-anchor="middle" font-weight="800">Your sheet</text>
-    <text x="115" y="338" text-anchor="middle" font-size="18" fill="#57606A">the data stays here</text>
-    <line x1="240" y1="294" x2="710" y2="294" stroke="#4156A1" stroke-width="5" marker-end="url(#rt-blue)"/>
-    <text x="475" y="282" text-anchor="middle" font-weight="700" fill="#4156A1">headers + 5 made-up rows</text>
-    <line x1="710" y1="338" x2="240" y2="338" stroke="#57606A" stroke-width="3" marker-end="url(#rt-grey)"/>
-    <text x="475" y="366" text-anchor="middle" font-size="19" fill="#57606A">formulas and steps you run</text>
-    <rect x="720" y="254" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
-    <text x="835" y="306" text-anchor="middle" font-weight="800">Gemini</text>
-    <text x="835" y="338" text-anchor="middle" font-size="18" fill="#57606A">NC State login</text>
+    <rect x="0" y="50" width="250" height="170" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="125" y="115" text-anchor="middle" font-weight="800">Your sheet</text>
+    <text x="125" y="150" text-anchor="middle" font-size="19" fill="#57606A">the real rows</text>
+    <text x="125" y="178" text-anchor="middle" font-size="19" fill="#57606A">stay here</text>
+    <line x1="260" y1="105" x2="700" y2="105" stroke="#4156A1" stroke-width="5" marker-end="url(#ws-blue)"/>
+    <text x="480" y="90" text-anchor="middle" font-weight="700" fill="#4156A1">headers, 5 made-up rows, notes</text>
+    <g class="fragment">
+      <line x1="700" y1="170" x2="260" y2="170" stroke="#57606A" stroke-width="3" marker-end="url(#ws-grey)"/>
+      <text x="480" y="202" text-anchor="middle" font-size="20" fill="#57606A">formulas and steps you run</text>
+    </g>
+    <rect x="710" y="50" width="250" height="170" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="835" y="128" text-anchor="middle" font-weight="800">Gemini</text>
+    <text x="835" y="160" text-anchor="middle" font-size="19" fill="#57606A">NC State login</text>
   </g>
 </svg>
 ```
 
-[Text alternative: Route A, upload: the whole file goes from your sheet to Gemini, and answers, charts and code come back. Route B, keep the data in the sheet: only the headers and five made-up rows go to Gemini, and formulas and steps come back for you to run in your sheet, where the data stays.]{.visually-hidden}
+[Text alternative: Your sheet holds the real rows, and they stay there. Only the headers, five made-up rows and notes go to Gemini. Formulas and steps come back, and you run them in your sheet.]{.visually-hidden}
 
 # Your turn {.divider background-color="#CC0000"}
 
@@ -166,17 +152,31 @@ A fabric, a test sample, or a day's production?
 
 [{{< var site-short >}} → Explore]{.statement style="white-space:nowrap;font-size:0.72em"}
 
-[Route A until minute 17]{.pill .dark} [Route B until minute 27]{.pill .dark}
+[Problems until minute 19]{.pill .dark} [Summary until 25]{.pill .dark} [Checks until 31]{.pill .dark}
 
-## Compare
+## What Gemini's checks missed
+
+<ul class="finish" style="font-size:0.5em;line-height:1.3">
+<li>{{< var key.reject-blank >}} blank Reject Qty: zero, or not recorded?</li>
+<li>A note instead of a number in Reject Qty</li>
+<li>"any" in Fabric Diameter, {{< var key.any-rows >}} rows</li>
+<li>Blank or "%" Composition</li>
+<li>{{< var key.repeated-rows >}} exact copies of earlier rows</li>
+<li>"nan" as a Lot, {{< var key.lot-nan >}} rows</li>
+<li>A gauge of {{< var key.gauge-max >}}</li>
+<li>Yarn counts in three notations</li>
+</ul>
+
+[Each check should fit what a row is: {{< var key.lots-repeat >}} repeated lots aren't an error.]{.muted}
+
+## Two ways, one number
 
 | You got | What happened |
 | --- | --- |
-| **{{< var data.rows >}}** rows, **{{< var key.sj-mean >}}** for S/J, **{{< var key.reject-mean >}}** rejects | Both routes agree |
+| **{{< var data.rows >}}** rows, **{{< var key.sj-mean >}}** for S/J | Both ways agree |
 | {{< var key.rows-with-header >}} rows | The header row was counted |
-| {{< var key.rows-dedup >}} rows | The {{< var key.repeated-rows >}} repeated rows were dropped |
 | {{< var key.sj-contains-mean >}} for S/J | LS/J was caught too |
-| {{< var key.reject-mean-zero >}} rejects | Blanks were counted as zero |
+| {{< var key.reject-mean >}} or {{< var key.reject-mean-zero >}} rejects | Blanks skipped, or counted as zero |
 
 [Does a blank Reject Qty mean no rejects, or not recorded?]{.muted}
 
@@ -187,7 +187,7 @@ A fabric, a test sample, or a day's production?
 <li>What units are the measurements in?</li>
 <li>Green, yellow, red or purple?</li>
 <li>Does an agreement limit sharing?</li>
-<li>Route A or Route B?</li>
+<li>Upload it, or describe it?</li>
 <li>Your first prompt</li>
 </ul>
 
@@ -211,7 +211,7 @@ A fabric, a test sample, or a day's production?
 
 - Say what a row is, the units, the range
 - One thing at a time
-- Formulas and code, not just answers
+- Formulas, not just answers
 :::
 
 ::: {.card}
