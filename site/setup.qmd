@@ -44,6 +44,8 @@ Already use Chrome with only your NC State account? Skip this step.
 
 **It works when** you see "Where should we start?" and, at the bottom left, your name with **Edu** under it.
 
+![](images/screens/gemini-account.png){.shot width="300" fig-alt="The bottom left corner of Gemini: a blurred profile photo, the name Alp Tezbasaran, and the word Edu under it."}
+
 ## 3. Make your copy of the practice sheet {#copy}
 
 1. Open the [copy link]({{< var sheet.copy >}}). It asks, "Would you like to make a copy of Knitting production data

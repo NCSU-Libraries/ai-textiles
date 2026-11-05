@@ -103,6 +103,12 @@ is? A check for repeated Lot values finds {{< var key.lots-repeat >}}, but a lot
 are expected. Which of the {{< var key.problems >}} problems did its checks miss?
 :::
 
+::: {.callout-note collapse="true" appearance="simple"}
+## What it looked like when we tried it
+
+![Gemini's six checks, from the description alone. "Duplicate Lot IDs" counts {{< var key.lots-repeat >}} lots that repeat by design, and none of the checks looks for exact copies, the note in Reject Qty, the "nan" lots or the gauge of {{< var key.gauge-max >}}.](images/screens/gemini-problems.png){.shot fig-alt="Gemini's answer to the problems prompt: six numbered checks, each with a Google Sheets formula. Non-numeric text in Fabric Diameter, blank Reject Qty, dates stored as text, duplicate Lot IDs, Composition entries ending in a double percent sign, and production quantities of zero or less."}
+:::
+
 ::: {.callout-tip collapse="true"}
 ## The {{< var key.problems >}} problems in this data
 
@@ -147,6 +153,12 @@ follow Gemini's chart steps.
 Does the table list all {{< var data.constructions >}} constructions? Gemini may label the count "Lot Count", but it
 counts rows, not lots. Rib's mean sits well above its median: flat-knit collars and cuffs weigh 700 g/m² and more.
 Write the mean GSM for **S/J** in the **First way** column of the **Compare** tab.
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## What it looked like when we tried it
+
+![The table from Gemini's formula and the chart from its steps. The chart kept the title "Lot Count and Mean GSM" after the count was removed; double-click a title to change it.](images/screens/sheets-summary.png){.shot fig-alt="A table on the Work tab listing eight constructions with their row counts and mean GSM, and below it a column chart of mean GSM by construction, with 'other' and Rib the tallest bars."}
 :::
 
 ::: {.callout-tip collapse="true"}
