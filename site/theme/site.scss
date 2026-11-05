@@ -129,3 +129,18 @@ table { font-size: 0.95rem; }
 // Code fonts draw != <= >= == as single glyphs (ligatures). Beginners copy what they see and type ≠, which Python
 // rejects, so show every character as typed.
 code, pre, kbd, samp, .sourceCode { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+// The decision guide on Data security: the drawing on wide screens, the same steps in words on phones,
+// where the drawing's text would be too small to read.
+.decision-svg { display: block; margin: 1rem 0 1.5rem; }
+.decision-words { display: none; }
+@media (max-width: 640px) {
+  .decision-svg { display: none; }
+  .decision-words { display: block; }
+}
+
+// "Practice: …" tag under a step heading: names the recommended practice the step shows
+.practice {
+  display: inline-block; background: #F3F1ED; color: #3D3D3D; border: 1px solid #E6E1DA; border-radius: 999px;
+  padding: 0.1rem 0.7rem; font-size: 0.85rem; font-weight: 600; margin: -0.4rem 0 0.6rem;
+}

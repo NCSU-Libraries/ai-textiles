@@ -48,11 +48,15 @@ while students do Route B. Stretch to 45: the Composition cleaning extra and the
 | `site/` | Quarto website. Gate 0 pages: `index.qmd`, `setup.qmd`, `data.qmd`. Gate 1 adds `explore.qmd`, `data-security.qmd`, `practices.qmd` and `slides/index.qmd` |
 | `site/_variables.yml` | Facts used on several pages. The block between the "generated" markers is written by `tools/make_data.py`; edit the rest by hand |
 | `site/_dictionary.md` | The data dictionary, generated; `data.qmd` includes it |
+| `site/_decision-guide.md` | The decision-guide SVG, included by `data-security.qmd` and the deck. Its words are also in `data-security.qmd`'s phone-only list: change both |
+| `site/explore.qmd` | The session page: look first, data security, Route A, Route B, compare, your own data. Draft until the spike |
+| `site/slides/index.qmd` | The deck: framing, data security, two routes, then reference slides after "Your turn" |
 | `site/downloads/knitting-practice.{csv,xlsx}` | The practice data, generated. The XLSX has Data, Dictionary, Work, Compare and About tabs |
 | `site/theme/` | NC State theme, copied from `../local-llms` |
 | `tools/make_data.py` | Downloads the Mendeley source (checksums pinned), builds the practice data and the answer key, writes the variables. Deterministic |
 | `tools/quarto.sh`, `check_links.py`, `shoot.mjs`, `check_overlaps.py` | Copied from `../local-llms` |
-| `instructor/` | Private: `plan.md`, `answer-key.{md,json}` (generated), `email.md`, and later the run sheet and talking points |
+| `tools/extract_prompts.py` | Writes `instructor/prompts.txt` from the Explore page's prompt blocks. Run it after changing a prompt |
+| `instructor/` | Private: `plan.md`, `run-sheet.md`, `talking-points.md`, `email.md`, `answer-key.{md,json}` and `prompts.txt` (both generated) |
 
 ## Commands
 

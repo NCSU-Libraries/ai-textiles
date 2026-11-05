@@ -333,6 +333,15 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
             "fibers": {name: pattern for name, pattern in FIBERS},
             "groups": {k: int(v) for k, v in rule.value_counts().sort_index().items()},
             "rows_contradicting_author": int(disagree.sum()),
+            # The author's category names a fiber the text doesn't contain: plainly wrong.
+            "rows_author_adds_absent_fiber": int(sum(
+                a in AUTHOR_FIBERS and g != "Not recorded" and bool(AUTHOR_FIBERS[a] - set(g.split(" + ")))
+                for g, a in zip(rule, author))),
+            # The text names a fiber the author's category leaves out: sometimes a judgment call (5% elastane),
+            # sometimes a big miss (40% polyester filed as Cotton).
+            "rows_author_drops_fiber": int(sum(
+                a in AUTHOR_FIBERS and g != "Not recorded" and bool(set(g.split(" + ")) - AUTHOR_FIBERS[a])
+                for g, a in zip(rule, author))),
             "rows_author_can_not_hold": int(rule.str.count(r"\+").ge(2).sum()),
             "largest_blends": [
                 {"text": t, "rows": int(n), "rule": g, "author": a}
@@ -643,9 +652,12 @@ def write_key_md(key: dict, path: Path) -> None:
             "answer.", "",
             "| Group | Rows |", "| --- | --- |"]
     out += [f"| {k} | {v:,} |" for k, v in comp["groups"].items()]
-    out += ["", f"{comp['rows_contradicting_author']:,} rows sit in a source-author category that the fibers in their "
-            f"own text contradict, and {comp['rows_author_can_not_hold']:,} rows name three or more fibers, which the "
-            "author's six categories can't hold.", "",
+    out += ["", f"{comp['rows_contradicting_author']:,} rows sit in a source-author category that doesn't match the "
+            f"fibers their own text names. {comp['rows_author_can_not_hold']:,} rows name three or more fibers, which "
+            f"six categories can't hold. In {comp['rows_author_adds_absent_fiber']:,} rows the author's category names a fiber "
+            f"the text doesn't contain (plainly wrong, such as viscose/elastane filed as Polyester); in "
+            f"{comp['rows_author_drops_fiber']:,} rows it leaves out a fiber the text names (sometimes a judgment call "
+            "like 5% elastane, sometimes a big miss like 40% polyester filed as Cotton).", "",
             "**For Alp or the faculty member to review: the 15 largest blends.**", "",
             "| Text as recorded | Rows | Rule | Source author |", "| --- | --- | --- | --- |"]
     out += [f"| {b['text'] or '(blank)'} | {b['rows']:,} | {b['rule']} | {b['author']} |"

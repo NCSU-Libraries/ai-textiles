@@ -1,0 +1,73 @@
+---
+title: "Practices"
+subtitle: "Recommended practices for exploring data with AI, on one page. Print it or keep it open in a tab."
+toc: false
+---
+
+## Before you ask
+
+1. **Look first.** Count the rows and columns, read the units, and decide what one row is. Those become your checks.
+2. **Work on a copy.** Keep the original file untouched, and note where the copy came from.
+3. **Mind the data.** Use your NC State account, know the data's level, and check any agreement. When in doubt,
+   share the structure, not the rows. See [Data security](data-security.qmd).
+
+## When you ask
+
+4. **Say what Gemini is looking at:** what one row is and the units. For formulas, add Google Sheets, the tab name
+   and the range.
+5. **Ask for one thing at a time.** Check it, then ask for the next.
+6. **Ask for formulas and code, not just answers.** You can check a formula and run it again; you can't check a
+   number on its own.
+
+## After it answers
+
+7. **Check numbers two ways:** a formula in the sheet, a filter, or a few rows counted by hand.
+8. **Check by group, not just overall.** One overall number can hide groups that go in opposite directions.
+9. **Watch for quiet fixes:** rows dropped as duplicates, blanks read as zero, text turned into numbers or dates,
+   categories merged.
+10. **Keep a log:** your prompts, the answers you used, and what you changed.
+11. **Know when to ask a person.** Data Science Services helps with your own data:
+    [go.ncsu.edu/getdatahelp]({{< var help >}}).
+
+## Prompts to adapt
+
+Fill in the brackets.
+
+**Route A, starting a chat with an upload:**
+
+::: {.prompt}
+```default
+I'm a [your field] graduate student. The attached file is [what the data is]. Each row is [what one row is]. Use Python to analyze it, show your code when I ask, and keep answers short.
+```
+:::
+
+**Route B, a formula without sharing the data:**
+
+::: {.prompt}
+```default
+My data is in Google Sheets, tab [name], range [A1:M100]. Here are the headers and 5 made-up rows: [paste]. Write a formula that [what you want]. Explain it in one sentence.
+```
+:::
+
+**Checking an answer:**
+
+::: {.prompt}
+```default
+How did you get [the number]? Show the code, and tell me how many rows you used and whether you dropped or changed any.
+```
+:::
+
+## Plan for your own data {#own-data}
+
+Answer these before you open Gemini with your own data:
+
+| Question | Your answer |
+| --- | --- |
+| What is one row? | |
+| What units are the measurements in? | |
+| What level is the data: green, yellow, red or purple? | |
+| Does an agreement limit sharing (IRB, data use agreement, NDA, sponsor, export control)? | |
+| Route A (upload) or Route B (structure only)? | |
+| Your first prompt | |
+
+<p class="small-muted">Content licensed CC BY 4.0. Questions about this page: <a href="mailto:{{< var email >}}">{{< var email >}}</a>.</p>

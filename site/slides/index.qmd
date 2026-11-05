@@ -1,0 +1,237 @@
+---
+title: "AI-Assisted Data Exploration for Research"
+subtitle: "Data Science Services · NC State University Libraries"
+from: markdown-smart
+format:
+  revealjs:
+    theme: [default, ../theme/ncsu.scss, ../theme/slides.scss]
+    width: 1280
+    height: 720
+    margin: 0.06
+    slide-number: true
+    hash-type: number
+    transition: fade
+    background-transition: fade
+    preview-links: false
+    # Placeholder until the go link exists; then "Data Science Services · go.ncsu.edu/<link>" (keep it near 50 characters)
+    footer: "Data Science Services · NC State Libraries"
+    logo: ../images/lib_logo_whiteBG.png
+---
+
+## While we get started
+
+[{{< var site-short >}}]{.statement style="white-space:nowrap;font-size:0.82em"}
+
+1. Open your copy of the practice sheet
+2. Open Gemini, signed in with your NC State account
+3. Have `knitting-practice.csv` ready
+
+<!-- When the go link exists, make it the statement above, put images/qr-session.svg beside it in a .two-col, and
+     update the footer. -->
+
+## Data Science Services {.dss background-image="../images/dss/dss-services.png" background-size="contain" background-color="#FFFFFF" data-state="dss-slide"}
+
+[Our services: consulting, workshops and instruction, specialized spaces. What we do: finding data, wrangling data, analyzing data, visualization, geographic information systems (GIS), software access.]{.visually-hidden}
+
+## Who we are {.dss .dss-team .nostretch data-state="dss-slide"}
+
+![](../images/dss/dss-team.png){fig-alt="Data Science Services, who we are: Mara Blake, Head, Data Science Services; Shannon Ricci, Associate Head, Data Science Services; Jeff Essic, Lead Librarian for GIS; Alp Tezbasaran, Data Science Librarian; Selene Schmittling, Data Science Librarian; Bin Liu, Data Science Librarian; Ashley Pearson, University Library Specialist"}
+
+Our team comes from a variety of academic backgrounds, including nuclear engineering, electrical engineering, industrial and environmental engineering, marine ecology, information science, natural resources, business administration, and geographic information sciences.
+
+## How to contact us {.dss background-image="../images/dss/dss-contact.png" background-size="contain" background-color="#FFFFFF" data-state="dss-slide"}
+
+[How to contact us: go.ncsu.edu/getdatahelp. Email us, book a 30-minute appointment with a Data Science Consultant, or reserve a workstation in the DXL or Dataspace. All communication with the program is through getdatahelp@ncsu.edu.]{.visually-hidden}
+
+## Today's finish line
+
+<ul class="finish" style="font-size:0.6em;line-height:1.35">
+<li>Your copy of the practice sheet, open</li>
+<li>Gemini's summary and the problems it found, checked</li>
+<li>A formula, a pivot table and a chart</li>
+<li>One number, worked out two ways</li>
+<li>What's safe to share, and why the account matters</li>
+<li>A plan for your own data</li>
+</ul>
+
+# Look first {.divider background-color="#CC0000"}
+
+[Before any AI]{.eyebrow}
+
+## Three questions before you ask Gemini anything
+
+::: {.cards .three}
+::: {.card}
+[How many rows?]{.card-title}
+
+Count them yourself.
+:::
+
+::: {.card}
+[What units?]{.card-title}
+
+The column names and the Dictionary tab.
+:::
+
+::: {.card}
+[What is one row?]{.card-title}
+
+A fabric, a test sample, or a day's production?
+:::
+:::
+
+[Your answers become your checks.]{.muted}
+
+# Data security {.divider background-color="#CC0000"}
+
+[Before you upload]{.eyebrow}
+
+## The account matters
+
+::: {.cards .two}
+::: {.card}
+[Your NC State login]{.card-title}
+
+- On NC State's approved list
+- Not used to train models
+- Not read by people
+:::
+
+::: {.card .red}
+[A personal Google account]{.card-title}
+
+- The free public version
+- Rejected for university data
+:::
+:::
+
+[Check: profile picture → `@ncsu.edu`]{.muted}
+
+## How sensitive is it?
+
+| <span class="level-dot" style="background:#6B2C91"></span>Purple | <span class="level-dot" style="background:#CC0000"></span>Red | <span class="level-dot" style="background:#E8B500"></span>Yellow | <span class="level-dot" style="background:#6F7D1C"></span>Green |
+| --- | --- | --- | --- |
+| SSNs, passwords, keys, biometrics | Passport and license numbers | Birth dates, transcripts | Published data |
+
+[Gemini with your NC State login: approved up to red. Never purple.]{.statement style="font-size:0.7em"}
+
+[Agreements come first: IRB protocols, data use agreements, partner NDAs, sponsor terms, export control.]{.muted}
+
+## Two routes
+
+```{=html}
+<svg viewBox="0 0 960 400" width="100%" role="img" aria-labelledby="routes-title" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif">
+  <title id="routes-title">Two routes: what Gemini sees</title>
+  <defs>
+    <marker id="rt-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#CC0000"/></marker>
+    <marker id="rt-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4156A1"/></marker>
+    <marker id="rt-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606A"/></marker>
+  </defs>
+  <g font-size="22" fill="#1F2328">
+    <!-- Route A -->
+    <text x="0" y="28" font-size="20" font-weight="800" fill="#CC0000">ROUTE A · UPLOAD</text>
+    <rect x="0" y="44" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="115" y="96" text-anchor="middle" font-weight="800">Your sheet</text>
+    <text x="115" y="128" text-anchor="middle" font-size="18" fill="#57606A">12,569 rows</text>
+    <line x1="240" y1="84" x2="710" y2="84" stroke="#CC0000" stroke-width="5" marker-end="url(#rt-red)"/>
+    <text x="475" y="72" text-anchor="middle" font-weight="700" fill="#CC0000">the whole file</text>
+    <line x1="710" y1="128" x2="240" y2="128" stroke="#57606A" stroke-width="3" marker-end="url(#rt-grey)"/>
+    <text x="475" y="156" text-anchor="middle" font-size="19" fill="#57606A">answers, charts, code</text>
+    <rect x="720" y="44" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="835" y="96" text-anchor="middle" font-weight="800">Gemini</text>
+    <text x="835" y="128" text-anchor="middle" font-size="18" fill="#57606A">NC State login</text>
+  </g>
+  <g class="fragment" font-size="22" fill="#1F2328">
+    <!-- Route B -->
+    <text x="0" y="238" font-size="20" font-weight="800" fill="#4156A1">ROUTE B · KEEP THE DATA IN THE SHEET</text>
+    <rect x="0" y="254" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="115" y="306" text-anchor="middle" font-weight="800">Your sheet</text>
+    <text x="115" y="338" text-anchor="middle" font-size="18" fill="#57606A">the data stays here</text>
+    <line x1="240" y1="294" x2="710" y2="294" stroke="#4156A1" stroke-width="5" marker-end="url(#rt-blue)"/>
+    <text x="475" y="282" text-anchor="middle" font-weight="700" fill="#4156A1">headers + 5 made-up rows</text>
+    <line x1="710" y1="338" x2="240" y2="338" stroke="#57606A" stroke-width="3" marker-end="url(#rt-grey)"/>
+    <text x="475" y="366" text-anchor="middle" font-size="19" fill="#57606A">formulas and steps you run</text>
+    <rect x="720" y="254" width="230" height="120" rx="12" fill="#FFFFFF" stroke="#1F2328" stroke-width="3"/>
+    <text x="835" y="306" text-anchor="middle" font-weight="800">Gemini</text>
+    <text x="835" y="338" text-anchor="middle" font-size="18" fill="#57606A">NC State login</text>
+  </g>
+</svg>
+```
+
+[Text alternative: Route A, upload: the whole file goes from your sheet to Gemini, and answers, charts and code come back. Route B, keep the data in the sheet: only the headers and five made-up rows go to Gemini, and formulas and steps come back for you to run in your sheet, where the data stays.]{.visually-hidden}
+
+# Your turn {.divider background-color="#CC0000"}
+
+## Open the Explore page
+
+[{{< var site-short >}} → Explore]{.statement style="white-space:nowrap;font-size:0.72em"}
+
+[Route A until minute 17]{.pill .dark} [Route B until minute 27]{.pill .dark}
+
+## Compare
+
+| You got | What happened |
+| --- | --- |
+| **{{< var data.rows >}}** rows, **{{< var key.sj-mean >}}** for S/J, **{{< var key.reject-mean >}}** rejects | Both routes agree |
+| {{< var key.rows-with-header >}} rows | The header row was counted |
+| {{< var key.rows-dedup >}} rows | The {{< var key.repeated-rows >}} repeated rows were dropped |
+| {{< var key.sj-contains-mean >}} for S/J | LS/J was caught too |
+| {{< var key.reject-mean-zero >}} rejects | Blanks were counted as zero |
+
+[Does a blank Reject Qty mean no rejects, or not recorded?]{.muted}
+
+## Your own data
+
+<ul class="finish" style="font-size:0.6em;line-height:1.35">
+<li>What is one row?</li>
+<li>What units are the measurements in?</li>
+<li>Green, yellow, red or purple?</li>
+<li>Does an agreement limit sharing?</li>
+<li>Route A or Route B?</li>
+<li>Your first prompt</li>
+</ul>
+
+## Can I upload this?
+
+{{< include ../_decision-guide.md >}}
+
+## Practices
+
+::: {.cards .three}
+::: {.card}
+[Before you ask]{.card-title}
+
+- Look first
+- Work on a copy
+- Mind the data
+:::
+
+::: {.card}
+[When you ask]{.card-title}
+
+- Say what a row is, the units, the range
+- One thing at a time
+- Formulas and code, not just answers
+:::
+
+::: {.card}
+[After it answers]{.card-title}
+
+- Check numbers two ways
+- Check by group
+- Watch for quiet fixes
+- Keep a log
+:::
+:::
+
+[Help with your own data: go.ncsu.edu/getdatahelp]{.muted}
+
+# Questions {.divider background-color="#CC0000"}
+
+## Tell us how we did
+
+::: {style="text-align:center"}
+[go.ncsu.edu/dss-workshop-eval](https://go.ncsu.edu/dss-workshop-eval){style="font-size:1.5em;font-weight:800"}
+
+![](../images/dss/qr-eval.png){.qr .qr-big fig-alt="QR code for the workshop evaluation, go.ncsu.edu/dss-workshop-eval"}
+:::

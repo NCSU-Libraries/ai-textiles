@@ -167,3 +167,8 @@ $red: #CC0000;
 
 // Code fonts draw != <= >= == as single glyphs (ligatures). Show every character as typed, so nobody types ≠.
 .reveal code, .reveal pre, .reveal kbd, .reveal .type { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+// The decision guide, shared with the Data security page: on a slide, let it fill the height instead of the page's
+// 760px reading width.
+.reveal .decision-svg { max-width: none !important; width: auto !important; height: 560px; display: block; margin: 0 auto; }
+.reveal .level-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; margin-right: 0.35em; vertical-align: -0.05em; }

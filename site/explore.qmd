@@ -1,0 +1,379 @@
+---
+title: "Explore"
+subtitle: "The session's hands-on steps, in order. About 30 minutes."
+---
+
+You'll get to know the practice data two ways. In **Route A** you upload it to Gemini. In **Route B** it stays in
+your sheet, and Gemini writes formulas you run yourself. Then you compare one number from each route. Each step names
+the practice it shows; the [Practices](practices.qmd) page has them all on one page.
+
+::: {.callout-note}
+## Before you start
+
+Have these open, from the [setup](setup.qmd):
+
+- your copy of the practice sheet;
+- [Gemini]({{< var gemini.url >}}), signed in with your NC State account;
+- `knitting-practice.csv`, downloaded.
+:::
+
+::: {.callout-tip}
+## Pace
+
+Route A until minute 17, Route B until minute 27. If you fall behind, move on to the next route: the extras can wait.
+:::
+
+## <span class="step-badge">1</span> Look first, no AI {#look}
+
+[Practice: look first]{.practice}
+
+Before you ask Gemini anything, find out for yourself. You'll use the answers to check it.
+
+1. **How many rows of data?** On the Data tab, click a cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> on a
+   Mac or <kbd>Ctrl</kbd> + <kbd>↓</kbd> on Windows. Don't count the header.
+2. **How many columns, and what unit is each measurement in?** The column names and the Dictionary tab tell you.
+3. **What is one row?** Scroll the first rows. Is a row a fabric, a test sample, or a day's production? Then check the
+   first line of the Dictionary tab.
+
+::: {.callout-tip collapse="true"}
+## Check your answers
+
+::: {.answer}
+<span class="answer-label">Rows of data</span><span class="answer-value">{{< var data.rows >}}</span>
+:::
+
+{{< var data.columns >}} columns. One row is one lot knitted on one day, on a machine of a given brand and size. The
+same fabric shows up on many rows, which matters later.
+:::
+
+## <span class="step-badge">2</span> Before you upload: data security {#security}
+
+[Practice: mind the data]{.practice}
+
+1. Click your profile picture at the top right of Gemini. It should show your `@ncsu.edu` address.
+2. This data is published under a CC BY 4.0 license, so it's fine to upload.
+3. Your own data may not be. The [decision guide](data-security.qmd#guide) takes a minute.
+
+## <span class="step-badge">3</span> Route A: upload the data {#route-a}
+
+[Practices: say what Gemini is looking at · ask for code, not just answers · check numbers two ways]{.practice}
+
+### a. Start a chat with the file
+
+In Gemini, start a **New chat**, click **+** next to the prompt box, choose **Upload files**, and pick
+`knitting-practice.csv`. Then send this with it:
+
+::: {.prompt}
+```default
+I'm a textile graduate student. The attached file is a knitting factory's daily production report, June to August 2022. Each row is one lot knitted on one day. Use Python to analyze it, show your code when I ask, and keep your answers short.
+```
+:::
+
+### b. The overview
+
+::: {.prompt}
+```default
+How many rows and columns does it have? For each column, give the data type and what it likely measures. Flag any column whose meaning or unit is unclear.
+```
+:::
+
+::: {.watch}
+Does the row count match yours from step 1? Does Gemini notice that Reject Qty has no unit, or that Yarn Count is
+written in several notations?
+:::
+
+### c. The problems
+
+::: {.prompt}
+```default
+Check the data quality. Make a table of blank cells per column, rows that repeat exactly, and values that look out of place, like text in a number column. Don't change or drop anything yet.
+```
+:::
+
+::: {.watch}
+How many of the six known problems did Gemini find? Open the list after you've counted.
+:::
+
+::: {.callout-tip collapse="true"}
+## The six problems in this data
+
+1. **Reject Qty** is blank in {{< var key.reject-blank >}} rows. No rejects, or not recorded?
+2. **Reject Qty** holds a note instead of a number in row {{< var key.reject-note-row >}}: the factory correcting a
+   date.
+3. **Fabric Diameter** says "any" in {{< var key.any-rows >}} rows.
+4. **Composition** is blank in {{< var key.composition-blank >}} rows and just "%" in
+   {{< var key.composition-percent >}}.
+5. **{{< var key.repeated-rows >}} rows repeat exactly.** Errors, or the same lot entered twice? The table can't tell
+   you; ask the data's owner before dropping them.
+6. **Yarn Count** mixes notations: cotton count (`30/1`), denier (`20/D`), filament yarns (`75D/72F`), and several
+   yarns in one cell.
+:::
+
+### d. GSM by construction, and a chart
+
+::: {.prompt}
+```default
+Give the mean, median and standard deviation of GSM for each Construction, as a table sorted by mean. Then make a box plot of GSM by Construction.
+```
+:::
+
+::: {.watch}
+Write the mean GSM for **S/J** in the Route A column of your sheet's **Compare** tab. In the box plot, why does Rib
+reach 700 g/m²? The [construction codes](data.qmd#codes) explain it.
+:::
+
+### e. The reject rate
+
+::: {.prompt}
+```default
+What's the mean of Reject Qty? Tell me how you handled the blank cells and the text in that column.
+```
+:::
+
+::: {.watch}
+Write the mean in the Route A column of the Compare tab. Did Gemini skip the blanks, or count them as zero? Which one
+is right depends on what a blank means here.
+:::
+
+### f. Show the work
+
+::: {.prompt}
+```default
+Show me the Python code you ran for the last two answers.
+```
+:::
+
+::: {.watch}
+Real code reads the file and computes, with lines like `read_csv` and `groupby`. If Gemini can't show any, treat its
+numbers as unchecked, and start a new chat that begins with "Use Python to analyze this file."
+:::
+
+### Extras for Route A
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Clean up Composition: you're the fiber experts
+
+The Composition column was typed by hand: {{< var data.spellings >}} different spellings.
+
+::: {.prompt}
+```default
+The Composition column was typed by hand. Propose a rule that groups the entries by the fibers they name, ignoring percentages and labels like BCI, CmiA, organic or recycled. Show the rule, the number of rows in each group, and every entry you weren't sure about.
+```
+:::
+
+Check the rule against what you know. Does it read Lycra, Creora and "Ly" as elastane? CVC as cotton and polyester?
+"Sea-shell" as SeaCell? The dataset's author made a cleaned version too, and filed "95% Viscose-5% Elastan" under
+Polyester. Would you?
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Stitch length and GSM: check by group
+
+::: {.prompt}
+```default
+What's the correlation between Stitch Length and GSM, overall and for each Construction? Then count each distinct fabric only once and compute it again.
+```
+:::
+
+The overall number is close to zero, while some constructions show strong patterns in opposite directions. Counting
+each fabric once weakens them. Longer stitches with heavier fabric? Look at the yarn counts before you believe it.
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Three research questions
+
+::: {.prompt}
+```default
+Suggest three research questions this data could answer. For each, name the columns it needs and the analysis you'd run.
+```
+:::
+
+Could each one really be answered from these columns?
+:::
+
+## <span class="step-badge">4</span> Route B: keep the data in the sheet {#route-b}
+
+[Practices: mind the data · ask for formulas, not just answers]{.practice}
+
+This is what you do with data you can't upload. Gemini sees only the column headers and a few made-up rows; your
+formulas do the work in your own sheet.
+
+It's normal not to see a Gemini button inside Google Sheets. NC State's license doesn't include it.
+
+### a. Describe the sheet, not the data
+
+Start a **New chat** in Gemini, so the uploaded file isn't part of it, and send:
+
+::: {.prompt}
+```default
+My data is in Google Sheets, on a tab named Data, range A1:M12570. Here are the headers and 5 made-up rows of the same kind:
+
+Production Date,Lot,Machine,Machine Diameter (in),Machine Gauge (needles/in),Construction,Composition (as recorded),Yarn Count (as recorded),Stitch Length (mm),Fabric Diameter (in),GSM (g/m2),Production Qty (kg),Reject Qty
+2022-06-03,DEMO-101,Fukuhara,30,24,S/J,Cotton 100%,30/1,2.85,60,140,412.5,0
+2022-06-03,DEMO-102,Pailung,34,24,LS/J,95% Cotton 5% Elastane %,"30/1,20/D",2.7,68,180,288,
+2022-06-04,DEMO-103,Jiunn Long,30,20,Fleece_terry,80% Cotton 20% Polyester %,"30/1,20/1",3.2,72,260,175.25,2
+2022-06-04,DEMO-104,Lisky,36,24,Rib,Cotton 100%,26/1,2.9,any,220,95,0
+2022-06-05,DEMO-105,Hangxing,32,28,Mesh,100% Polyester %,75D/72F,2.6,66,140,310.8,
+
+I'll ask for formulas one at a time. I'll put them on a tab named Work.
+```
+:::
+
+Put every formula on the **Work** tab, in an empty cell.
+
+### b. Counts
+
+::: {.prompt}
+```default
+Give me formulas that count the data rows, count the blank cells in Reject Qty, and count the distinct values in Construction.
+```
+:::
+
+::: {.callout-tip collapse="true"}
+## Formulas that work
+
+```default
+=COUNTA(Data!A2:A)
+=COUNTBLANK(Data!M2:M{{< var data.last-row >}})
+=COUNTUNIQUE(Data!F2:F)
+```
+
+They give {{< var data.rows >}}, {{< var key.reject-blank >}} and {{< var data.constructions >}}. Write the row count
+in the Route B column of the Compare tab.
+:::
+
+### c. The two numbers to compare
+
+::: {.prompt}
+```default
+Write a formula for the mean GSM of the rows whose Construction is exactly S/J, and one for the mean Reject Qty.
+```
+:::
+
+::: {.watch}
+"Exactly" matters: a pattern like `*S/J*` also catches LS/J, Lycra single jersey. Write both results in the Route B
+column of the Compare tab.
+:::
+
+::: {.callout-tip collapse="true"}
+## Formulas that work
+
+```default
+=AVERAGEIF(Data!F2:F,"S/J",Data!K2:K)
+=AVERAGE(Data!M2:M)
+```
+
+`AVERAGE` skips blank cells and text, so the note in row {{< var key.reject-note-row >}} doesn't break it.
+:::
+
+### d. A pivot table and a chart
+
+::: {.prompt}
+```default
+Walk me through making a pivot table in Google Sheets with Construction as rows and GSM as values, showing the average, the median and the standard deviation. Then tell me how to chart the averages.
+```
+:::
+
+::: {.watch}
+Do Gemini's menu names match what you see? If not, tell it what you see. Do the pivot's averages agree with your
+`AVERAGEIF` for S/J?
+:::
+
+::: {.callout-tip collapse="true"}
+## Steps that work
+
+1. On the Data tab, click any cell in the data, then choose **Insert → Pivot table → Create**. It opens a new tab.
+2. Under **Rows**, add **Construction**.
+3. Under **Values**, add **GSM (g/m2)**. It summarizes by **SUM**; change that to **AVERAGE**.
+4. Add **GSM (g/m2)** to Values twice more, and summarize them by **MEDIAN** and **STDEV**.
+5. Click a cell in the pivot table, then **Insert → Chart**.
+:::
+
+### Extras for Route B
+
+::: {.callout-note collapse="true" appearance="simple"}
+## One formula for every group
+
+::: {.prompt}
+```default
+Write one formula that lists each Construction with the mean, median and standard deviation of its GSM.
+```
+:::
+
+If Gemini uses `QUERY`, you'll get an error: `QUERY` can sum, count, average and find the minimum and maximum, but not
+the median or standard deviation. Paste the error back and ask for another way. A version that works:
+
+```default
+=LET(c, SORT(UNIQUE(Data!F2:F{{< var data.last-row >}})), g, Data!K2:K{{< var data.last-row >}}, k, Data!F2:F{{< var data.last-row >}},
+  HSTACK(c,
+    MAP(c, LAMBDA(x, AVERAGE(FILTER(g, k = x)))),
+    MAP(c, LAMBDA(x, MEDIAN(FILTER(g, k = x)))),
+    MAP(c, LAMBDA(x, STDEV(FILTER(g, k = x))))))
+```
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Share a list, not the rows
+
+When you can't share rows, a list of a column's distinct values is often fine. Put this on the Work tab:
+
+```default
+=SORT(UNIQUE(Data!G2:G))
+```
+
+Paste the list into Gemini and ask for a rule that groups the entries by fiber, then for a formula column that applies
+it with `REGEXMATCH`. Check the rows the rule puts in "Other".
+:::
+
+## <span class="step-badge">5</span> Compare {#compare}
+
+[Practice: check numbers two ways]{.practice}
+
+Your Compare tab should now have three numbers from each route. The **Match?** column rounds both before comparing,
+so 0.23 and 0.2310 match.
+
+::: {.callout-tip collapse="true"}
+## The numbers, if you ran out of time
+
+| Statistic | Value |
+| --- | --- |
+| Rows of data | {{< var data.rows >}} |
+| Mean GSM, S/J | {{< var key.sj-mean >}} |
+| Mean Reject Qty, blanks skipped | {{< var key.reject-mean >}} |
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## What a wrong number tells you
+
+| You got | What happened |
+| --- | --- |
+| {{< var key.rows-with-header >}} rows | The formula counted the header row too. |
+| {{< var key.rows-dedup >}} rows | The {{< var key.repeated-rows >}} repeated rows were dropped as duplicates. |
+| {{< var key.sj-contains-mean >}} for S/J | The filter also caught LS/J, Lycra single jersey. |
+| {{< var key.reject-mean-zero >}} for Reject Qty | Blank cells were counted as zero. |
+:::
+
+If everything matches, talk it through: does a blank Reject Qty mean no rejects, or not recorded? Which mean would you
+report, and how would you find out?
+
+## <span class="step-badge">6</span> Your own data {#own-data}
+
+[Practice: look first, then mind the data]{.practice}
+
+Fill in the [plan for your own data](practices.qmd#own-data): what one row is, the units, the data's level, any
+agreements, the route, and your first prompt.
+
+## If something goes wrong
+
+| What happens | Try |
+| --- | --- |
+| Gemini answers without showing code | Start a new chat, upload the file again, and begin with "Use Python to analyze this file." |
+| The upload fails, or Gemini can't read the file | Upload the CSV, not the XLSX. If Gemini says you've reached an upload limit, wait a few minutes. |
+| A formula shows `#REF!` | Its results need empty cells to spill into. Move it to an empty part of the Work tab. |
+| A formula shows `#N/A`, `#VALUE!` or `#ERROR!` | Paste the formula and the error into Gemini. |
+| Gemini's menu names don't match Sheets | Tell it what you see; menus change. |
+| You're out of time | Use the numbers in step 5. |
+
+<p class="small-muted">Checked against the Gemini app on {{< var gemini.checked-date >}}. Gemini changes often; if a
+screen looks different, Google's <a href="{{< var security.upload-help >}}">Gemini help</a> wins. Help with your own
+data: <a href="{{< var help >}}">go.ncsu.edu/getdatahelp</a>.</p>
