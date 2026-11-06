@@ -22,6 +22,13 @@ Problems by minute 19, summary by 25, checks by 31. Behind? Move on; the extras 
 
 [Practice: look first]{.practice}
 
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-1.jpg" src="video/step-1.mp4"></video>
+
+:::
+
 1. **How many rows?** Click a cell in column A and press <kbd>Cmd</kbd> + <kbd>↓</kbd> (Mac) or <kbd>Ctrl</kbd> +
    <kbd>↓</kbd> (Windows). Don't count the header.
 2. **How many columns, in what units?** See the column names and the Dictionary tab.
@@ -42,6 +49,13 @@ is in kg; Reject Qty has no stated unit.
 
 [Practice: mind the data]{.practice}
 
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-2.jpg" src="video/step-2.mp4"></video>
+
+:::
+
 1. In Gemini, check the bottom left for your name with **Edu** under it.
 2. You won't upload anything today; you'll describe the data. That works for any data you may keep in your NC State
    Drive. For your own data, see the [decision guide](data-security.qmd#guide).
@@ -49,6 +63,13 @@ is in kg; Reject Qty has no stated unit.
 ## <span class="step-badge">3</span> Describe the data {#describe}
 
 [Practices: say what Gemini is looking at · mind the data]{.practice}
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-3.jpg" src="video/step-3.mp4"></video>
+
+:::
 
 Start a **New chat** in Gemini and send:
 
@@ -79,6 +100,13 @@ notes.
 ## <span class="step-badge">4</span> Find the problems {#problems}
 
 [Practices: ask for formulas, not just answers · watch for quiet fixes]{.practice}
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-4.jpg" src="video/step-4.mp4"></video>
+
+:::
 
 ::: {.prompt}
 ```default
@@ -126,6 +154,13 @@ These find the ones Gemini often misses ({{< var key.repeated-rows >}}, {{< var 
 
 [Practice: ask for formulas, not just answers]{.practice}
 
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-5.jpg" src="video/step-5.mp4"></video>
+
+:::
+
 ::: {.prompt}
 ```default
 Give me one formula that lists each Construction with its number of rows and its mean GSM. Then tell me how to make a chart of the means.
@@ -158,6 +193,13 @@ Chart: select the table, **Insert → Chart**, **Column chart**, then remove the
 ## <span class="step-badge">6</span> Check it a second way {#check}
 
 [Practice: check numbers two ways]{.practice}
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-6.jpg" src="video/step-6.mp4"></video>
+
+:::
 
 ::: {.prompt}
 ```default
@@ -199,6 +241,13 @@ Put the result in **Compare → Second way**. For **Data rows**, use your step 1
 
 [Practice: watch for quiet fixes]{.practice}
 
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-7.jpg" src="video/step-7.mp4"></video>
+
+:::
+
 ::: {.prompt}
 ```default
 Write a formula for the mean Reject Qty. Should the blank cells count as zero?
@@ -224,6 +273,13 @@ would you find out?
 ## <span class="step-badge">8</span> Your own data {#own-data}
 
 [Practices: look first · mind the data]{.practice}
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Watch this step
+
+<video controls preload="none" playsinline class="clip" poster="video/step-8.jpg" src="video/step-8.mp4"></video>
+
+:::
 
 Fill in the [plan for your own data](practices.qmd#own-data), on a new tab or on paper.
 

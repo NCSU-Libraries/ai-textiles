@@ -61,6 +61,26 @@ You don't need any coding experience. Couldn't do the setup ahead? We'll do it t
 <a class="card-link" href="slides/index.html"><span class="card-title">Slides</span><span class="card-text">The session's slides</span></a>
 :::
 
+## Watch it in two and a half minutes
+
+<video id="tour" controls preload="metadata" playsinline class="tour" poster="video/tour-poster.jpg">
+<source src="video/tour.mp4" type="video/mp4">
+</video>
+
+{{< include _tour-chapters.md >}}
+
+<p class="small-muted">A captioned walkthrough of the Explore page's eight steps, with no sound. Gemini and Sheets are
+simplified re-creations. Gemini's answers and the screenshots come from our rehearsal, and the numbers come from the
+practice data. Each step's part is also on the <a href="explore.html">Explore</a> page.</p>
+
+<script>
+document.querySelectorAll('.chapters button').forEach((b) => b.addEventListener('click', () => {
+  const v = document.getElementById('tour');
+  v.currentTime = Number(b.dataset.t);
+  v.play();
+}));
+</script>
+
 ## About this session
 
 Most of the data you work with in classes and research ends up in a spreadsheet at some point. In this hands-on

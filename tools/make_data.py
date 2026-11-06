@@ -465,7 +465,7 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
 
     # Compare
     cmp_ = wb.create_sheet("Compare")
-    cmp_["A1"], cmp_["A1"].font = "Compare the two routes", TITLE
+    cmp_["A1"], cmp_["A1"].font = "Check each number two ways", TITLE
     header(cmp_, 3, ["Statistic", "First way", "Second way", "Compare to (decimals)", "Match?"])
     stats = [("Data rows, not counting the header", 0), ("Mean GSM for single jersey (S/J)", 1),
              ("Mean Reject Qty", 2), ("Your own:", 2), ("Your own:", 2)]

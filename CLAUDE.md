@@ -41,8 +41,13 @@ folder is `textiles-seminar`.
   as typed in the factory's raw report (290 spellings); every other quirk is the factory's own. The answer key lists
   the eight problems students can find with formulas.
 - **Data security comes right before Gemini sees anything,** in the room, not just on a page.
-- **The video comes last:** one captions-only walkthrough with chapters, built with dsti-python's tour pipeline from
-  real screenshots. The day-of fallback never depends on it.
+- **The video:** a captions-only walkthrough of the eight steps (about 2.5 minutes) on Home, with chapter buttons and
+  a caption transcript, plus a clip per step on Explore. It's recorded like `../agentic-coding-with-claude`'s:
+  - simplified re-creations of Gemini and Sheets, labeled as such;
+  - Gemini's words from the spike (`instructor/dry-run.md`);
+  - the real screenshots and site pages.
+
+  The day-of fallback never depends on it.
 
 **Run of show (40 min):**
 
@@ -75,6 +80,7 @@ folder is `textiles-seminar`.
 | `site/theme/` | NC State theme, copied from `../local-llms` |
 | `tools/make_data.py` | Downloads the Mendeley source (checksums pinned), builds the practice data and the answer key, writes the variables. Deterministic |
 | `tools/quarto.sh`, `check_links.py`, `shoot.mjs`, `check_overlaps.py` | Copied from `../local-llms` |
+| `tools/record-tour.mjs`, `tools/tour/` | Record the video and the step clips into `site/video/`, and write `site/_tour-chapters.md`. Scenes in `tour/scenes.mjs`, the stage in `tour/stage.html` |
 | `tools/extract_prompts.py` | Writes `instructor/prompts.txt` from the Explore page's prompt blocks. Run it after changing a prompt |
 | `instructor/` | Private: `plan.md`, `run-sheet.md`, `talking-points.md`, `email.md`, `answer-key.{md,json}` and `prompts.txt` (both generated) |
 
@@ -86,6 +92,7 @@ tools/quarto.sh render site      # full build into site/_site (Docker must be ru
 tools/quarto.sh preview site     # live preview at http://localhost:4848
 python3 tools/check_links.py     # after a render; --web also requests external URLs
 node tools/shoot.mjs shots.json  # headless Chrome screenshots
+node tools/record-tour.mjs       # the video and step clips (render the site first; about 3 minutes)
 ```
 
 ## Keeping things consistent
@@ -97,8 +104,10 @@ node tools/shoot.mjs shots.json  # headless Chrome screenshots
 - **The shared Google Sheet** lives in Alp's NC State Drive (its `/copy` link is in `_variables.yml`). It's built by
   importing `site/downloads/knitting-practice.xlsx` with **File → Import → Upload → Replace spreadsheet**, which keeps
   the link. Re-import after any change to the XLSX.
-- **Every prompt appears in several places:** the Explore page, the deck, `instructor/prompts.txt`, and later the
-  video's scenes. Students copy them word for word. Change one, change them all.
+- **Every prompt appears in several places:** the Explore page, the deck, `instructor/prompts.txt` and the video.
+  Students copy them word for word. Change one, change them all. The video reads prompts from `explore.qmd` and
+  numbers from `_variables.yml`. After changing either, or a page the video shows (Data security, Practices),
+  render and re-record.
 - **Data security claims carry a date** (`security.checked-date`) and link to their sources: the approved AI list,
   the Data Management Framework, Google's education FAQ. Recheck them the day before the session.
 - **Plain voice** on every public page: short sentences, no colon-led lists, no slogans.
