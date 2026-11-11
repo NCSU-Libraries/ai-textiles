@@ -4,7 +4,7 @@ subtitle: "Checking and summarizing a spreadsheet with Gemini and Google Sheets"
 author: "NC State University Libraries · Data Science Services"
 ---
 
-[{{< var event.course >}} · {{< var event.date >}} · {{< var event.length >}}]{.small-muted}
+[{{< var event.course >}} · {{< var event.date >}} · {{< var event.length >}} · [{{< var go >}}]({{< var go-url >}})]{.small-muted}
 
 ::: {.callout-important}
 ## How to use this guide

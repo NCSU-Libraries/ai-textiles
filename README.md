@@ -16,7 +16,7 @@ Gemini under their NC State account. They describe the sheet to Gemini instead o
 writes in their own copy, and compare each number with one they found themselves. The session starts with what is
 safe to share with an AI tool and ends with how to do the same on their own data. No coding needed.
 
-**Workshop site:** <https://ncsu-libraries.github.io/ai-data-exploration/>
+**Workshop site:** <https://ncsu-libraries.github.io/ai-textiles/> (short link: <https://go.ncsu.edu/ai-textiles>)
 
 ## What's here
 

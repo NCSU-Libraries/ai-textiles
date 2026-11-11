@@ -16,22 +16,25 @@ format:
     transition: fade
     background-transition: fade
     preview-links: false
-    # Placeholder until the go link exists; then "Data Science Services · go.ncsu.edu/<link>" (keep it near 50 characters)
-    footer: "Data Science Services · NC State Libraries"
+    # The go link, as in _variables.yml (go). Keep the footer near 50 characters.
+    footer: "Data Science Services · go.ncsu.edu/ai-textiles"
     logo: ../images/lib_logo_whiteBG.png
 ---
 
 ## While we get started
 
-[{{< var site-short >}}]{.statement style="white-space:nowrap;font-size:0.82em"}
+::: {.two-col}
+::: {}
+[{{< var go >}}]{.statement style="white-space:nowrap"}
 
 1. Open this page on your laptop
 2. Have your NC State login ready
 
 We'll set up together.
+:::
 
-<!-- When the go link exists, make it the statement above, put images/qr-session.svg beside it in a .two-col, and
-     update the footer. -->
+![](../images/qr-session.svg){.qr .qr-big fig-alt="QR code for the session's guide, go.ncsu.edu/ai-textiles"}
+:::
 
 ## Data Science Services {.dss background-image="../images/dss/dss-services.png" background-size="contain" background-color="#FFFFFF" data-state="dss-slide"}
 

@@ -10,10 +10,11 @@ event:
   where: "In class"                        # TBD: room
   length: "75 minutes"
 
-site: "https://ncsu-libraries.github.io/ai-data-exploration/"
-site-short: "ncsu-libraries.github.io/ai-data-exploration"
-go: "ncsu-libraries.github.io/ai-data-exploration"   # placeholder until the go link exists; then also the deck footer and images/qr-session.svg
-repo: "https://github.com/NCSU-Libraries/ai-data-exploration"
+site: "https://ncsu-libraries.github.io/ai-textiles/"
+site-short: "ncsu-libraries.github.io/ai-textiles"
+go: "go.ncsu.edu/ai-textiles"                # the short link, as people type it. Its QR code is images/qr-session.svg; the deck's footer repeats it
+go-url: "https://go.ncsu.edu/ai-textiles"
+repo: "https://github.com/NCSU-Libraries/ai-textiles"
 help: "https://go.ncsu.edu/getdatahelp"
 eval: "https://go.ncsu.edu/dss-workshop-eval"
 

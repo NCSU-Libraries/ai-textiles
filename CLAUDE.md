@@ -7,10 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Materials for **AI-Assisted Data Exploration for Research**, a course-embedded session from NC State University
 Libraries' Data Science Services, taught by Alp Tezbasaran in a textiles graduate seminar. The calendar invite is for
 75 minutes: the numbered sections take about 50, and the extra activities fill the rest, as many as time allows.
-The repo and site are `ai-data-exploration` (<https://ncsu-libraries.github.io/ai-data-exploration/>); the local
+The repo and site are `ai-textiles` (<https://github.com/NCSU-Libraries/ai-textiles>, published at
+<https://ncsu-libraries.github.io/ai-textiles/>; until 2026-11-11 the planned name was `ai-data-exploration`); the local
 folder is `textiles-seminar`.
 
 - **When and where:** to be announced; placeholders live in `site/_variables.yml` (`event`).
+- **The short link** is go.ncsu.edu/ai-textiles (`go` and `go-url` in the variables). It's on the page's top line,
+  the deck's first slide and footer, and the workbook's About tab. Its QR code is `site/images/qr-session.svg`.
 - **The abstract is the plan's starting point.** It's submitted and can't change. Its promises, in order:
   1. a practice dataset in Google Sheets;
   2. ask Gemini to summarize it, point out problems, and help with formulas and charts;

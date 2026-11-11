@@ -45,7 +45,7 @@ SOURCE = ROOT / "build" / "source"
 DOWNLOADS = ROOT / "site" / "downloads"
 INSTRUCTOR = ROOT / "instructor"
 VARIABLES = ROOT / "site" / "_variables.yml"
-SITE = "https://ncsu-libraries.github.io/ai-data-exploration/"
+SITE = "https://go.ncsu.edu/ai-textiles"  # the short link, on the workbook's About tab
 
 DOI = "https://doi.org/10.17632/vs2vjzkw5h.1"
 CITATION = ("Ahmed, Toufique (2025). knitting-dataset. Mendeley Data, V1. " + DOI)
@@ -194,7 +194,7 @@ def fetch(name: str) -> Path:
     if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest() != sha:
         SOURCE.mkdir(parents=True, exist_ok=True)
         print(f"downloading {name} from Mendeley Data")
-        req = urllib.request.Request(MENDELEY.format(file_id), headers={"User-Agent": "ai-data-exploration-build"})
+        req = urllib.request.Request(MENDELEY.format(file_id), headers={"User-Agent": "practice-data-build"})
         with urllib.request.urlopen(req, timeout=120) as r:
             data = r.read()
         if hashlib.sha256(data).hexdigest() != sha:

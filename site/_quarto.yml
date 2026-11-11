@@ -8,8 +8,8 @@ project:
 website:
   title: "AI-Assisted Data Exploration for Research"
   description: "Check and summarize a spreadsheet with Gemini and Google Sheets. A hands-on session from NC State University Libraries' Data Science Services."
-  site-url: "https://ncsu-libraries.github.io/ai-data-exploration/"
-  repo-url: "https://github.com/NCSU-Libraries/ai-data-exploration"
+  site-url: "https://ncsu-libraries.github.io/ai-textiles/"
+  repo-url: "https://github.com/NCSU-Libraries/ai-textiles"
   favicon: images/favicon.svg
   bread-crumbs: false
   search: false   # one page: the browser's own find does the job
@@ -25,7 +25,7 @@ website:
       - href: "https://go.ncsu.edu/getdatahelp"
         text: Get data help
       - icon: github
-        href: "https://github.com/NCSU-Libraries/ai-data-exploration"
+        href: "https://github.com/NCSU-Libraries/ai-textiles"
         aria-label: "Source on GitHub"
   page-footer:
     left: "NC State University Libraries · [Data Science Services](https://www.lib.ncsu.edu/staff/department/data-science-services) · Help: [go.ncsu.edu/getdatahelp](https://go.ncsu.edu/getdatahelp)"
