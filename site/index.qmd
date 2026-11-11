@@ -135,6 +135,8 @@ win if they disagree with this page.</p>
 2. Click **Make a copy**. Your copy opens, named "Copy of Knitting production data (practice copy)". It's yours
    alone, so nothing you do in it can break anyone else's.
 
+**Check:** the bottom of your copy has five tabs, named Data, Dictionary, Work, Log and About.
+
 ![The link opens this page instead of the sheet, so everyone gets a copy of their own.](images/screens/sheets-copy.png){.shot width="560" fig-alt="A Google Sheets page titled Copy document. It asks: Would you like to make a copy of Knitting production data (practice copy)? Below is a blue Make a copy button."}
 
 ## What's in the workbook {#sec-tabs}
@@ -164,7 +166,8 @@ The codes are also in the [Reference](#codes) at the end of this page.
    <kbd>Ctrl</kbd> + <kbd>↑</kbd> takes you back up.
 3. Read the column names. Which measurements have a unit, and which don't?
 4. What is one row? Guess from the first few rows, then read line 2 of the **Dictionary** tab.
-5. Click the **Work** tab and type your row count in cell {{< var work.rows-own >}}, under *Do it yourself*. You'll
+5. Click the **Work** tab. Column A already names each number you'll work out. Find the row named
+   *{{< var work.rows-name >}}* and type your count in cell {{< var work.rows-own >}}, under *Do it yourself*. You'll
    check Gemini against it in @sec-prepare.
 
 ::: {.callout-note collapse="true" icon=false}
