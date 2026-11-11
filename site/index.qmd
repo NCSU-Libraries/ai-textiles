@@ -773,28 +773,83 @@ public, so that's allowed here. For your own data, decide first whether such a l
    ```
    :::
 
-3. Paste Gemini's formula at the top of the next empty column.
+3. Paste Gemini's formula in an empty cell. Ours tested one row:
+
+   ::: {.formula}
+   ```default
+   =REGEXMATCH(Data!G2, "(?i)ela|spandex|lycra|creora|\bly\b")
+   ```
+   :::
 
 With the list in front of it, Gemini's rule caught Lycra, Spandex, Creora and "Ly", and typos such as Elastan and
-Elaasthane. In another chat its rule was shorter, and it missed {{< var key.stretch-short-missed >}} rows. This
-formula counts the rows the longer rule calls TRUE. It gives {{< var key.stretch-rows >}}.
+Elaasthane. In another chat its rule was shorter, and it missed {{< var key.stretch-short-missed >}} rows.
 
-::: {.formula}
+The prompts below build on that formula. Send them in the same chat.
+
+::: {.prompt}
 ```default
-=SUMPRODUCT(--REGEXMATCH(LOWER(Data!G2:G{{< var data.last-row-n >}}), "ela|spand|lycra|creor|\bly\b"))
+Give me one formula that does this for every row of my data, and leaves the row blank when Composition is blank.
 ```
 :::
 
-Two columns should agree here, and they don't. LS/J means Lycra single jersey, yet
-{{< var key.lsj-no-stretch >}} of the {{< var key.lsj-rows >}} LS/J rows name no stretch fiber in Composition, and
-{{< var key.sj-stretch >}} S/J rows name one. Which column would you trust?
-
-Composition is blank in {{< var key.composition-blank >}} rows. A plain `REGEXMATCH` calls them FALSE. This formula
-leaves them blank:
+Paste the formula at the top of the next empty column. It fills {{< var data.rows >}} rows, and
+{{< var key.composition-blank >}} of them stay blank.
 
 ::: {.formula}
 ```default
-=MAP(Data!G2:G{{< var data.last-row-n >}}, LAMBDA(c, IF(c="",, REGEXMATCH(LOWER(c), "ela|spand|lycra|creor|\bly\b"))))
+=ARRAYFORMULA(IF(Data!G2:G="", "", REGEXMATCH(Data!G2:G, "(?i)ela|spandex|lycra|creora|\bly\b")))
+```
+:::
+
+::: {.prompt}
+```default
+Give me a formula that counts the rows with a stretch fiber.
+```
+:::
+
+It should give {{< var key.stretch-rows >}}.
+
+::: {.formula}
+```default
+=COUNTIF(ARRAYFORMULA(IFERROR(REGEXMATCH(Data!G2:G, "(?i)ela|spandex|lycra|creora|\bly\b"), FALSE)), TRUE)
+```
+:::
+
+Two columns should agree here. LS/J means Lycra single jersey, so its Composition should name a stretch fiber.
+
+::: {.prompt}
+```default
+LS/J means Lycra single jersey, and S/J is plain single jersey. Give me a formula that counts the LS/J rows with no stretch fiber in Composition, and one that counts the S/J rows with one.
+```
+:::
+
+{{< var key.lsj-no-stretch >}} of the {{< var key.lsj-rows >}} LS/J rows name no stretch fiber, and
+{{< var key.sj-stretch >}} S/J rows name one. Which column would you trust?
+
+::: {.formula}
+```default
+=SUMPRODUCT((Data!F2:F="LS/J") * NOT(IFERROR(REGEXMATCH(Data!G2:G, "(?i)ela|spandex|lycra|creora|\bly\b"), FALSE)))
+```
+:::
+
+::: {.formula}
+```default
+=SUMPRODUCT((Data!F2:F="S/J") * IFERROR(REGEXMATCH(Data!G2:G, "(?i)ela|spandex|lycra|creora|\bly\b"), FALSE))
+```
+:::
+
+::: {.prompt}
+```default
+Now give me the same kind of formula for polyester, for every row.
+```
+:::
+
+Gemini's rule says TRUE for {{< var key.poly-rows >}} rows. It counted "60/40 CVC", a cotton and polyester blend
+that names neither fiber. A shorter rule from another chat missed those {{< var key.poly-short-missed >}} rows.
+
+::: {.formula}
+```default
+=ARRAYFORMULA(IF(Data!G2:G="", "", REGEXMATCH(Data!G2:G, "(?i)poly|\bpes\b|\bcvc\b")))
 ```
 :::
 
@@ -814,9 +869,6 @@ For more groups, ask for a TRUE or FALSE column for each fiber in the same way. 
 {{< var key.fiber-groups >}} groups hold {{< var key.fiber-groups-rows >}} of the {{< var data.rows >}} rows.
 
 {{< include _key-fibers.md >}}
-
-Watch for "60/40 CVC" when you get to polyester. It's a cotton and polyester blend that names neither fiber, in
-{{< var key.poly-short-missed >}} rows.
 :::
 
 ::: {.callout-tip collapse="true"}

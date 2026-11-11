@@ -140,6 +140,7 @@ key:
   interlock-rest-mean: "155.1"
   fleece-stretch-mean: "230.8"
   fleece-rest-mean: "276.5"
+  poly-rows: "4,252"
   poly-short-rows: "4,098"
   poly-short-missed: "154"
   rate-high-machine: "Lisky"

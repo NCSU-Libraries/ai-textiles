@@ -460,6 +460,7 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "mean_gsm": {"stretch": r(gsm[stretch].mean(), 3), "the_rest": r(gsm[~stretch].mean(), 3)},
         "by_construction": {c: {"stretch": group(c, True), "the_rest": group(c, False)} for c in order},
         "largest_fiber_groups": fiber_groups,
+        "polyester_rows": int(rule.str.contains("polyester").sum()),  # with CVC, a cotton and polyester blend
         "polyester_short_rule": POLYESTER_RULE_SHORT,
         "polyester_short_rule_rows": int(poly_short.sum()),
         "polyester_short_rule_misses": {t: int(n) for t, n in poly_missed.items()},
@@ -986,6 +987,7 @@ def write_variables(key: dict) -> None:
             "interlock-rest-mean": fmt(by_con["Interlock"]["the_rest"]["mean_gsm"], 1),
             "fleece-stretch-mean": fmt(by_con["Fleece_terry"]["stretch"]["mean_gsm"], 1),
             "fleece-rest-mean": fmt(by_con["Fleece_terry"]["the_rest"]["mean_gsm"], 1),
+            "poly-rows": f"{st['polyester_rows']:,}",
             "poly-short-rows": f"{st['polyester_short_rule_rows']:,}",
             "poly-short-missed": str(sum(st["polyester_short_rule_misses"].values())),
             # five more extra activities
