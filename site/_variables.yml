@@ -8,7 +8,7 @@ event:
   date: "Date to be announced"             # TBD
   time: ""                                 # TBD
   where: "In class"                        # TBD: room
-  length: "40 minutes"
+  length: "75 minutes"
 
 site: "https://ncsu-libraries.github.io/ai-data-exploration/"
 site-short: "ncsu-libraries.github.io/ai-data-exploration"
@@ -141,6 +141,35 @@ key:
   fleece-rest-mean: "276.5"
   poly-short-rows: "4,098"
   poly-short-missed: "154"
+  rate-high-machine: "Lisky"
+  rate-high: "3.3"
+  rate-high-blank: "126"
+  rate-high-rows: "620"
+  most-blank-machine: "Fukuhara"
+  most-blank-rate: "0.5"
+  most-blank-cells: "2,120"
+  most-blank-rows: "4,591"
+  share-up: "S/J"
+  share-up-rows: "44.9"
+  share-up-kg: "64.3"
+  share-up-kg-per-row: "254"
+  share-up-fraction: "0.449"
+  share-down: "Rib"
+  share-down-rows: "15.2"
+  share-down-kg: "5.8"
+  share-down-kg-per-row: "67"
+  month-low: "July"
+  month-low-kg: "663,885"
+  month-low-dates: "23"
+  month-low-per-date: "28,865"
+  month-others-dates: "29 in June and 28 in August"
+  lot-top: "TC-457P"
+  lot-top-kg: "43,617"
+  lot-top-rows: "181"
+  lot-pair: "GU-Z40016,NB-FEB-22-S-2813"
+  lot-pair-rank: "seventh"
+  lot-comma-rows: "5,394"
+  first-row-name: "Rib, including flat-knit collars and cuffs"
   fiber-groups: "6"
   fiber-groups-rows: "11,240"
 work:
@@ -181,4 +210,7 @@ work:
   own-table: "A61"
   own-table-name: "Your own tables"
   free-column: "F1"
+dict:
+  codes: "A20:A27"
+  names: "B20:B27"
 # <<< end of generated block

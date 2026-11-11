@@ -147,6 +147,10 @@ WORK_NUMBERS = [  # (variable key, the name in column A), one row each from WORK
     ("own-2", ""),
 ]
 WORK_COLUMNS = 4  # A to D: the name, Gemini's formula, your own number, Match?
+
+# The Dictionary tab: a title, the row sentence, a header in row 4, one row per column, a blank row, the heading
+# "Construction codes", then the codes. The lookup example on the page names these cells.
+DICTIONARY_HEADER_ROW = 4
 WORK_TABLES_NOTE_ROW = 15
 WORK_TABLES = [  # (variable key, the name in column A, its row); the formula goes in column A of the next row
     ("profile", "Every column: blank cells, numbers and text", 17),   # 14 rows
@@ -162,6 +166,12 @@ AUTHOR_FIBERS = {  # the source author's six categories, as fiber sets (other_co
     "Cotton_Elastan": {"cotton", "elastane"},
     "Cotton_Viscose": {"cotton", "viscose/modal"},
 }
+
+
+def dictionary_code_rows() -> tuple[int, int]:
+    """The first and last row of the Construction codes on the Dictionary tab."""
+    first = DICTIONARY_HEADER_ROW + len(COLUMNS) + 3  # the columns, a blank row, the heading, then the codes
+    return first, first + len(CONSTRUCTION_CODES) - 1
 
 
 def fibers(text: str) -> tuple[str, ...]:
@@ -455,6 +465,39 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "polyester_short_rule_misses": {t: int(n) for t, n in poly_missed.items()},
     }
 
+    # Five more extra activities (2026-11-11): what each one's table should show
+    mach = d[MACHINE]
+    blank_reject = d[REJECT] == ""
+    machines = []
+    for name in sorted(mach.unique()):
+        of = mach == name
+        machines.append({"machine": name, "rows": int(of.sum()), "kg": r(qty[of].sum(), 2),
+                         "reject": r(reject[of].sum(), 2), "blank_reject": int((of & blank_reject).sum()),
+                         "blank_share": r((of & blank_reject).sum() / of.sum(), 4),
+                         "reject_per_1000_kg": r(1000 * reject[of].sum() / qty[of].sum(), 3)})
+    shares = []
+    for c in order:
+        of = con == c
+        shares.append({"construction": c, "rows": int(of.sum()), "rows_share": r(of.mean(), 5),
+                       "kg_share": r(qty[of].sum() / qty.sum(), 5), "kg_per_row": r(qty[of].mean(), 1)})
+    months = []
+    for (year, month), part in qty.groupby([days.dt.year, days.dt.month]):
+        dates = int(days[part.index].nunique())
+        months.append({"month": f"{year}-{month:02d}", "name": dt.date(year, month, 1).strftime("%B"),
+                       "kg": r(part.sum(), 2), "dates_with_rows": dates, "kg_per_date": r(part.sum() / dates, 0)})
+    by_lot = pd.DataFrame({"kg": qty.groupby(d[LOT]).sum(), "rows": d.groupby(LOT).size()})
+    top_lots = by_lot.sort_values(["kg", "rows"], ascending=False).head(10)
+    code_first, code_last = dictionary_code_rows()
+    more = {
+        "rejects_by_machine": machines,
+        "shares_by_construction": shares,
+        "production_by_month": months,
+        "largest_lots": [{"lot": lot, "kg": r(row.kg, 2), "rows": int(row.rows)} for lot, row in top_lots.iterrows()],
+        "lot_cells_with_a_comma": int(d[LOT].str.contains(",", regex=False).sum()),
+        "dictionary_codes": {"codes": f"A{code_first}:A{code_last}", "names": f"B{code_first}:B{code_last}"},
+        "first_row_full_name": dict(CONSTRUCTION_CODES)[con.iloc[0]],  # what the lookup shows in its first cell
+    }
+
     key = {
         "source": {"citation": CITATION, "license": "CC BY 4.0", "doi": DOI},
         "rows": ROWS,
@@ -497,6 +540,7 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "gsm": {"overall": stats(con == con), "by_construction": by_construction},
         "correlation": correlation,
         "extras": extras,
+        "more_extras": more,
         "prep": prep,
         "stretch": stretch_key,
         "compare": {
@@ -631,7 +675,7 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
     header(dic, 4, ["Column", "Name", "What it holds", "Unit", "Notes"])
     for i, (name, _, unit, holds, notes) in enumerate(COLUMNS):
         dic.append([get_column_letter(i + 1), name, holds, unit, notes])
-    row = 5 + len(COLUMNS) + 1
+    row = dictionary_code_rows()[0] - 1  # the heading "Construction codes", one row above the first code
     dic.cell(row=row, column=1, value="Construction codes").font = BOLD
     for code, meaning in CONSTRUCTION_CODES:
         row += 1
@@ -766,6 +810,26 @@ def write_page_keys(key: dict, site: Path) -> None:
     out += [f"| {g['name']} | {g['rows']:,} |" for g in key["stretch"]["largest_fiber_groups"]]
     (site / "_key-fibers.md").write_text("\n".join(out) + "\n", encoding="utf-8")
 
+    more = key["more_extras"]
+    out = [note, "", "| Machine | Rows | Production (kg) | Reject Qty | Blank Reject Qty |", "| --- | --: | --: | --: | --: |"]
+    out += [f"| {x['machine']} | {x['rows']:,} | {x['kg']:,.0f} | {x['reject']:,.1f} | {x['blank_reject']:,} |"
+            for x in more["rejects_by_machine"]]
+    (site / "_key-machines.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "| Construction | Share of rows | Share of kilograms |", "| --- | --: | --: |"]
+    out += [f"| {x['construction']} | {100 * x['rows_share']:.1f}% | {100 * x['kg_share']:.1f}% |"
+            for x in sorted(more["shares_by_construction"], key=lambda x: -x["kg_share"])]
+    (site / "_key-shares.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "| Month | Production (kg) | Dates with rows | kg per date |", "| --- | --: | --: | --: |"]
+    out += [f"| {x['name']} | {x['kg']:,.0f} | {x['dates_with_rows']} | {x['kg_per_date']:,.0f} |"
+            for x in more["production_by_month"]]
+    (site / "_key-months.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "| Lot | Production (kg) | Rows |", "| --- | --: | --: |"]
+    out += [f"| {x['lot']} | {x['kg']:,.0f} | {x['rows']:,} |" for x in more["largest_lots"]]
+    (site / "_key-lots.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
     by_construction = key["gsm"]["by_construction"]
     out = [note, "", "| Construction | Rows | Mean GSM |", "| --- | --: | --: |"]
     out += [f"| {c} | {by_construction[c]['per_row']['rows']:,} | {by_construction[c]['per_row']['mean']:.1f} |"
@@ -797,6 +861,21 @@ def write_variables(key: dict) -> None:
     gauge_first = str(key["gauge"]["max"])[:-len(gauge_rest)]
     assert int(gauge_first) in key["gauge"]["values"], "the gauge typo no longer starts with a real gauge"
     by_con = st["by_construction"]
+    more = key["more_extras"]
+    by_rate = sorted(more["rejects_by_machine"], key=lambda x: x["reject_per_1000_kg"])
+    rate_high = by_rate[-1]                                                         # the most rejects per 1,000 kg
+    most_blank = max(more["rejects_by_machine"], key=lambda x: x["blank_share"])    # the most blank Reject Qty
+    assert rate_high["machine"] != most_blank["machine"] and most_blank["reject_per_1000_kg"] < rate_high["reject_per_1000_kg"]
+    sh = more["shares_by_construction"]
+    share_up = max(sh, key=lambda x: x["kg_share"] - x["rows_share"])    # more of the kilograms than of the rows
+    share_down = max(sh, key=lambda x: x["rows_share"] - x["kg_share"])  # more of the rows than of the kilograms
+    mo = more["production_by_month"]
+    month_low = min(mo, key=lambda x: x["kg"])
+    assert month_low["kg_per_date"] == max(x["kg_per_date"] for x in mo), "the lowest month isn't the busiest per date"
+    month_others = [x for x in mo if x is not month_low]
+    lots = more["largest_lots"]
+    ordinal = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"]
+    lot_pair = next(i for i, x in enumerate(lots) if "," in x["lot"])  # the first of the ten that is two lots in one cell
     work = {}  # the Work tab's cells and their names, so the page and the sheet can't drift apart
     for i, (k, label) in enumerate(WORK_NUMBERS, start=WORK_HEADER_ROW + 1):
         if label:
@@ -909,10 +988,41 @@ def write_variables(key: dict) -> None:
             "fleece-rest-mean": fmt(by_con["Fleece_terry"]["the_rest"]["mean_gsm"], 1),
             "poly-short-rows": f"{st['polyester_short_rule_rows']:,}",
             "poly-short-missed": str(sum(st["polyester_short_rule_misses"].values())),
+            # five more extra activities
+            "rate-high-machine": rate_high["machine"],
+            "rate-high": fmt(rate_high["reject_per_1000_kg"], 1),
+            "rate-high-blank": f"{rate_high['blank_reject']:,}",
+            "rate-high-rows": f"{rate_high['rows']:,}",
+            "most-blank-machine": most_blank["machine"],
+            "most-blank-rate": fmt(most_blank["reject_per_1000_kg"], 1),
+            "most-blank-cells": f"{most_blank['blank_reject']:,}",
+            "most-blank-rows": f"{most_blank['rows']:,}",
+            "share-up": share_up["construction"],
+            "share-up-rows": fmt(100 * share_up["rows_share"], 1),
+            "share-up-kg": fmt(100 * share_up["kg_share"], 1),
+            "share-up-kg-per-row": fmt(share_up["kg_per_row"], 0),
+            "share-up-fraction": fmt(share_up["rows_share"], 3),
+            "share-down": share_down["construction"],
+            "share-down-rows": fmt(100 * share_down["rows_share"], 1),
+            "share-down-kg": fmt(100 * share_down["kg_share"], 1),
+            "share-down-kg-per-row": fmt(share_down["kg_per_row"], 0),
+            "month-low": month_low["name"],
+            "month-low-kg": fmt(month_low["kg"], 0),
+            "month-low-dates": str(month_low["dates_with_rows"]),
+            "month-low-per-date": fmt(month_low["kg_per_date"], 0),
+            "month-others-dates": " and ".join(f"{x['dates_with_rows']} in {x['name']}" for x in month_others),
+            "lot-top": lots[0]["lot"],
+            "lot-top-kg": fmt(lots[0]["kg"], 0),
+            "lot-top-rows": f"{lots[0]['rows']:,}",
+            "lot-pair": lots[lot_pair]["lot"],
+            "lot-pair-rank": ordinal[lot_pair],
+            "lot-comma-rows": f"{more['lot_cells_with_a_comma']:,}",
+            "first-row-name": more["first_row_full_name"],
             "fiber-groups": str(len(st["largest_fiber_groups"])),
             "fiber-groups-rows": f"{sum(g['rows'] for g in st['largest_fiber_groups']):,}",
         },
         "work": work,
+        "dict": more["dictionary_codes"],  # where the Construction codes sit on the Dictionary tab
     }
     lines = ["# >>> generated by tools/make_data.py; don't edit this block by hand"]
     for top, values in v.items():
@@ -1053,6 +1163,30 @@ def write_key_md(key: dict, path: Path) -> None:
             + ", most likely a 12/1 that a spreadsheet read as a date.", "",
             "| S/J rows, first yarn's count | Rows | Mean GSM |", "| --- | --- | --- |"]
     out += [f"| {k} | {s['rows']:,} | {s['mean']:.1f} |" for k, s in yc["sj_mean_gsm"].items()]
+    more = key["more_extras"]
+    out += ["", "## Five more extra activities", "",
+            "**Rejects by machine.** Reject Qty has no stated unit, and a blank may mean zero or not recorded, so "
+            "the rate is only as good as the records behind it.", "",
+            "| Machine | Rows | Production (kg) | Reject Qty | Blank Reject Qty | Blank share | Reject per 1,000 kg |",
+            "| --- | --- | --- | --- | --- | --- | --- |"]
+    out += [f"| {x['machine']} | {x['rows']:,} | {x['kg']:,.2f} | {x['reject']:,.2f} | {x['blank_reject']:,} | "
+            f"{100 * x['blank_share']:.0f}% | {x['reject_per_1000_kg']:.2f} |" for x in more["rejects_by_machine"]]
+    out += ["", "**Rows or kilograms.**", "",
+            "| Construction | Rows | Share of rows | Share of kg | kg per row |", "| --- | --- | --- | --- | --- |"]
+    out += [f"| {x['construction']} | {x['rows']:,} | {100 * x['rows_share']:.1f}% | {100 * x['kg_share']:.1f}% | "
+            f"{x['kg_per_row']:.1f} |" for x in more["shares_by_construction"]]
+    out += ["", "**Production by month.** The month with the lowest total has the fewest dates with rows, and the "
+            "most kilograms per date.", "",
+            "| Month | Production (kg) | Dates with rows | kg per date |", "| --- | --- | --- | --- |"]
+    out += [f"| {x['month']} | {x['kg']:,.2f} | {x['dates_with_rows']} | {x['kg_per_date']:,.0f} |"
+            for x in more["production_by_month"]]
+    out += ["", f"**The ten largest lots.** {more['lot_cells_with_a_comma']:,} Lot cells hold a comma, which is "
+            "more than one lot number in a cell.", "",
+            "| Lot | Production (kg) | Rows |", "| --- | --- | --- |"]
+    out += [f"| {x['lot']} | {x['kg']:,.2f} | {x['rows']:,} |" for x in more["largest_lots"]]
+    out += ["", f"**Look up a code's full name.** The codes are in `Dictionary!{more['dictionary_codes']['codes']}` "
+            f"and their names in `Dictionary!{more['dictionary_codes']['names']}`. "
+            f"{key['gsm']['by_construction']['S/J']['per_row']['rows']:,} rows should say Single jersey."]
     st = key["stretch"]
     out += ["", "## Composition: a stretch fiber or not (the first extra activity)", "",
             f"- **The rule on the page:** `{st['rule']}` inside `REGEXMATCH(LOWER(...))`. Gemini wrote it with the "

@@ -13,6 +13,6 @@
 2022-06-04,DEMO-104,Lisky,36,24,Rib,Cotton 100%,26/1,2.9,any,220,95,0
 2022-06-05,DEMO-105,Hangxing,32,28,Mesh,100% Polyester %,75D/72F,2.6,66,140,310.8,</pre></div>
 <div class="part"><span class="num" aria-hidden="true">5</span><span class="visually-hidden">Part 5: </span><p>Notes: Construction is a code (S/J is single jersey, LS/J is Lycra single jersey). Yarn Count is text in the factory's notation (30/1 is cotton count, 20/D is denier), with several yarns separated by commas. Reject Qty has no stated unit.</p></div>
-<div class="part"><span class="num" aria-hidden="true">6</span><span class="visually-hidden">Part 6: </span><p>I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula in its own code block, so I can copy it.</p></div>
+<div class="part"><span class="num" aria-hidden="true">6</span><span class="visually-hidden">Part 6: </span><p>I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula on one line, in its own code block, so I can copy it.</p></div>
 </figure>
 ```

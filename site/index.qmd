@@ -213,7 +213,7 @@ Production Date,Lot,Machine,Machine Diameter (in),Machine Gauge (needles/in),Con
 
 Notes: Construction is a code (S/J is single jersey, LS/J is Lycra single jersey). Yarn Count is text in the factory's notation (30/1 is cotton count, 20/D is denier), with several yarns separated by commas. Reject Qty has no stated unit.
 
-I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula in its own code block, so I can copy it.
+I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula on one line, in its own code block, so I can copy it.
 ```
 :::
 
@@ -230,7 +230,7 @@ The prompt has six parts, and each one is there for a reason.
 | [3]{.num} | What one row is | Whether a repeated lot is a problem depends on it. |
 | [4]{.num} | The column names, with five made-up rows in your data's format | A column's position gives its letter, and its name gives the unit. The rows show its data type, which may be a number, text, a date, a blank, or an odd value such as "any". |
 | [5]{.num} | Notes | These cover codes, units and anything else the names don't say. |
-| [6]{.num} | How you want the answers | You get one formula at a time, in a box you can copy. |
+| [6]{.num} | How you want the answers | You get one formula at a time, in a box you can copy. A formula written on several lines would land in several cells when you paste it. |
 
 The five rows are invented. They use codes from the data, such as S/J, but none of them is a row of the data.
 
@@ -302,6 +302,13 @@ Explain that formula one piece at a time, in plain words, for someone who has ne
 `#REF!` means the result has no room. It needs empty cells below it and to its right, so clear the cells in its way
 or move the formula. For any other error, paste the formula and the error into Gemini and ask for a fix. One of ours
 showed `#NAME?`, because Gemini had used a function that doesn't exist. It fixed the formula when we told it.
+:::
+
+::: {.callout-warning}
+## Gotcha: the formula lands in several cells
+
+Gemini wrote it on more than one line, and Sheets put each line in its own cell. Press <kbd>Ctrl</kbd> + <kbd>Z</kbd>
+(Mac: <kbd>Cmd</kbd> + <kbd>Z</kbd>) to undo. Then double-click the cell, paste, and press <kbd>Enter</kbd>.
 :::
 
 ::: {.callout-note collapse="true" icon=false}
@@ -401,7 +408,11 @@ who could tell you what a blank means?
 | Mean Reject Qty, blanks as zero | {{< var key.reject-mean-zero >}} |
 
 The first mean divides by the {{< var key.reject-numeric >}} cells that hold a number. The second divides by all
-{{< var data.rows >}} rows. Formulas that work:
+{{< var data.rows >}} rows.
+
+Gemini's own answer changed from one chat to the next. In one it said that blanks should usually not count as zero.
+In another it said that in a textile mill a blank usually means zero. It can't know which is true here. The factory
+does. Formulas that work:
 
 ::: {.formula}
 ```default
@@ -575,10 +586,11 @@ counts in column A beside it. For each one, ask whether the check fits what a ro
 Your list will differ from ours. Every time we asked, Gemini offered a count of duplicate lots. Its usual formula
 returns {{< var key.lots-repeat >}}, and that isn't a problem, because lots repeat by design.
 
-Once it also offered a count of rows where Reject Qty is above Production Qty. That formula returns
-{{< var key.reject-over-qty-sheets >}}. In {{< var key.reject-over-qty >}} of those rows, more was rejected than
-knitted, or the two columns are in different units. The other row is the note in row
-{{< var key.reject-note-row >}}, because Sheets ranks text above every number.
+Twice it also offered a count of rows where Reject Qty is above Production Qty. One of its formulas returns
+{{< var key.reject-over-qty-sheets >}} and the other {{< var key.reject-over-qty >}}. In
+{{< var key.reject-over-qty >}} rows, more was rejected than knitted, or the two columns are in different units. The
+extra row is the note in row {{< var key.reject-note-row >}}. The first formula counted it, because Sheets ranks text
+above every number.
 :::
 
 **Checkpoint.** You now know what is in the data and what to be careful with, and nothing in it has changed.
@@ -685,7 +697,7 @@ The same steps work on your own data, in the same order.
 
    Notes: [codes, units, anything the column names don't say].
 
-   I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula in its own code block, so I can copy it.
+   I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula on one line, in its own code block, so I can copy it.
    ```
    :::
 
@@ -719,8 +731,9 @@ again and check it.
 
 # Extra activities {#extras .unnumbered}
 
-These are for fast finishers, and for practice afterwards. Click one to open it. Their formulas go on the Work tab
-under *{{< var work.own-table-name >}}*, each in an empty area with a name typed above it.
+These are for fast finishers, and for practice afterwards. In the session we'll do as many as time allows. Click
+one to open it. Their formulas go on the Work tab under *{{< var work.own-table-name >}}*, each in an empty area with
+a name typed above it.
 
 ::: {.callout-tip collapse="true"}
 ## Group fabrics by fiber
@@ -796,6 +809,154 @@ Watch for "60/40 CVC" when you get to polyester. It's a cotton and polyester ble
 :::
 
 ::: {.callout-tip collapse="true"}
+## Rows or kilograms? Each construction's share
+
+::: {.prompt}
+```default
+Give me one formula that lists each Construction with its share of the rows and its share of the total Production Qty, both as percentages.
+```
+:::
+
+{{< var key.share-up >}} is {{< var key.share-up-rows >}}% of the rows and {{< var key.share-up-kg >}}% of the
+kilograms. {{< var key.share-down >}} is {{< var key.share-down-rows >}}% of the rows and
+{{< var key.share-down-kg >}}% of the kilograms. A row of {{< var key.share-up >}} holds
+{{< var key.share-up-kg-per-row >}} kg on average, and a row of {{< var key.share-down >}} holds
+{{< var key.share-down-kg-per-row >}}. A share of the rows and a share of the kilograms answer different questions.
+
+{{< include _key-shares.md >}}
+
+Gemini's formula gave us fractions, such as {{< var key.share-up-fraction >}}. To show them as percentages, select
+the two columns and click **%** in the toolbar. One that works:
+
+::: {.formula}
+```default
+=LET(c, UNIQUE(FILTER(Data!F2:F{{< var data.last-row-n >}}, Data!F2:F{{< var data.last-row-n >}}<>"")), tot_rows, ROWS(Data!F2:F{{< var data.last-row-n >}}), tot_qty, SUM(Data!L2:L{{< var data.last-row-n >}}), VSTACK({"Construction", "Share of Rows", "Share of Production Qty"}, MAP(c, LAMBDA(x, HSTACK(x, COUNTIF(Data!F2:F{{< var data.last-row-n >}}, x) / tot_rows, SUMIFS(Data!L2:L{{< var data.last-row-n >}}, Data!F2:F{{< var data.last-row-n >}}, x) / tot_qty)))))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## Rejects by machine, and the blanks behind them
+
+::: {.prompt}
+```default
+Give me one formula that lists each Machine with its total Production Qty, its total Reject Qty, and its number of blank Reject Qty cells.
+```
+:::
+
+{{< include _key-machines.md >}}
+
+Divide each machine's Reject Qty by its Production Qty. {{< var key.rate-high-machine >}} rejects the most, about
+{{< var key.rate-high >}} for every 1,000 kg, and {{< var key.most-blank-machine >}} about
+{{< var key.most-blank-rate >}}. Now look at the blanks. {{< var key.most-blank-machine >}}'s Reject Qty is blank
+in {{< var key.most-blank-cells >}} of its {{< var key.most-blank-rows >}} rows, and
+{{< var key.rate-high-machine >}}'s in {{< var key.rate-high-blank >}} of its {{< var key.rate-high-rows >}}. If
+a blank means that nobody wrote the number down, the lower rate may say more about the records than about the
+fabric. Reject Qty also has no stated unit. One that works:
+
+::: {.formula}
+```default
+=LET(m, UNIQUE(FILTER(Data!C2:C{{< var data.last-row-n >}}, Data!C2:C{{< var data.last-row-n >}}<>"")), VSTACK({"Machine", "Total Production Qty", "Total Reject Qty", "Blank Reject Qty"}, MAP(m, LAMBDA(x, HSTACK(x, SUMIFS(Data!L2:L{{< var data.last-row-n >}}, Data!C2:C{{< var data.last-row-n >}}, x), SUMIFS(Data!M2:M{{< var data.last-row-n >}}, Data!C2:C{{< var data.last-row-n >}}, x), COUNTIFS(Data!C2:C{{< var data.last-row-n >}}, x, Data!M2:M{{< var data.last-row-n >}}, ""))))))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## Production by month, and why one month looks low
+
+::: {.prompt}
+```default
+Give me one formula that lists each month with its total Production Qty and the number of different Production Dates in it.
+```
+:::
+
+{{< include _key-months.md >}}
+
+{{< var key.month-low >}} has the lowest total, {{< var key.month-low-kg >}} kg. It also has rows on only
+{{< var key.month-low-dates >}} dates, against {{< var key.month-others-dates >}}. For each date with rows,
+{{< var key.month-low >}} made {{< var key.month-low-per-date >}} kg, the most of the three months. Before you
+compare totals, check how many dates each one covers.
+
+Gemini's first formula showed `#N/A` in our sheet. We told it so, and its second formula worked:
+
+::: {.formula}
+```default
+=ARRAYFORMULA(LET(dates, Data!A2:A{{< var data.last-row-n >}}, qtys, Data!L2:L{{< var data.last-row-n >}}, m_text, TEXT(dates, "yyyy-mm"), u_m, UNIQUE(FILTER(m_text, dates<>"")), VSTACK({"Month", "Total Production Qty", "Unique Production Dates"}, BYROW(u_m, LAMBDA(m, HSTACK(m, SUMIF(m_text, m, qtys), COUNTUNIQUE(FILTER(dates, m_text=m))))))))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## Production day by day, and the days with no rows
+
+::: {.prompt}
+```default
+Give me one formula that lists each Production Date with its total Production Qty, in date order. Then tell me how to make a line chart of it.
+```
+:::
+
+The table has {{< var key.dates-with-rows >}} dates, but {{< var data.first-date >}} to {{< var data.last-date >}} is
+{{< var key.days-span >}} days. There are no rows from {{< var key.gap-first >}} to {{< var key.gap-last >}}, and the
+line chart draws straight across them. Fridays average {{< var key.friday-mean >}} kg, against
+{{< var key.other-day-mean >}} on other days. Did the factory make nothing on the missing days, or were they not
+recorded? Ask before you fill them in. One that works:
+
+::: {.formula}
+```default
+=QUERY(Data!A2:L{{< var data.last-row-n >}}, "SELECT A, SUM(L) WHERE A IS NOT NULL GROUP BY A ORDER BY A LABEL A 'Date', SUM(L) 'Production (kg)'")
+```
+:::
+
+The daily totals should add up to `=SUM(Data!L2:L{{< var data.last-row-n >}})`, which is {{< var key.qty-total >}} kg.
+:::
+
+::: {.callout-tip collapse="true"}
+## The ten largest lots
+
+::: {.prompt}
+```default
+Give me one formula that lists the 10 lots with the most Production Qty, with each lot's total and its number of rows.
+```
+:::
+
+{{< include _key-lots.md >}}
+
+The largest lot, {{< var key.lot-top >}}, made {{< var key.lot-top-kg >}} kg on {{< var key.lot-top-rows >}}
+rows. Look at the {{< var key.lot-pair-rank >}} one, {{< var key.lot-pair >}}. That cell holds two lot numbers
+with a comma between them, and {{< var key.lot-comma-rows >}} rows have a Lot like it. A count of lots depends on
+whether you split those cells. One that works:
+
+::: {.formula}
+```default
+=QUERY(Data!B2:L{{< var data.last-row-n >}}, "SELECT B, SUM(L), COUNT(B) WHERE B IS NOT NULL GROUP BY B ORDER BY SUM(L) DESC LIMIT 10 LABEL B 'Lot', SUM(L) 'Total Production Qty', COUNT(B) 'Row Count'", 0)
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## Look up each code's full name
+
+Gemini knows only what you describe. The full names of the Construction codes are on the Dictionary tab, so this
+prompt says where.
+
+::: {.prompt}
+```default
+On a tab named Dictionary, cells {{< var dict.codes >}} hold the Construction codes and {{< var dict.names >}} hold their full names. Give me one formula that shows the full name of the Construction for every row of my data.
+```
+:::
+
+Paste the formula at the top of an empty column on the Work tab. It should fill {{< var data.rows >}} rows, and the
+first should say "{{< var key.first-row-name >}}". Our first formula filled one cell only. We told Gemini so, and the
+next one filled them all:
+
+::: {.formula}
+```default
+=ARRAYFORMULA(XLOOKUP(Data!F2:F{{< var data.last-row-n >}}, Dictionary!{{< var dict.codes >}}, Dictionary!{{< var dict.names >}}, ""))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
 ## Mean, median and standard deviation in one formula
 
 ::: {.prompt}
@@ -864,30 +1025,6 @@ comparing machines also compares fabrics. One that works:
 :::
 
 `QUERY` fails with `#VALUE!` if it counts the column it pivots on. Paste the error back.
-:::
-
-::: {.callout-tip collapse="true"}
-## Production day by day, and the days with no rows
-
-::: {.prompt}
-```default
-Give me one formula that lists each Production Date with its total Production Qty, in date order. Then tell me how to make a line chart of it.
-```
-:::
-
-The table has {{< var key.dates-with-rows >}} dates, but {{< var data.first-date >}} to {{< var data.last-date >}} is
-{{< var key.days-span >}} days. There are no rows from {{< var key.gap-first >}} to {{< var key.gap-last >}}, and the
-line chart draws straight across them. Fridays average {{< var key.friday-mean >}} kg, against
-{{< var key.other-day-mean >}} on other days. Did the factory make nothing on the missing days, or were they not
-recorded? Ask before you fill them in. One that works:
-
-::: {.formula}
-```default
-=QUERY(Data!A2:L{{< var data.last-row-n >}}, "SELECT A, SUM(L) WHERE A IS NOT NULL GROUP BY A ORDER BY A LABEL A 'Date', SUM(L) 'Production (kg)'")
-```
-:::
-
-The daily totals should add up to `=SUM(Data!L2:L{{< var data.last-row-n >}})`, which is {{< var key.qty-total >}} kg.
 :::
 
 ::: {.callout-tip collapse="true"}
