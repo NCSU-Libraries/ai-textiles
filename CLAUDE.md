@@ -18,99 +18,118 @@ folder is `textiles-seminar`.
   5. no coding experience needed;
   6. by the end, students can try the same steps on their own data.
 
-  Before the session: a laptop, and sign in to Google Sheets and Gemini (gemini.google.com) with the NC State account.
-- **Contacts:** session questions go to lib-datascienceservices@ncsu.edu; help with access or your own data goes to
-  go.ncsu.edu/getdatahelp (not DSCP).
-- **Private plan:** `instructor/` holds the plan, run sheet, talking points, answer key and email. It's gitignored and
-  is its own local git repo: commit there with `git -C instructor`.
+  Students bring a laptop and their NC State login. **Nothing is set up before the session:** making the copy and
+  signing in to Gemini are part of it.
+- **Contacts:** help of any kind goes to go.ncsu.edu/getdatahelp (not DSCP, and not the lib-datascienceservices
+  address, which isn't used for instruction).
+- **Private plan:** `instructor/` holds the plan, run sheet, talking points, answer key and the note to the class.
+  It's gitignored and is its own local git repo: commit there with `git -C instructor`.
 
-**Design (decided 2026-11-05):**
-- **Describe the data; never upload it.** Alp's call after the spike: students describe the practice data to Gemini
-  (layout, header row, 5 made-up rows, notes on codes and units) and ask for formulas they run in their own copy.
-  Gemini never sees a real row. It's what you'd do with data you can't upload, and it meets every promise:
-  - Gemini summarizes through formulas and a pivot table.
-  - It points out likely problems, with formulas that find them.
-  - Students check each number two ways.
+**Design:**
+- **One scrolling page** (decided 2026-11-11, after Shannon's review). `site/index.qmd` is the whole session, with
+  numbered sections and the table of contents on the right, in the shape of the Libraries' one-page guides
+  (<https://ncsu-libraries.github.io/intro-spreadsheets/spreadsheets-workshop.html>):
+  - Welcome: objectives, the questions we'll answer, about the data;
+  - numbered sections, each opening with the question it answers;
+  - Wrapping up, then Extra activities, then Reference.
+
+  No other pages, no video. The deck is five slides.
+- **Describe the data; never upload it** (2026-11-05). Students describe the practice data to Gemini (tab and range,
+  what a row is, the header row, 5 made-up rows, notes on codes and units) and ask for formulas they run in their own
+  copy. Gemini never sees a real row. It's what you'd do with data you can't upload.
+- **The page lists the checks; Gemini writes the formulas** (2026-11-11). Data preparation is five checks: data
+  types, missing values, duplicates, categories, values out of range. Asked what to check, Gemini gave a different
+  list in every mode and found at most 2 of the data's known problems; one open "what else?" question stays as the
+  last, cuttable step.
+- **Do it yourself against AI-assisted** (2026-11-11). Where the menus can give the number (Ctrl + ↓, Data → Column
+  stats, a pivot table), the student's own number sits beside Gemini's formula on the Work tab, and a Match? column
+  compares them. Each check is written as a "Do it yourself" paragraph and an "AI-assisted" paragraph.
 - **The Gemini app, not Gemini inside Sheets.** NC State's approved AI list says some Workspace features, Sheets among
   them, need the paid AI Pro for Education add-on. Alp's NC State account shows no Gemini button in Sheets.
 - **Google Sheets only:** no Excel track, no Apps Script.
-- **Two ways, one number.** The sheet's Compare tab has "First way" and "Second way" columns: a formula and another
-  formula or a pivot table. The Reject Qty row differs on purpose, because blanks skipped and blanks as zero answer
-  different questions.
 - **Real data, one planted problem.** The Mendeley knitting dataset (CC BY 4.0), 13 columns. Composition is the text
   as typed in the factory's raw report (290 spellings); every other quirk is the factory's own. The answer key lists
-  the eight problems students can find with formulas.
-- **Data security comes right before Gemini sees anything,** in the room, not just on a page.
-- **The video:** a captions-only walkthrough of the eight steps (about 2.5 minutes) on Home, with chapter buttons and
-  a caption transcript, plus a clip per step on Explore. It's recorded like `../agentic-coding-with-claude`'s:
-  - simplified re-creations of Gemini and Sheets, labeled as such;
-  - Gemini's words from the spike (`instructor/dry-run.md`);
-  - the real screenshots and site pages.
-
-  The day-of fallback never depends on it.
+  the problems the checks find. One row is one lot on one day on one machine: 7,493 rows share their lot and date
+  with another row. The describe prompt says the shorter "one lot knitted on one day", because that wording is the
+  one that was tested.
+- **Data security comes first,** before the workbook and before Gemini sees anything.
+- **Three kinds of box, and no others:** Answer key (a closed `callout-note`, gray), Gotcha (`callout-warning`) and
+  Extra (`callout-tip`). A "**Check:**" line states something the student can verify on screen; a question for the
+  room is its own sentence. The page's column table leaves out the Dictionary tab's notes, which give away what the
+  checks find.
+- **What Gemini sees:** no row of the data. One extra activity pastes a list of a column's distinct entries, and says
+  so.
 
 **Run of show (40 min):**
 
-| Minutes | Segment |
+| Minutes | Page section |
 | --- | --- |
-| 0–4 | Welcome |
-| 4–6 | Look first, no AI |
-| 6–8 | Data security |
-| 8–11 | Describe the data |
-| 11–19 | Find the problems |
-| 19–25 | Summarize, with a chart |
-| 25–31 | Check it a second way, and what a blank means |
-| 31–36 | Your own data |
-| 36–40 | Questions and evaluation |
+| 0–3 | The opening slides, then Welcome |
+| 3–7 | 1 What can you share with an AI tool? |
+| 7–12 | 2 Set up your workbook |
+| 12–17 | 3 Set up Gemini |
+| 17–27 | 4 Preparing the data |
+| 27–34 | 5 Summarizing and charting |
+| 34–37 | 6 Wrapping up |
+| 37–40 | Questions and evaluation |
 
-- Cut to 30: Alp demos the problems step on the projector, and students skip the pivot table.
-- Stretch to 45: the Composition extra and the correlation-by-group extra.
+- Cut to 30: Alp demos section 4 on the projector, students run only 4.1 to 4.3, and the pivot table is skipped.
+- Stretch to 45: the extra activity "Group fabrics by fiber".
 
 ## Layout
 
 | Path | Contents |
 | --- | --- |
-| `site/` | Quarto website. Gate 0 pages: `index.qmd`, `setup.qmd`, `data.qmd`. Gate 1 adds `explore.qmd`, `data-security.qmd`, `practices.qmd` and `slides/index.qmd` |
-| `site/_variables.yml` | Facts used on several pages. The block between the "generated" markers is written by `tools/make_data.py`; edit the rest by hand |
-| `site/_dictionary.md` | The data dictionary, generated; `data.qmd` includes it |
-| `site/_decision-guide.md` | The decision-guide SVG, included by `data-security.qmd` and the deck. Its words are also in `data-security.qmd`'s phone-only list: change both |
-| `site/explore.qmd` | The session page, eight steps: look first, data security, describe, problems, summary, second way, blanks, your own data. Then the Extras: eight collapsed examples, each a prompt, what to look for, and a formula that works |
-| `site/slides/index.qmd` | The deck: framing, data security, what Gemini sees, then reference slides after "Your turn" |
-| `site/downloads/knitting-practice.{csv,xlsx}` | The practice data, generated. The XLSX has Data, Dictionary, Work, Compare and About tabs |
-| `site/theme/` | NC State theme, copied from `../local-llms` |
-| `tools/make_data.py` | Downloads the Mendeley source (checksums pinned), builds the practice data and the answer key, writes the variables. Deterministic |
+| `site/index.qmd` | The site's one page: the session, the extra activities and the reference |
+| `site/_variables.yml` | Facts the page and the deck use. The block between the "generated" markers is written by `tools/make_data.py`; edit the rest by hand |
+| `site/_dictionary.md`, `_dictionary-codes.md` | The data dictionary, generated: the columns (section 2.2) and the two code tables (Reference) |
+| `site/_key-types.md`, `_key-range.md`, `_key-summary.md`, `_key-fibers.md` | The tables inside three answer keys and the fiber extra, generated |
+| `site/_describe-anatomy.md` | The describe prompt cut into six numbered parts, generated by `tools/extract_prompts.py` from the prompt itself. The six reasons under it are in `index.qmd`: keep the two in step |
+| `site/_decision-guide.md`, `_what-gemini-sees.md` | Two drawings (SVG) for wide screens, each with the same thing in words for phones. Change both forms together |
+| `site/slides/index.qmd` | Five slides: get started, the three DSS slides, the evaluation. Nothing links to it |
+| `site/downloads/knitting-practice.{csv,xlsx}` | The practice data, generated. The XLSX has Data, Dictionary, Work, Log and About tabs |
+| `site/images/screens/` | Screenshots of Gemini and Sheets, cropped so no chat history or account detail shows |
+| `site/theme/` | NC State theme, copied from `../local-llms`. `site.scss` holds the page's boxes, the Copy button and the callout colors |
+| `tools/make_data.py` | Downloads the Mendeley source (checksums pinned), builds the practice data and the answer key, writes the variables and the generated includes, then runs `extract_prompts.py`. Deterministic |
+| `tools/extract_prompts.py` | Writes `instructor/prompts.txt` and `site/_describe-anatomy.md` from the page's prompt blocks. Run it after changing a prompt |
 | `tools/quarto.sh`, `check_links.py`, `shoot.mjs`, `check_overlaps.py` | Copied from `../local-llms` |
-| `tools/record-tour.mjs`, `tools/tour/` | Record the video and the step clips into `site/video/`, and write `site/_tour-chapters.md`. Scenes in `tour/scenes.mjs`, the stage in `tour/stage.html` |
-| `tools/extract_prompts.py` | Writes `instructor/prompts.txt` from the Explore page's prompt blocks. Run it after changing a prompt |
-| `instructor/` | Private: `plan.md`, `run-sheet.md`, `talking-points.md`, `email.md`, `answer-key.{md,json}` and `prompts.txt` (both generated) |
+| `instructor/` | Private: `plan.md`, `run-sheet.md`, `talking-points.md`, `dry-run.md`, `email.md`, `answer-key.{md,json}` and `prompts.txt` (both generated) |
+| `gemini-eda.qmd` | Untracked. Shannon's first draft of a one-page guide, kept as a format example. It's built on uploading; don't take content from it |
 
 ## Commands
 
 ```bash
-uv run --with pandas --with openpyxl python -I tools/make_data.py   # rebuild the data, key and variables
+uv run --with pandas --with openpyxl python -I tools/make_data.py   # rebuild the data, key, variables and includes
+python3 tools/extract_prompts.py  # after changing a prompt (make_data.py runs it too)
 tools/quarto.sh render site      # full build into site/_site (Docker must be running)
 tools/quarto.sh preview site     # live preview at http://localhost:4848
 python3 tools/check_links.py     # after a render; --web also requests external URLs
 node tools/shoot.mjs shots.json  # headless Chrome screenshots
-node tools/record-tour.mjs       # the video and step clips (render the site first; about 3 minutes)
+uv run --with playwright python -I tools/check_overlaps.py   # the deck, after a render
 ```
 
 ## Keeping things consistent
 
-- **Numbers come from the generated variables,** never typed into a page: `{{< var key.sj-mean >}}`, and so on. Inside
-  formulas, use `data.last-row-n` (no thousands comma; `12,570` breaks a range). Change
-  the data → rerun `make_data.py` → the pages follow. The private answer key explains every number and lists the
-  wrong values students may get, with their causes.
+- **Numbers come from the generated variables,** never typed into the page: `{{< var key.sj-mean >}}`, and so on.
+  Inside formulas, use `data.last-row-n` (no thousands comma; `12,570` breaks a range). Change the data → rerun
+  `make_data.py` → the page follows. The private answer key explains every number and lists the wrong values students
+  may get, with their causes.
+- **The page names cells on the Work tab** (B4, A18, …) through the `work.*` variables, which `make_data.py` writes
+  from the same lists that lay out the tab (`WORK_NUMBERS`, `WORK_TABLES`). Change the layout there, never on the
+  page.
 - **The shared Google Sheet** lives in Alp's NC State Drive (its `/copy` link is in `_variables.yml`). It's built by
   importing `site/downloads/knitting-practice.xlsx` with **File → Import → Upload → Replace spreadsheet**, which keeps
-  the link. Re-import after any change to the XLSX.
-- **Every prompt appears in several places:** the Explore page, the deck, `instructor/prompts.txt` and the video.
-  Students copy them word for word. Change one, change them all. The video reads prompts from `explore.qmd` and
-  numbers from `_variables.yml`. After changing either, or a page the video shows (Data security, Practices),
-  render and re-record.
+  the link. Re-import after any change to the XLSX, or the page and the students' copies stop matching.
+- **A prompt appears on the page, in the figure of its parts, and in `instructor/prompts.txt`.** Students copy it word
+  for word, so the page is the source and `extract_prompts.py` makes the other two. The fill-in prompt in section 6.2
+  is the describe prompt with brackets: change the two together.
+- **A prompt or formula goes on the page only after it has run:** the prompt in Gemini, the formula in Sheets, on the
+  real data. `instructor/dry-run.md` records each run and lists what is still untested.
 - **Data security claims carry a date** (`security.checked-date`) and link to their sources: the approved AI list,
-  the Data Management Framework, Google's education FAQ. Recheck them the day before the session.
-- **Plain voice** on every public page: short sentences, no colon-led lists, no slogans.
+  the Data Management Framework, Google's education FAQ. Recheck them the day before the session. Gemini's screens
+  have their own date (`gemini.checked-date`).
+- **Plain voice** on the page: short sentences, no colon-led lists, no slogans. Label and description pairs go in a
+  small table.
 
 ## Gotchas
 
@@ -118,18 +137,29 @@ node tools/record-tour.mjs       # the video and step clips (render the site fir
   memory is tight.
 - **Quarto smartens `{{< var >}}` values:** a pair of hyphens becomes a dash. `make_data.py` writes negatives with a
   real minus sign.
+- **A table's column widths follow the dashes** under its header when any row is long, so `| - | ------ |` makes a
+  narrow first column.
+- **Quarto tints code inside a list item and drops the padding of code inside a callout.** `site.scss` undoes both
+  for the prompt and formula boxes.
+- **In the deck, an HTML comment above the first heading becomes an empty slide.** Put notes in the YAML header.
 - **The source CSV is cp1252** and full of non-breaking spaces; `make_data.py` handles both.
 - **Sheets turns `24/1` into a date** when it converts a CSV. The XLSX stores Yarn Count as text, so always build the
   shared sheet from the XLSX.
+- **In Sheets, text ranks above every number,** so `M > L` is TRUE for the note in Reject Qty. `QUERY` can't count
+  the column it pivots on, and can't do a median.
 - **The harness:**
   - Google's upload dialog (the Picker) is a cross-origin frame that Claude in Chrome can't upload into; Alp does
     uploads.
-  - The Google Drive and Sheets connectors follow the claude.ai organization. On NC State University Libraries they
-    are signed in as Alp's NC State account, so they can read the shared sheet and write to the test copy ("Copy of
-    Knitting production data (practice copy)"). That's how to run a formula in real Sheets without Chrome: write it
-    to an empty part of the copy's Work tab, read the result, clear it. Never write to the shared sheet. Charts and
-    pivot tables still need Chrome. On another organization the connectors may not see either file.
-  - A page's "formula that works" must have run in Sheets first. `QUERY` can't count the column it pivots on.
+  - The Google Drive and Sheets connectors and the Chrome extension follow the claude.ai organization. On NC State
+    University Libraries they are signed in as Alp's NC State account, so they can read the shared sheet and write to
+    the test copy ("Copy of Knitting production data (practice copy)"). That's how to run a formula in real Sheets
+    without Chrome: write it to an empty part of the copy's Work tab (rows 100 and below), read the result, clear it.
+    Never write to the shared sheet. Charts, pivot tables and Column stats need Chrome. On another organization none
+    of them is there.
+  - That Chrome has two NC State Google accounts. Plain links open the shared GetDataHelp account; Alp's is
+    `/u/1/`. Read the name in Gemini's sidebar before sending anything.
+  - Smooth scrolling keeps `scrollIntoView()` from moving a headless page; `shoot.mjs` evals need
+    `window.scrollTo({top, behavior: 'instant'})`.
   - WebFetch rejects lib.ncsu.edu's certificate; `curl -sL` works.
   - macOS has no `timeout`; quote zsh globs; `gh` isn't installed.
 

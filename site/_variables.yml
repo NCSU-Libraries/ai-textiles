@@ -1,4 +1,4 @@
-# One place for facts that appear on several pages and in the deck. The block at the end is written by
+# One place for facts that appear on the page and in the deck. The block at the end is written by
 # tools/make_data.py; edit everything above it by hand.
 
 event:
@@ -15,8 +15,10 @@ site-short: "ncsu-libraries.github.io/ai-data-exploration"
 go: "ncsu-libraries.github.io/ai-data-exploration"   # placeholder until the go link exists; then also the deck footer and images/qr-session.svg
 repo: "https://github.com/NCSU-Libraries/ai-data-exploration"
 help: "https://go.ncsu.edu/getdatahelp"
-email: "lib-datascienceservices@ncsu.edu"
 eval: "https://go.ncsu.edu/dss-workshop-eval"
+
+guides:
+  spreadsheets: "https://ncsu-libraries.github.io/intro-spreadsheets/spreadsheets-workshop.html"
 
 # The practice sheet lives in Alp's NC State Drive; students make their own copy.
 sheet:
@@ -25,7 +27,7 @@ sheet:
 
 gemini:
   url: "https://gemini.google.com"
-  checked-date: "November 5, 2026"         # when the pages were last checked against the Gemini app and Sheets
+  checked-date: "November 11, 2026"        # when the page was last checked against the Gemini app and Sheets
 
 # NC State's rules and Google's terms, as checked on security.checked-date. Recheck the day before the session.
 security:
@@ -48,6 +50,7 @@ data:
   range: "A1:M12570"
   last-row: "12,570"
   last-row-n: "12570"
+  rows-n: "12569"
   first-date: "June 1, 2022"
   last-date: "August 28, 2022"
   csv: "downloads/knitting-practice.csv"
@@ -80,7 +83,7 @@ key:
   lots-repeat: "10,685"
   gauge-max: "2,468"
   qty-zero: "4"
-  problems: "8"
+  problems: "10"
   r-overall: "0.10"
   r-interlock: "0.87"
   r-pique: "−0.87"
@@ -110,4 +113,72 @@ key:
   yarn-date-row: "11,527"
   sj-ne24-mean: "177.9"
   sj-ne30-mean: "143.9"
+  gauge-min: "9"
+  gauge-next: "32"
+  gauge-row: "12,285"
+  gauge-typo-first: "24"
+  gauge-typo-rest: "68"
+  any-first-row: "23"
+  reject-sum-n: "1875.85"
+  mcdia-min: "3"
+  mcdia-next: "24"
+  stitch-max: "19.8"
+  stitch-median: "2.9"
+  stitch-over-10: "1,108"
+  qty-under-1: "582"
+  qty-001: "471"
+  reject-over-qty: "12"
+  reject-over-qty-sheets: "13"
+  stretch-rows: "3,767"
+  stretch-short-rows: "3,756"
+  stretch-short-missed: "11"
+  lsj-rows: "1,970"
+  lsj-no-stretch: "88"
+  sj-stretch: "347"
+  interlock-stretch-mean: "306.3"
+  interlock-rest-mean: "155.1"
+  fleece-stretch-mean: "230.8"
+  fleece-rest-mean: "276.5"
+  poly-short-rows: "4,098"
+  poly-short-missed: "154"
+  fiber-groups: "6"
+  fiber-groups-rows: "11,240"
+work:
+  rows: "B4"
+  rows-own: "C4"
+  rows-name: "Rows of data"
+  reject-blank: "B5"
+  reject-blank-own: "C5"
+  reject-blank-name: "Blank cells in Reject Qty"
+  reject-mean: "B6"
+  reject-mean-own: "C6"
+  reject-mean-name: "Mean Reject Qty, blanks skipped"
+  reject-mean-zero: "B7"
+  reject-mean-zero-own: "C7"
+  reject-mean-zero-name: "Mean Reject Qty, blanks as zero"
+  copies: "B8"
+  copies-own: "C8"
+  copies-name: "Rows that are an exact copy of an earlier row"
+  machines: "B9"
+  machines-own: "C9"
+  machines-name: "Different values in Machine"
+  constructions: "B10"
+  constructions-own: "C10"
+  constructions-name: "Different values in Construction"
+  compositions: "B11"
+  compositions-own: "C11"
+  compositions-name: "Different values in Composition"
+  own-1: "B12"
+  own-1-label: "A12"
+  own-2: "B13"
+  own-2-label: "A13"
+  profile-table: "A18"
+  profile-table-name: "Every column: blank cells, numbers and text"
+  range-table: "A35"
+  range-table-name: "Smallest and largest value of each number column"
+  summary-table: "A47"
+  summary-table-name: "Rows and mean GSM for each construction"
+  own-table: "A61"
+  own-table-name: "Your own tables"
+  free-column: "F1"
 # <<< end of generated block

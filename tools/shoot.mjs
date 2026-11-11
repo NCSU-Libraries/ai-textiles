@@ -6,8 +6,8 @@
 //   full: capture the whole page height, not just the window
 //   wait: milliseconds to wait after load (charts and slide transitions)
 //   eval: JavaScript to run before the capture (scroll, click, hide something)
-// Needs Google Chrome (set CHROME if it isn't at the macOS default). Uses the DevTools protocol, like
-// record-tour.mjs, so it needs no npm packages.
+// Needs Google Chrome (set CHROME if it isn't at the macOS default). Uses the DevTools protocol directly, so it
+// needs no npm packages.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';

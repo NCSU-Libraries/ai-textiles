@@ -1,8 +1,8 @@
-<!-- The decision guide drawing, included by data-security.qmd and the deck. Its words are in data-security.qmd's
-     .decision-words list too, for phones; change both together. -->
+<!-- The decision guide, included by index.qmd. The drawing is for wide screens; the list under it says the same
+     thing on phones, where the drawing's text would be too small. Change both together. -->
 
 ```{=html}
-<svg class="decision-svg" viewBox="0 0 760 540" width="100%" style="max-width:760px" role="img" aria-labelledby="dg-title dg-desc" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif">
+<svg class="on-wide" viewBox="0 0 760 540" width="100%" style="max-width:760px" role="img" aria-labelledby="dg-title dg-desc" font-family="Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif">
   <title id="dg-title">Can I upload this data to Gemini?</title>
   <desc id="dg-desc">Four questions in order. One: signed in with a personal Google account? If yes, switch to your NC State account; the free public Gemini isn't approved for university data. Two: is any of it purple, such as Social Security numbers, passwords, keys or biometrics? If yes, don't put it in any AI tool. Three: could an agreement limit sharing, such as an IRB protocol, a data use agreement, a partner NDA, sponsor terms or export control? If yes, describe it only, with headers and made-up rows, and ask whoever signed the agreement first. Otherwise, for green, yellow or red data that nothing limits, you may upload it or describe it; if you upload, include only the columns you need.</desc>
   <defs>
@@ -47,3 +47,11 @@
   </g>
 </svg>
 ```
+
+::: {.on-phone}
+1. **Signed in with a personal Google account?** Switch to your NC State account.
+2. **Is any of it purple?** Keep it out of every AI tool.
+3. **Could an agreement limit sharing?** Describe it only, and ask whoever signed the agreement first.
+4. **Otherwise,** for green, yellow or red data, upload it or describe it. If you upload, include only the columns
+   you need.
+:::

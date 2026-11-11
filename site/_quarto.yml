@@ -4,39 +4,26 @@ project:
   resources:
     - images/
     - downloads/
-    - video/
 
 website:
   title: "AI-Assisted Data Exploration for Research"
-  description: "Use Gemini to explore spreadsheet data, and check what it tells you. A hands-on session from NC State University Libraries' Data Science Services."
+  description: "Check and summarize a spreadsheet with Gemini and Google Sheets. A hands-on session from NC State University Libraries' Data Science Services."
   site-url: "https://ncsu-libraries.github.io/ai-data-exploration/"
   repo-url: "https://github.com/NCSU-Libraries/ai-data-exploration"
   favicon: images/favicon.svg
-  page-navigation: true
   bread-crumbs: false
+  search: false   # one page: the browser's own find does the job
+  # The whole session is one page, index.qmd, so the navbar has no page links. The deck (slides/index.qmd) holds only
+  # the opening and closing slides, and nothing links to it.
   navbar:
     background: "#CC0000"
     foreground: "#FFFFFF"
     logo: images/lib_logo_white.png
     logo-alt: "NC State University Libraries"
     title: false
-    collapse-below: lg
-    left:
-      - href: index.qmd
-        text: Home
-      - href: setup.qmd
-        text: Setup
-      - href: explore.qmd
-        text: Explore
-      - href: data-security.qmd
-        text: Data security
-      - href: practices.qmd
-        text: Practices
-      - href: data.qmd
-        text: Data
     right:
-      - href: slides/index.qmd
-        text: Slides
+      - href: "https://go.ncsu.edu/getdatahelp"
+        text: Get data help
       - icon: github
         href: "https://github.com/NCSU-Libraries/ai-data-exploration"
         aria-label: "Source on GitHub"
@@ -50,6 +37,9 @@ format:
       light: [cosmo, theme/site.scss]
     toc: true
     toc-depth: 2
+    toc-title: "On this page"
+    number-sections: true
+    number-depth: 2
     code-copy: true
     code-overflow: wrap
     smooth-scroll: true

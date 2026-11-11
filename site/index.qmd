@@ -1,100 +1,985 @@
 ---
-pagetitle: "AI-Assisted Data Exploration for Research"
-toc: false
-title-block-style: none
+title: "AI-Assisted Data Exploration for Research"
+subtitle: "Checking and summarizing a spreadsheet with Gemini and Google Sheets"
+author: "NC State University Libraries · Data Science Services"
 ---
 
-::: {.hero}
-<p class="small-muted" style="color:#BDBDBD;margin:0 0 .3rem">{{< var event.course >}} · NC State University Libraries</p>
+[{{< var event.course >}} · {{< var event.date >}} · {{< var event.length >}}]{.small-muted}
 
-# AI-Assisted Data Exploration for Research
+::: {.callout-important}
+## How to use this guide
 
-<p class="when">{{< var event.date >}} · {{< var event.length >}} · {{< var event.where >}}</p>
+This is the page we work from in the session. Every step is written out, so you can follow along, catch up if you
+fall behind, and come back to it later.
 
-Use Gemini to analyze a spreadsheet of real factory data without sharing a single row of it, and check every number yourself.
+- You need a laptop and your NC State login. There is nothing to install and no code to write.
+- A dark box holds a prompt for Gemini, and a light box holds a formula for Google Sheets. Each has a **Copy** button.
+- An **Answer key** opens when you click it. Try the step first.
 :::
 
-## What you'll leave with
+# Welcome {#welcome .unnumbered}
 
-::: {.finish-line}
-<ul id="finish-line">
-<li><label><input type="checkbox" data-k="copy"> Your own copy of the practice sheet, open in Google Sheets</label></li>
-<li><label><input type="checkbox" data-k="problems"> The data's problems, found with formulas Gemini wrote</label></li>
-<li><label><input type="checkbox" data-k="summary"> A summary table and a chart, built with Gemini's help</label></li>
-<li><label><input type="checkbox" data-k="compare"> One number worked out two ways, and a reason for any difference</label></li>
-<li><label><input type="checkbox" data-k="security"> Knowing what's safe to share with an AI tool, and why your account matters</label></li>
-<li><label><input type="checkbox" data-k="own"> A plan for trying the same steps on your own data</label></li>
-</ul>
+Most research data passes through a spreadsheet at some point, whether it's test results, production records or
+survey exports. Before you analyze it, you need to know what is in it and whether you can trust it. That first look
+is called exploratory data analysis.
+
+Today we do it in Google Sheets, with a real dataset from a knitting factory and with help from Gemini. Gemini never
+sees a row of the data. We describe the sheet to it, it writes formulas, and we run them in our own copy and check
+what comes back.
+
+By the end of this session you will be able to:
+
+- Recognize when you can upload data to an AI tool, and when to describe it instead.
+- Describe a dataset to Gemini so that its formulas work in your sheet as they are.
+- Check a dataset for wrong data types, missing values, duplicates, inconsistent categories and values out of range.
+- Summarize a variable by group, and chart it.
+- Check a formula Gemini wrote against a number you found yourself, and keep a record of what you asked.
+
+## The questions we'll answer {#questions .unnumbered}
+
+| | Question | Where |
+| - | ---------------- | ----- |
+| 1 | What can we share with an AI tool? | @sec-security |
+| 2 | What is one row of this data, and how many are there? | @sec-workbook |
+| 3 | Can we trust these values? | @sec-prepare |
+| 4 | Does a blank mean zero? | @sec-missing |
+| 5 | How heavy is each kind of fabric? | @sec-summary |
+
+## About the data {#about-the-data .unnumbered}
+
+The practice data is real. It comes from a knitting factory's daily production reports for
+{{< var data.first-date >}} to {{< var data.last-date >}}. It has {{< var data.rows >}} rows, and each row is one lot
+knitted on one day on one machine. {{< var source.author >}} of Daffodil International University published it on
+[Mendeley Data]({{< var source.page >}}) under a {{< var source.license >}} license, so anyone may reuse it with
+credit.
+
+**Cite it as:** {{< var source.citation >}} [{{< var data.doi >}}]({{< var data.doi >}})
+
+We changed three things.
+
+- We kept {{< var data.columns >}} of the 38 columns and named them with their units.
+- We kept **Composition** as it was typed in the factory's report, {{< var data.spellings >}} spellings and all. The
+  published file also has a tidied version of that column, which puts some blends in the wrong group.
+- We saved the file as UTF-8, removed invisible spaces, and made the dates real dates.
+
+Everything else is as the factory recorded it, problems included. Finding them is part of the session.
+
+The same fabric repeats on many rows, so a count of rows is not a count of fabrics.
+
+# What can you share with an AI tool? {#sec-security}
+
+[Question 1: What can we share with an AI tool?]{.question}
+
+Before you share data with any AI tool, check your account, how sensitive the data is, and any agreement that covers
+it.
+
+## Your account {#sec-account}
+
+Use Gemini with your NC State login. NC State's [approved AI list]({{< var security.approved-list >}}) rejects the
+free public version for university data. With your NC State account, chats and uploads "won't be reviewed by human
+reviewers or otherwise used to improve generative AI models" ([Google's education FAQ]({{< var security.google-faq >}})).
+Your Gemini activity is kept, and you can't turn that off.
+
+## How sensitive is the data? {#sec-levels}
+
+NC State's [Data Management Framework]({{< var security.framework >}}) has four levels.
+
+| Level | Risk if disclosed | Examples |
+| ------ | ---- | ------------ |
+| **Purple**, ultra-sensitive | Highest | Social Security numbers, passwords, encryption keys, biometrics |
+| **Red**, highly sensitive | High | Driver's license and passport numbers, mother's maiden name, immigration numbers |
+| **Yellow**, moderately sensitive | Moderate to low | Date of birth, race, gender, transcripts |
+| **Green**, not sensitive | Low | Data that's already public, like the practice data |
+
+Unclassified data counts as at least yellow. For research data, ask your PI.
+
+**Gemini with your NC State login is approved up to red. Never purple.**
+
+## Agreements come first {#sec-agreements}
+
+An agreement can be stricter than the approved list. These are common in textiles research.
+
+- An industry partner's NDA (production reports, recipes, test results)
+- A sponsor's terms
+- An IRB protocol and consent form (surveys, interviews, fit studies)
+- A data use agreement
+- Export control
+
+If one applies, or you're not sure, ask the PI or whoever signed it before you share anything. The stricter rule wins.
+
+## Upload it, or describe it? {#sec-share}
+
+{{< include _decision-guide.md >}}
+
+To describe data, you send Gemini the layout, the column names and a few made-up rows, and you run its formulas in
+your sheet. The data never leaves it.
+
+{{< include _what-gemini-sees.md >}}
+
+Today we describe. The practice data is public, so it's green, and uploading it would be allowed. We describe it
+anyway. That works for any data you may keep in your NC State Drive, and every number then comes from a formula you
+can read and run again.
+
+<p class="small-muted">Checked against NC State's <a href="{{< var security.approved-list >}}">approved AI list</a>
+and <a href="{{< var security.framework >}}">Data Management Framework</a> on {{< var security.checked-date >}}. They
+win if they disagree with this page.</p>
+
+# Set up your workbook {#sec-workbook}
+
+[Question 2: What is one row of this data, and how many are there?]{.question}
+
+## Make your copy {#sec-copy}
+
+1. Open the [copy link]({{< var sheet.copy >}}). If Google asks you to sign in, use your NC State account. Google
+   Sheets then asks whether you'd like to make a copy of *Knitting production data (practice copy)*.
+2. Click **Make a copy**. Your copy opens, named "Copy of Knitting production data (practice copy)". It's yours
+   alone, so nothing you do in it can break anyone else's.
+
+![The link opens this page instead of the sheet, so everyone gets a copy of their own.](images/screens/sheets-copy.png){.shot width="560" fig-alt="A Google Sheets page titled Copy document. It asks: Would you like to make a copy of Knitting production data (practice copy)? Below is a blue Make a copy button."}
+
+## What's in the workbook {#sec-tabs}
+
+The workbook has five tabs, and each has one job.
+
+| Tab | What it's for |
+| --- | ---------------- |
+| **Data** | The {{< var data.rows >}} rows. Nothing gets typed here. |
+| **Dictionary** | What each column holds, its unit, and what its codes mean. |
+| **Work** | Gemini's formulas. Single numbers go at the top, each next to its name, and tables go below. |
+| **Log** | A record of what you asked and what you changed. |
+| **About** | Where the data comes from, its license, and what we changed. |
+
+These are the Data tab's columns.
+
+{{< include _dictionary.md >}}
+
+The Dictionary tab says more about each column, and explains the Construction codes and the Yarn Count notation.
+The codes are also in the [Reference](#codes) at the end of this page.
+
+## Find your way around the data {#sec-look}
+
+1. Click the **Data** tab. Row 1 holds the column names, and it stays in view as you scroll.
+2. Click any cell in column A, then press <kbd>Ctrl</kbd> + <kbd>↓</kbd> (Mac: <kbd>Cmd</kbd> + <kbd>↓</kbd>) to jump
+   to the last row. Its row number is one more than the number of rows of data, because of the header.
+   <kbd>Ctrl</kbd> + <kbd>↑</kbd> takes you back up.
+3. Read the column names. Which measurements have a unit, and which don't?
+4. What is one row? Guess from the first few rows, then read line 2 of the **Dictionary** tab.
+5. Click the **Work** tab and type your row count in cell {{< var work.rows-own >}}, under *Do it yourself*. You'll
+   check Gemini against it in @sec-prepare.
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+The last row is {{< var data.last-row >}}, so there are {{< var data.rows >}} rows of data, in
+{{< var data.columns >}} columns. One row is one lot knitted on one day on one machine, so a lot can have several
+rows a day. Production Qty is in kg, and Reject Qty has no stated unit.
 :::
 
-<script>
-(() => {
-  const boxes = document.querySelectorAll('#finish-line input[type=checkbox]');
-  let saved = {};
-  try { saved = JSON.parse(localStorage.getItem('finish-line') || '{}'); } catch (e) {}
-  boxes.forEach((box) => {
-    box.checked = !!saved[box.dataset.k];
-    box.addEventListener('change', () => {
-      saved[box.dataset.k] = box.checked;
-      try { localStorage.setItem('finish-line', JSON.stringify(saved)); } catch (e) {}
-    });
-  });
-})();
-</script>
+# Set up Gemini {#sec-gemini}
 
-## Before you come
+## Sign in {#sec-signin}
 
-1. **Bring a laptop** and its charger.
-2. **Do the [setup](setup.qmd).** It takes about 5 minutes. You'll sign in to Gemini with your NC State account and
-   make your copy of the practice sheet.
+1. Go to [gemini.google.com]({{< var gemini.url >}}) and sign in with your NC State account. If a welcome page comes
+   up, click **Chat with Gemini**, then **Use Gemini**.
+2. **Check:** the bottom left corner says **Edu**, under your name or next to your picture. If it doesn't, switch to
+   your NC State account.
 
-You don't need any coding experience. Couldn't do the setup ahead? We'll do it together at the start.
+   ![](images/screens/gemini-account.png){.shot width="300" fig-alt="The bottom left corner of Gemini: a blurred profile photo, the name Alp Tezbasaran, and the word Edu under it."}
 
-## The materials
+3. Click the mode button in the box where you type, and choose **Thinking**.
 
-::: {.cards}
-<a class="card-link" href="setup.html"><span class="card-title">Setup</span><span class="card-text">Your account and your copy of the practice sheet</span></a>
-<a class="card-link" href="explore.html"><span class="card-title">Explore</span><span class="card-text">The session's steps and prompts, ready to copy</span></a>
-<a class="card-link" href="data-security.html"><span class="card-title">Data security</span><span class="card-text">What's safe to share with Gemini, and a decision guide</span></a>
-<a class="card-link" href="practices.html"><span class="card-title">Practices</span><span class="card-text">Recommended practices and prompts, on one page</span></a>
-<a class="card-link" href="data.html"><span class="card-title">The practice data</span><span class="card-text">Where it comes from, what each column holds, and how to cite it</span></a>
-<a class="card-link" href="slides/index.html"><span class="card-title">Slides</span><span class="card-text">The session's slides</span></a>
+   ![](images/screens/gemini-modes.png){.shot width="520" fig-alt="Gemini's prompt box with the mode menu open. It lists three modes: All-around help, 3.6 Flash; Solves complex problems, 3.6 Thinking, which has a check mark; and Detailed research, 3.1 Pro."}
+
+Does the mode matter? A little. When we tried all three, Flash was the quickest, and one of its formulas used a
+function that doesn't exist. Every formula from Thinking and Pro ran. Pro has a usage limit, and when it was busy
+Gemini answered with another mode. In any mode, you run the formula and check the number, so a mistake shows up.
+
+## Describe your data {#sec-describe}
+
+Start a **New chat** and send this prompt.
+
+::: {.prompt}
+```default
+I'm a textile graduate student working in Google Sheets. I won't share the data itself, only its structure.
+
+My sheet has a tab named Data, range {{< var data.range >}}: one header row and {{< var data.rows >}} rows. Each row is one lot knitted on one day in a knitting factory, June to August 2022. Here are the header row and 5 made-up rows in the same format:
+
+Production Date,Lot,Machine,Machine Diameter (in),Machine Gauge (needles/in),Construction,Composition (as recorded),Yarn Count (as recorded),Stitch Length (mm),Fabric Diameter (in),GSM (g/m2),Production Qty (kg),Reject Qty
+2022-06-03,DEMO-101,Fukuhara,30,24,S/J,Cotton 100%,30/1,2.85,60,140,412.5,0
+2022-06-03,DEMO-102,Pailung,34,24,LS/J,95% Cotton 5% Elastane %,"30/1,20/D",2.7,68,180,288,
+2022-06-04,DEMO-103,Jiunn Long,30,20,Fleece_terry,80% Cotton 20% Polyester %,"30/1,20/1",3.2,72,260,175.25,2
+2022-06-04,DEMO-104,Lisky,36,24,Rib,Cotton 100%,26/1,2.9,any,220,95,0
+2022-06-05,DEMO-105,Hangxing,32,28,Mesh,100% Polyester %,75D/72F,2.6,66,140,310.8,
+
+Notes: Construction is a code (S/J is single jersey, LS/J is Lycra single jersey). Yarn Count is text in the factory's notation (30/1 is cotton count, 20/D is denier), with several yarns separated by commas. Reject Qty has no stated unit.
+
+I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula in its own code block, so I can copy it.
+```
 :::
 
-## Watch it in two and a half minutes
+**Check:** Gemini should only say that it's ready.
 
-<video id="tour" controls preload="metadata" playsinline class="tour" poster="video/tour-poster.jpg">
-<source src="video/tour.mp4" type="video/mp4">
-</video>
+The prompt has six parts, and each one is there for a reason.
 
-{{< include _tour-chapters.md >}}
+{{< include _describe-anatomy.md >}}
 
-<p class="small-muted">A captioned walkthrough of the Explore page's eight steps, with no sound. Gemini and Sheets are
-simplified re-creations. Gemini's answers and the screenshots come from our rehearsal, and the numbers come from the
-practice data. Each step's part is also on the <a href="explore.html">Explore</a> page.</p>
+| | Part | Why it's there |
+| - | ---------- | ------------------ |
+| [1]{.num} | Who you are, and that you'll share only the structure | Gemini then doesn't ask for the file. |
+| [2]{.num} | The tab and the range | Gemini's formulas then point at your real cells, so you can paste them in as they are. |
+| [3]{.num} | What one row is | Whether a repeated lot is a problem depends on it. |
+| [4]{.num} | The column names, with five made-up rows in your data's format | A column's position gives its letter, and its name gives the unit. The rows show its data type, which may be a number, text, a date, a blank, or an odd value such as "any". |
+| [5]{.num} | Notes | These cover codes, units and anything else the names don't say. |
+| [6]{.num} | How you want the answers | You get one formula at a time, in a box you can copy. |
 
-<script>
-document.querySelectorAll('.chapters button').forEach((b) => b.addEventListener('click', () => {
-  const v = document.getElementById('tour');
-  v.currentTime = Number(b.dataset.t);
-  v.play();
-}));
-</script>
+The five rows are invented. They use codes from the data, such as S/J, but none of them is a row of the data.
 
-## About this session
+## Keep a record {#sec-record}
 
-Most of the data you work with in classes and research ends up in a spreadsheet at some point. In this hands-on
-session, we'll work through a practice dataset in Google Sheets and ask Gemini to summarize it, point out problems,
-and help with formulas and charts. We'll also talk about data security, like what's safe to share with an AI tool and
-why it matters which account you use. Then we'll go over some recommended practices for using AI in exploratory data
-analysis, such as asking for formulas instead of just answers so you can check the math yourself. You don't need any
-coding experience. By the end, you should be able to try the same steps on your own data.
+Gemini may answer the same question differently tomorrow, and a chat is easy to lose. Keep your own record of what
+you asked and what you did with the answer.
 
-## Get help
+| Way | How |
+| ---- | ---------------- |
+| Pin the chat | Open the ⋮ menu at the top right of the chat and click **Pin**. |
+| Export the chat | The same menu has **Download PDF** and **Export to Docs**. |
+| Keep a log | The **Log** tab has a row for each thing you ask. It holds the date, what you asked, the formula or steps you used, what changed in the data, and how you checked it. |
 
-- Questions about the session: [{{< var email >}}](mailto:{{< var email >}})
-- Help with access, accounts or your own data, before or after: [go.ncsu.edu/getdatahelp]({{< var help >}})
+![](images/screens/gemini-chat-menu.png){.shot width="210" fig-alt="The menu at the top right of a Gemini chat: Share via Drive, Pin, Rename, Download PDF, Export to Docs, Add to notebook."}
 
-<p class="small-muted">The practice data is real: production reports from a knitting factory, published by
-{{< var source.author >}} under {{< var source.license >}} (see <a href="data.html">The practice data</a>). Content on
-this site is licensed CC BY 4.0, and code MIT.</p>
+The formulas are a record too. They stay on the Work tab, next to their names.
+
+Today's data is for practice, so you can leave the Log empty. In your own work, fill it in as you go.
+
+# Preparing the data {#sec-prepare}
+
+[Question 3: Can we trust these values?]{.question}
+
+Before you summarize data, check it. Five checks catch most problems. They cover data types, missing values,
+duplicates, categories, and values out of range. Each check below says what to look for and how to look yourself, and
+Gemini writes the formula.
+
+None of the checks changes the data. They count problems, and you decide what to do about each one.
+
+## How a check works {#sec-pattern}
+
+The first formula counts the rows, which you have already done by hand.
+
+1. In Gemini, send this prompt.
+
+   ::: {.prompt}
+   ```default
+   Give me a formula that counts the rows of data, not counting the header.
+   ```
+   :::
+
+2. Click the copy button on Gemini's formula box.
+
+   ![Gemini labels the box "Excel". The formula works in Google Sheets all the same.](images/screens/gemini-formula-box.png){.shot width="560" fig-alt="A Gemini chat. The prompt asks for a formula that counts the rows of data. The answer is one box labeled Excel that holds a COUNTA formula, with a download button and a copy button at its top right."}
+
+3. In your sheet, click the **Work** tab and then cell {{< var work.rows >}}, next to
+   *{{< var work.rows-name >}}*. Paste, and press <kbd>Enter</kbd>.
+4. Look at column D. It says **match** when Gemini's number and yours agree.
+
+Each single number follows this pattern. Your number goes under *Do it yourself*, Gemini's formula goes under
+*AI-assisted*, and column D compares them once both cells are filled. A formula that makes a table goes lower on the
+tab, under the table's name.
+
+Gemini's formula may differ from the one in the answer key, and from your neighbor's. There are many ways to write
+the same check, so compare the numbers.
+
+To learn what a formula does, ask.
+
+::: {.prompt}
+```default
+Explain that formula one piece at a time, in plain words, for someone who has never used these functions.
+```
+:::
+
+::: {.callout-warning}
+## Gotcha: the cell shows an error
+
+`#REF!` means the result has no room. It needs empty cells below it and to its right, so clear the cells in its way
+or move the formula. For any other error, paste the formula and the error into Gemini and ask for a fix. One of ours
+showed `#NAME?`, because Gemini had used a function that doesn't exist. It fixed the formula when we told it.
+:::
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+There are {{< var data.rows >}} rows. A count of {{< var key.rows-with-header >}} includes the header.
+
+::: {.formula}
+```default
+=COUNTA(Data!A2:A)
+```
+:::
+
+`A2:A` means A2 and everything below it.
+:::
+
+## Data types {#sec-types}
+
+A number column should hold only numbers. SUM and AVERAGE skip a cell that holds text, and they don't warn you.
+
+**Do it yourself.** On the **Data** tab, numbers and dates sit on the right of a cell, and text sits on the left.
+Scroll down the Fabric Diameter column to row {{< var key.any-first-row >}}, where a cell says "any".
+
+**AI-assisted.** Send this prompt. Paste the formula on the Work tab in cell {{< var work.profile-table >}}, under
+*{{< var work.profile-table-name >}}*.
+
+::: {.prompt}
+```default
+Give me one formula that makes a table with one row for each column of my data: the column's name, how many of its cells are blank, how many hold numbers, and how many hold text.
+```
+:::
+
+**Check:** in each row of the table, the three counts add up to {{< var data.rows >}}.
+
+A date counts as a number. Which of the number columns hold text?
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+{{< include _key-types.md >}}
+
+Fabric Diameter says "any" in {{< var key.any-rows >}} rows. Reject Qty holds text in one cell, in row
+{{< var key.reject-note-row >}}, where the factory wrote a note about a corrected date. Lot, Machine, Construction,
+Composition and Yarn Count are text on purpose.
+
+A formula that works:
+
+::: {.formula}
+```default
+=LET(d, Data!A2:M{{< var data.last-row-n >}}, VSTACK({"Column", "Blank", "Numbers", "Text"}, HSTACK(TRANSPOSE(Data!A1:M1), TRANSPOSE(BYCOL(d, LAMBDA(c, COUNTBLANK(c)))), TRANSPOSE(BYCOL(d, LAMBDA(c, COUNT(c)))), TRANSPOSE(BYCOL(d, LAMBDA(c, COUNTA(c)-COUNT(c)))))))
+```
+:::
+:::
+
+## Missing values {#sec-missing}
+
+[Question 4: Does a blank mean zero?]{.question}
+
+A blank cell is the plain kind of missing value. Some values stand in for a blank without being one, such as `nan`,
+`any`, a dash or 999. Then comes the harder question of what a blank means. In Reject Qty, a blank could mean that
+nothing was rejected, or that nobody wrote the number down.
+
+The table from @sec-types already counts the blank cells of every column. Only Composition and Reject Qty have
+any.
+
+**Do it yourself.** On the **Data** tab, click any cell in the Reject Qty column. Open the **Data** menu and choose
+**Column stats**. Scroll to the bottom of the panel, and type three numbers on the Work tab.
+
+| From the panel | Type it in |
+| ---------------- | ---- |
+| Empty cells | {{< var work.reject-blank-own >}} |
+| Average | {{< var work.reject-mean-own >}} |
+| Sum divided by Total rows, as `={{< var key.reject-sum-n >}}/{{< var data.rows-n >}}` | {{< var work.reject-mean-zero-own >}} |
+
+![](images/screens/sheets-column-stats.png){.shot width="300" fig-alt="The bottom of the Column stats panel for Reject Qty. Total rows 12,569. Empty cells 4,448. Unique values 112. Sum 1875.85. Average 0.2310160099. Median 0. Minimum value 0. Maximum value 41."}
+
+**AI-assisted.** Send this prompt. Gemini should give three formulas, for the count of blanks and for the mean with
+blanks skipped and with blanks as zero. Paste them in {{< var work.reject-blank >}}, {{< var work.reject-mean >}} and
+{{< var work.reject-mean-zero >}}. If it gives only two, ask for the missing one.
+
+::: {.prompt}
+```default
+Write a formula that counts the blank cells in Reject Qty, and a formula for the mean Reject Qty. Should the blank cells count as zero?
+```
+:::
+
+**Check:** all three rows say match, and the two means differ. Neither mean is wrong. Which would you report, and
+who could tell you what a blank means?
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+| What it is | Value |
+| ------------ | ---- |
+| Blank cells in Reject Qty | {{< var key.reject-blank >}} |
+| Mean Reject Qty, blanks skipped | {{< var key.reject-mean >}} |
+| Mean Reject Qty, blanks as zero | {{< var key.reject-mean-zero >}} |
+
+The first mean divides by the {{< var key.reject-numeric >}} cells that hold a number. The second divides by all
+{{< var data.rows >}} rows. Formulas that work:
+
+::: {.formula}
+```default
+=COUNTBLANK(Data!M2:M)
+```
+:::
+
+::: {.formula}
+```default
+=AVERAGE(Data!M2:M)
+```
+:::
+
+::: {.formula}
+```default
+=SUM(Data!M2:M)/COUNTA(Data!A2:A)
+```
+:::
+
+Three stand-ins are in this data. Lot says "nan" in {{< var key.lot-nan >}} rows, Fabric Diameter says "any" in
+{{< var key.any-rows >}}, and Composition is just "%" in {{< var key.composition-percent >}}. None of them is blank,
+so a count of blanks misses them all. This one counts the "nan" lots:
+
+::: {.formula}
+```default
+=COUNTIF(Data!B2:B{{< var data.last-row-n >}},"nan")
+```
+:::
+:::
+
+## Duplicates {#sec-duplicates}
+
+Whether a repeat is a problem depends on what one row is. Here a lot runs for several days and on several machines,
+so the same lot on many rows is expected. A whole row that repeats, with all {{< var data.columns >}} columns alike, is something to ask
+about.
+
+**Do it yourself.** The menus have no safe way to count them, because **Data → Data cleanup → Remove duplicates**
+deletes the rows. Leave {{< var work.copies-own >}} empty.
+
+**AI-assisted.** Send this prompt, and paste the formula in {{< var work.copies >}}.
+
+::: {.prompt}
+```default
+Give me a formula that counts the rows that are an exact copy of an earlier row, comparing all {{< var data.columns >}} columns.
+```
+:::
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+{{< var key.repeated-rows >}} rows are an exact copy of an earlier row. Ask the data's owner before you drop them,
+because the same lot may have been knitted twice in a day.
+
+::: {.formula}
+```default
+=ROWS(Data!A2:M{{< var data.last-row-n >}})-ROWS(UNIQUE(Data!A2:M{{< var data.last-row-n >}}))
+```
+:::
+
+A count of repeated lots gives {{< var key.lots-repeat >}}. That isn't a problem, because lots run for days. If a
+later count of rows comes to {{< var key.rows-dedup >}}, the copies were dropped.
+:::
+
+## Categories {#sec-categories}
+
+In a text column, look for one thing written several ways. Extra spaces, capitals and typos each make a new group in
+a summary.
+
+**Do it yourself.** On the **Data** tab, click a cell in the Composition column and open **Column stats** again.
+The panel counts the Unique values and lists the most common ones. Type the count in
+{{< var work.compositions-own >}}.
+
+**AI-assisted.** Send this prompt. Paste the three formulas in {{< var work.machines >}},
+{{< var work.constructions >}} and {{< var work.compositions >}}, in that order.
+
+::: {.prompt}
+```default
+Give me three formulas: the number of different values in Machine, in Construction and in Composition.
+```
+:::
+
+**Check:** the Composition row says match.
+
+How many ways would you expect a factory to write the fiber content of its fabrics?
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+Machine has {{< var key.machines >}} values and Construction has {{< var data.constructions >}}, each spelled one
+way. Composition has {{< var data.spellings >}}. The first of the [extra activities](#extras) groups them.
+
+::: {.formula}
+```default
+=COUNTUNIQUE(Data!C2:C)
+```
+:::
+
+::: {.formula}
+```default
+=COUNTUNIQUE(Data!F2:F)
+```
+:::
+
+::: {.formula}
+```default
+=COUNTUNIQUE(Data!G2:G)
+```
+:::
+:::
+
+## Values out of range {#sec-range}
+
+Look for numbers that can't be right, such as a negative weight or a gauge in the thousands. The smallest and largest
+values of a column show the worst of them.
+
+**Do it yourself.** On the **Data** tab, click a cell in the Machine Gauge column and open **Column stats** again.
+Read its Minimum value and its Maximum value.
+
+**AI-assisted.** Send this prompt. Paste the formula on the Work tab in cell {{< var work.range-table >}}, under
+*{{< var work.range-table-name >}}*.
+
+::: {.prompt}
+```default
+Give me one formula that makes a table of the smallest and largest value in each number column: Machine Diameter, Machine Gauge, Stitch Length, Fabric Diameter, GSM, Production Qty and Reject Qty.
+```
+:::
+
+**Check:** the Machine Gauge row of your table shows the same two values.
+
+Which of the values in the table could a knitting machine really have?
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+{{< include _key-range.md >}}
+
+- Machine Gauge is {{< var key.gauge-max >}} in row {{< var key.gauge-row >}}, and the next largest is
+  {{< var key.gauge-next >}}. It may be a {{< var key.gauge-typo-first >}} run together with the
+  {{< var key.gauge-typo-rest >}} in that row's Fabric Diameter.
+- Production Qty is 0 in {{< var key.qty-zero >}} rows. Column stats lists 0.01 as its most common value, in
+  {{< var key.qty-001 >}} rows. That may be a placeholder.
+- One machine is {{< var key.mcdia-min >}} inches across, and the next smallest is {{< var key.mcdia-next >}}.
+- Stitch Length is above 10 mm in {{< var key.stitch-over-10 >}} rows, and its median is
+  {{< var key.stitch-median >}}. That is too many rows for a typo. Is it another way of measuring?
+
+Ask before you change any of them. A formula that works:
+
+::: {.formula}
+```default
+=LET(d, {Data!D2:E{{< var data.last-row-n >}}, Data!I2:M{{< var data.last-row-n >}}}, VSTACK({"Column", "Smallest", "Largest"}, HSTACK(TRANSPOSE({Data!D1:E1, Data!I1:M1}), TRANSPOSE(BYCOL(d, LAMBDA(c, MIN(c)))), TRANSPOSE(BYCOL(d, LAMBDA(c, MAX(c)))))))
+```
+:::
+:::
+
+## What else would Gemini check? {#sec-else}
+
+So far this page chose the checks. Now ask Gemini.
+
+::: {.prompt}
+```default
+What else would you check in this data before analyzing it? For each check, give me one formula that counts the problem.
+```
+:::
+
+Paste one or two of its formulas in {{< var work.own-1 >}} and {{< var work.own-2 >}}, and type what each one
+counts in column A beside it. For each one, ask whether the check fits what a row is.
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+Your list will differ from ours. Every time we asked, Gemini offered a count of duplicate lots. Its usual formula
+returns {{< var key.lots-repeat >}}, and that isn't a problem, because lots repeat by design.
+
+Once it also offered a count of rows where Reject Qty is above Production Qty. That formula returns
+{{< var key.reject-over-qty-sheets >}}. In {{< var key.reject-over-qty >}} of those rows, more was rejected than
+knitted, or the two columns are in different units. The other row is the note in row
+{{< var key.reject-note-row >}}, because Sheets ranks text above every number.
+:::
+
+**Checkpoint.** You now know what is in the data and what to be careful with, and nothing in it has changed.
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key: what the five checks find in this data
+
+| Check | What it finds |
+| ---- | ---------------- |
+| Data types | "any" in {{< var key.any-rows >}} Fabric Diameter cells, and a note in Reject Qty in row {{< var key.reject-note-row >}}. |
+| Missing values | Reject Qty is blank in {{< var key.reject-blank >}} rows. Composition is blank in {{< var key.composition-blank >}} and just "%" in {{< var key.composition-percent >}}. Lot says "nan" in {{< var key.lot-nan >}}. |
+| Duplicates | {{< var key.repeated-rows >}} rows are an exact copy of an earlier row. |
+| Categories | Composition has {{< var data.spellings >}} spellings. Yarn Count mixes notations, such as `30/1`, `20/D` and `75D/72F`. |
+| Values out of range | A gauge of {{< var key.gauge-max >}}. Production Qty of 0 in {{< var key.qty-zero >}} rows and 0.01 in {{< var key.qty-001 >}}. Reject Qty above Production Qty in {{< var key.reject-over-qty >}} rows. |
+:::
+
+# Summarizing and charting {#sec-summary}
+
+[Question 5: How heavy is each kind of fabric?]{.question}
+
+GSM is a fabric's weight in grams per square meter. Construction is its knit structure, such as single jersey (S/J)
+or rib.
+
+## A summary table {#sec-table}
+
+Send this prompt. Paste the formula on the Work tab in cell {{< var work.summary-table >}}, under
+*{{< var work.summary-table-name >}}*.
+
+::: {.prompt}
+```default
+Give me one formula that lists each Construction with its number of rows and its mean GSM. Then tell me how to make a chart of the means.
+```
+:::
+
+**Check:** the table has all {{< var data.constructions >}} constructions. Select its
+{{< var data.constructions >}} row counts and read the sum at the bottom right of the window. It should be
+{{< var data.rows >}}.
+
+If Gemini calls the count "Lot Count", remember that it counts rows.
+
+::: {.callout-note collapse="true" icon=false}
+## Answer key
+
+{{< include _key-summary.md >}}
+
+A formula that works:
+
+::: {.formula}
+```default
+=QUERY(Data!A2:M, "SELECT F, COUNT(F), AVG(K) WHERE F IS NOT NULL GROUP BY F LABEL F 'Construction', COUNT(F) 'Row Count', AVG(K) 'Mean GSM'")
+```
+:::
+:::
+
+## A chart {#sec-chart}
+
+Follow Gemini's steps for the chart. Ours were these.
+
+1. Select the table.
+2. **Insert → Chart**.
+3. In the chart editor, choose **Column chart**.
+4. Under **Series**, click the ⋮ next to the row counts and choose **Remove**.
+
+![The table from Gemini's formula, and the chart from its steps. The chart kept its old title; double-click it to change it.](images/screens/sheets-summary.png){.shot fig-alt="A table on the Work tab listing eight constructions with their row counts and mean GSM, and below it a column chart of mean GSM by construction, with 'other' and Rib the tallest bars."}
+
+## Do it yourself: a pivot table {#sec-pivot}
+
+A pivot table builds the same table from the menus, with no formula. When its numbers match the formula's, you have
+checked a formula you didn't write.
+
+1. Click any cell on the **Data** tab, then **Insert → Pivot table → Create**.
+2. Remove any fields the editor filled in for you.
+3. **Rows → Add → Construction**.
+4. **Values → Add → GSM (g/m2)**, then change **SUM** to **AVERAGE**.
+5. Compare the pivot table with your table on the Work tab.
+
+**Check:** S/J is {{< var key.sj-mean >}} in both tables.
+
+# Wrapping up {#sec-wrap}
+
+## Take your work with you {#sec-take}
+
+Your copy of the workbook stays in your Google Drive, with every formula on its Work tab. **File → Download** saves it
+as an Excel or CSV file. To keep the chat too, pin it or export it (@sec-record).
+
+## How can I apply this to my own dataset? {#sec-own}
+
+The same steps work on your own data, in the same order.
+
+1. Decide what you may share (@sec-security). Check your account, the data's level and any agreement. If you aren't
+   sure, ask first.
+2. Make a copy to work on, and add a Work tab and a Log tab to it.
+3. Look first (@sec-look). Count the rows, read the units, and say what one row is.
+4. Describe the data to Gemini. Fill in the brackets, and make the five rows up yourself. Invent the IDs, dates and
+   measurements, and keep a real code or category only if you may share it.
+
+   ::: {.prompt}
+   ```default
+   I'm a [your field] graduate student working in Google Sheets. I won't share the data itself, only its structure.
+
+   My sheet has a tab named [name], range [A1:M100]: one header row and [number] rows. Each row is [what one row is]. Here are the header row and 5 made-up rows in the same format:
+
+   [paste the header row, then 5 rows you made up]
+
+   Notes: [codes, units, anything the column names don't say].
+
+   I'll ask for formulas one at a time and put them on a tab named Work. Keep your answers short. Put each formula in its own code block, so I can copy it.
+   ```
+   :::
+
+5. Run the five checks in @sec-prepare. For each one, find a number of your own to compare.
+6. Summarize, and check one number another way (@sec-summary).
+
+If you may upload the data, the checks stay the same. Upload only the columns you need.
+
+## What we did {#sec-did}
+
+- We decided what we could share before Gemini saw anything.
+- We described the data instead of uploading it.
+- We looked first. We counted the rows, read the units and said what one row is.
+- We told Gemini what it was looking at, down to the tab and the range.
+- We asked for one formula at a time, and ran each one ourselves.
+- We checked the data five ways before we summarized it.
+- We compared Gemini's numbers with numbers we found ourselves.
+- We changed nothing in the data without deciding to.
+- We kept each formula on the Work tab, next to a name for what it counts.
+
+Above all, we asked for formulas instead of answers. A formula stays in your sheet, where you can read it, run it
+again and check it.
+
+## Where to go next {#sec-next}
+
+- For help with your own data, before or after the session, go to [go.ncsu.edu/getdatahelp]({{< var help >}}).
+- The Libraries' guide [Introduction to Working with Spreadsheets]({{< var guides.spreadsheets >}}) covers filters,
+  cleaning, pivot tables and charts in Google Sheets.
+- The extra activities below give you more practice.
+- Tell us how the session went at [go.ncsu.edu/dss-workshop-eval]({{< var eval >}}).
+
+# Extra activities {#extras .unnumbered}
+
+These are for fast finishers, and for practice afterwards. Click one to open it. Their formulas go on the Work tab
+under *{{< var work.own-table-name >}}*, each in an empty area with a name typed above it.
+
+::: {.callout-tip collapse="true"}
+## Group fabrics by fiber
+
+Composition has {{< var data.spellings >}} spellings. Textile work usually needs a few groups, such as fabrics with a
+stretch fiber and fabrics without.
+
+This activity sends Gemini a list of one column's entries, which is more than a description. The practice data is
+public, so that's allowed here. For your own data, decide first whether such a list may be shared (@sec-security).
+
+1. List the different entries. On the Work tab, paste this in cell {{< var work.free-column >}}.
+
+   ::: {.formula}
+   ```default
+   =SORT(UNIQUE(Data!G2:G{{< var data.last-row-n >}}))
+   ```
+   :::
+
+2. Copy the list. Send this prompt, with the list pasted at its end.
+
+   ::: {.prompt}
+   ```default
+   Below are the different entries in my Composition column. Give me a formula that says TRUE for a fabric with a stretch fiber such as elastane, under any name or spelling in the list, and FALSE for the rest.
+
+   [paste the list here]
+   ```
+   :::
+
+3. Paste Gemini's formula at the top of the next empty column.
+
+With the list in front of it, Gemini's rule caught Lycra, Spandex, Creora and "Ly", and typos such as Elastan and
+Elaasthane. In another chat its rule was shorter, and it missed {{< var key.stretch-short-missed >}} rows. This
+formula counts the rows the longer rule calls TRUE. It gives {{< var key.stretch-rows >}}.
+
+::: {.formula}
+```default
+=SUMPRODUCT(--REGEXMATCH(LOWER(Data!G2:G{{< var data.last-row-n >}}), "ela|spand|lycra|creor|\bly\b"))
+```
+:::
+
+Two columns should agree here, and they don't. LS/J means Lycra single jersey, yet
+{{< var key.lsj-no-stretch >}} of the {{< var key.lsj-rows >}} LS/J rows name no stretch fiber in Composition, and
+{{< var key.sj-stretch >}} S/J rows name one. Which column would you trust?
+
+Composition is blank in {{< var key.composition-blank >}} rows. A plain `REGEXMATCH` calls them FALSE. This formula
+leaves them blank:
+
+::: {.formula}
+```default
+=MAP(Data!G2:G{{< var data.last-row-n >}}, LAMBDA(c, IF(c="",, REGEXMATCH(LOWER(c), "ela|spand|lycra|creor|\bly\b"))))
+```
+:::
+
+This one lists each construction's mean GSM, without a stretch fiber and with one:
+
+::: {.formula}
+```default
+=ARRAYFORMULA(QUERY({Data!F2:F{{< var data.last-row-n >}}, REGEXMATCH(LOWER(Data!G2:G{{< var data.last-row-n >}}), "ela|spand|lycra|creor|\bly\b"), Data!K2:K{{< var data.last-row-n >}}}, "SELECT Col1, AVG(Col3) WHERE Col1 IS NOT NULL GROUP BY Col1 PIVOT Col2 LABEL Col1 'Construction'"))
+```
+:::
+
+Interlock with a stretch fiber averages {{< var key.interlock-stretch-mean >}} GSM, against
+{{< var key.interlock-rest-mean >}} without. Fleece and terry goes the other way, at
+{{< var key.fleece-stretch-mean >}} against {{< var key.fleece-rest-mean >}}.
+
+For more groups, ask for a TRUE or FALSE column for each fiber in the same way. Grouped by the fibers they name,
+{{< var key.fiber-groups >}} groups hold {{< var key.fiber-groups-rows >}} of the {{< var data.rows >}} rows.
+
+{{< include _key-fibers.md >}}
+
+Watch for "60/40 CVC" when you get to polyester. It's a cotton and polyester blend that names neither fiber, in
+{{< var key.poly-short-missed >}} rows.
+:::
+
+::: {.callout-tip collapse="true"}
+## Mean, median and standard deviation in one formula
+
+::: {.prompt}
+```default
+Write one formula that lists each Construction with the mean, median and standard deviation of its GSM.
+```
+:::
+
+`QUERY` can't do a median or a standard deviation. It fails with "Unable to parse query string". Paste the error
+back. One that works:
+
+::: {.formula}
+```default
+=LET(c, SORT(UNIQUE(Data!F2:F{{< var data.last-row-n >}})), g, Data!K2:K{{< var data.last-row-n >}}, k, Data!F2:F{{< var data.last-row-n >}}, HSTACK(c, MAP(c, LAMBDA(x, AVERAGE(FILTER(g, k = x)))), MAP(c, LAMBDA(x, MEDIAN(FILTER(g, k = x)))), MAP(c, LAMBDA(x, STDEV(FILTER(g, k = x))))))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## How many different GSM values?
+
+::: {.prompt}
+```default
+Give me a formula that counts how many different GSM values there are, and one that lists each value with its number of rows, most common first. Then tell me how to make a histogram of GSM.
+```
+:::
+
+{{< var data.rows >}} rows hold only {{< var key.gsm-distinct >}} different values. {{< var key.gsm-top-rows >}} rows
+say exactly {{< var key.gsm-top >}}, and all but {{< var key.gsm-not-5 >}} are a multiple of 5. Is that a weight
+measured on each lot, or the weight that was ordered? Formulas that work, for the count and for the list:
+
+::: {.formula}
+```default
+=COUNTUNIQUE(Data!K2:K{{< var data.last-row-n >}})
+```
+:::
+
+::: {.formula}
+```default
+=QUERY(Data!K2:K{{< var data.last-row-n >}}, "SELECT K, COUNT(K) WHERE K IS NOT NULL GROUP BY K ORDER BY COUNT(K) DESC LABEL K 'GSM', COUNT(K) 'Rows'")
+```
+:::
+
+For the histogram, select column K on the Data tab and choose **Insert → Chart**. Sheets draws a column chart first.
+In the chart editor, open **Chart type** and pick **Histogram chart**, under Statistical.
+:::
+
+::: {.callout-tip collapse="true"}
+## Machines by construction, in one table
+
+::: {.prompt}
+```default
+Give me one formula that makes a table with one row per Machine and one column per Construction, showing the number of rows in each cell.
+```
+:::
+
+The cells should add up to {{< var data.rows >}}. {{< var key.table-empty >}} of the {{< var key.table-cells >}} cells
+are empty, because that machine never knitted that construction. {{< var key.special-machine >}} knitted
+{{< var key.special-construction >}} in {{< var key.special-rows >}} of its {{< var key.special-of >}} rows, so
+comparing machines also compares fabrics. One that works:
+
+::: {.formula}
+```default
+=QUERY(Data!C2:F{{< var data.last-row-n >}}, "SELECT C, COUNT(D) WHERE C IS NOT NULL GROUP BY C PIVOT F LABEL C 'Machine'")
+```
+:::
+
+`QUERY` fails with `#VALUE!` if it counts the column it pivots on. Paste the error back.
+:::
+
+::: {.callout-tip collapse="true"}
+## Production day by day, and the days with no rows
+
+::: {.prompt}
+```default
+Give me one formula that lists each Production Date with its total Production Qty, in date order. Then tell me how to make a line chart of it.
+```
+:::
+
+The table has {{< var key.dates-with-rows >}} dates, but {{< var data.first-date >}} to {{< var data.last-date >}} is
+{{< var key.days-span >}} days. There are no rows from {{< var key.gap-first >}} to {{< var key.gap-last >}}, and the
+line chart draws straight across them. Fridays average {{< var key.friday-mean >}} kg, against
+{{< var key.other-day-mean >}} on other days. Did the factory make nothing on the missing days, or were they not
+recorded? Ask before you fill them in. One that works:
+
+::: {.formula}
+```default
+=QUERY(Data!A2:L{{< var data.last-row-n >}}, "SELECT A, SUM(L) WHERE A IS NOT NULL GROUP BY A ORDER BY A LABEL A 'Date', SUM(L) 'Production (kg)'")
+```
+:::
+
+The daily totals should add up to `=SUM(Data!L2:L{{< var data.last-row-n >}})`, which is {{< var key.qty-total >}} kg.
+:::
+
+::: {.callout-tip collapse="true"}
+## Get a number out of Yarn Count
+
+::: {.prompt}
+```default
+Yarn Count is text. Write a formula that pulls the first yarn's cotton count out of each cell as a number, such as 30 from 30/1 or from "30/1,20/D", and leaves the cell blank when it starts with anything else. Then give me a formula that counts the blanks.
+```
+:::
+
+It leaves {{< var key.yarn-no-count >}} rows blank. Look at them before you go on. They start with a yarn in denier,
+such as 75D/72F, which is a different unit. Row {{< var key.yarn-date-row >}} says "{{< var key.yarn-date-text >}}",
+most likely a 12/1 that a spreadsheet once read as a date. With the number, S/J rows whose first yarn is 24/1 average
+{{< var key.sj-ne24-mean >}} GSM, and 30/1 rows {{< var key.sj-ne30-mean >}}. A higher count is a finer yarn, and the
+fabric is lighter.
+
+If Gemini counts the blanks with `COUNTBLANK`, check that its range starts where your results start. Ours was off by
+one row. Formulas that work. The number, for the top of an empty column on the Work tab:
+
+::: {.formula}
+```default
+=ARRAYFORMULA(IFERROR(VALUE(REGEXEXTRACT(Data!H2:H{{< var data.last-row-n >}}, "^(\d+)/1")), ""))
+```
+:::
+
+The count of blanks:
+
+::: {.formula}
+```default
+=SUMPRODUCT(--NOT(REGEXMATCH(Data!H2:H{{< var data.last-row-n >}}, "^\d+/1")))
+```
+:::
+
+Mean GSM of the S/J rows for each count:
+
+::: {.formula}
+```default
+=ARRAYFORMULA(QUERY({Data!F2:F{{< var data.last-row-n >}}, Data!K2:K{{< var data.last-row-n >}}, IFERROR(VALUE(REGEXEXTRACT(Data!H2:H{{< var data.last-row-n >}}, "^(\d+)/1")))}, "SELECT Col3, COUNT(Col2), AVG(Col2) WHERE Col1 = 'S/J' AND Col3 IS NOT NULL GROUP BY Col3 ORDER BY Col3 LABEL Col3 'Yarn count', COUNT(Col2) 'Rows', AVG(Col2) 'Mean GSM'"))
+```
+:::
+:::
+
+::: {.callout-tip collapse="true"}
+## Stitch length and GSM, group by group
+
+::: {.prompt}
+```default
+Write a formula for the correlation between Stitch Length and GSM for each Construction.
+```
+:::
+
+Overall the correlation is near zero ({{< var key.r-overall >}}). Within Interlock it's about
+{{< var key.r-interlock >}}, and within Pique {{< var key.r-pique >}}. Be careful with these. The same fabric repeats
+on many rows, and the yarn changes along with the stitch length.
+:::
+
+::: {.callout-tip collapse="true"}
+## Research questions, without the data
+
+::: {.prompt}
+```default
+Based on the columns I described, suggest three research questions this data could answer, and the analysis each would need.
+```
+:::
+
+Could each one really be answered from these columns?
+:::
+
+# Reference {#reference .unnumbered}
+
+{{< include _dictionary-codes.md >}}
+
+## Downloads {#downloads .unnumbered}
+
+| File | What it is |
+| ------------ | -------- |
+| [Your own copy of the Google Sheet]({{< var sheet.copy >}}) | The workbook we use in the session. |
+| [knitting-practice.csv]({{< var data.csv >}}){download=""} ({{< var data.csv-size >}}) | The Data tab only. |
+| [knitting-practice.xlsx]({{< var data.xlsx >}}){download=""} ({{< var data.xlsx-size >}}) | All five tabs, for Excel or LibreOffice. |
+| [The original files]({{< var source.page >}}) | The dataset as published on Mendeley Data. |
+
+You may reuse the data under {{< var source.license >}}. Credit {{< var source.author >}} and say what you changed.
+
+## Sources {#sources .unnumbered}
+
+| Source | Used for |
+| ---------- | ---------- |
+| NC State's [approved AI list]({{< var security.approved-list >}}) | Which AI tools are approved, and up to which data level. |
+| NC State's [Data Management Framework]({{< var security.framework >}}) | The four data levels and their examples. |
+| Google's [Gemini FAQ for education]({{< var security.google-faq >}}) | What Google does with chats under an education account. |
+| Google's [Gemini help]({{< var security.upload-help >}}) | The Gemini app's screens. |
+
+We checked the first three on {{< var security.checked-date >}}, and the Gemini app and Google Sheets on
+{{< var gemini.checked-date >}}. If a screen differs from this page, Google's help wins.

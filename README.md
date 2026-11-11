@@ -11,10 +11,10 @@
 </div>
 
 A hands-on session from NC State University Libraries' Data Science Services, first taught in a textiles graduate
-seminar. Students explore a spreadsheet of real knitting-factory data with Gemini, signed in with their NC State
-account, by two routes: uploading the data, or keeping it in the sheet and asking Gemini for formulas. Then they
-compare one number from both, talk through what's safe to share with an AI tool, and plan how to do the same with
-their own data. No coding needed.
+seminar. Students check and summarize a spreadsheet of real knitting-factory data in Google Sheets, with help from
+Gemini under their NC State account. They describe the sheet to Gemini instead of uploading it, run the formulas it
+writes in their own copy, and compare each number with one they found themselves. The session starts with what is
+safe to share with an AI tool and ends with how to do the same on their own data. No coding needed.
 
 **Workshop site:** <https://ncsu-libraries.github.io/ai-data-exploration/>
 
@@ -22,15 +22,17 @@ their own data. No coding needed.
 
 | Path | What it is |
 | --- | --- |
-| `site/` | The Quarto website |
+| `site/index.qmd` | The guide: the whole session on one page, with extra activities and a reference at the end |
+| `site/slides/` | Five slides to open and close the session |
 | `site/downloads/` | The practice data, as CSV and XLSX, built by `tools/make_data.py` |
-| `tools/make_data.py` | Builds the practice data from the published source, checks it, and writes the site's data variables |
+| `tools/make_data.py` | Builds the practice data from the published source, checks it, and writes the numbers the guide uses |
+| `tools/extract_prompts.py` | Collects the guide's prompts, and builds the figure that explains the first one |
 | `tools/` | Quarto in Docker, a link checker, a screenshot tool, and a slide overlap checker |
 
 ## The practice data
 
 Adapted from Toufique Ahmed's *knitting-dataset* (Mendeley Data, V1, <https://doi.org/10.17632/vs2vjzkw5h.1>),
-licensed CC BY 4.0. The site's Data page lists what we changed. To rebuild it from the source:
+licensed CC BY 4.0. The guide's "About the data" lists what we changed. To rebuild it from the source:
 
 ```bash
 uv run --with pandas --with openpyxl python -I tools/make_data.py

@@ -7,6 +7,8 @@ $ncsu-black: #000000;
 $ncsu-dk-gray: #3D3D3D;
 $ncsu-md-gray: #6D6E71;
 $ncsu-lt-gray: #E6E6E6;
+$ncsu-orange: #D14905;
+$ncsu-aqua: #008473;
 $paper: #FAF8F5;
 
 $font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -19,97 +21,111 @@ $code-color: $ncsu-red-dark;
 $navbar-bg: $ncsu-red;
 $footer-bg: #F4F4F4;
 
+// The page has three kinds of box, plus the red one at its top. Each kind is one callout type.
+$callout-color-note: $ncsu-dk-gray;      // Answer key: closed until you click it, and not green
+$callout-color-tip: $ncsu-aqua;          // Extra
+$callout-color-warning: $ncsu-orange;    // Gotcha
+$callout-color-important: $ncsu-red;     // How to use this guide
+
 /*-- scss:rules --*/
 body { font-feature-settings: "ss01", "cv11"; }
 
+// The session is one page. Its sections are level 1 headings with numbers, and the steps inside them are level 2.
 h1, h2, h3 { letter-spacing: -0.01em; color: #1A1A1A; }
-h2 { border-bottom: 4px solid $ncsu-red; padding-bottom: 0.25rem; margin-top: 2.4rem; }
-h3 { margin-top: 1.8rem; }
+h1.title { font-size: 2.2rem; margin-bottom: 0.3rem; }
+main section.level1 > h1 { font-size: 1.8rem; border-bottom: 4px solid $ncsu-red; padding-bottom: 0.25rem; margin-top: 3.2rem; }
+main h2 { font-size: 1.35rem; border-bottom: 0; padding-bottom: 0; margin-top: 2.2rem; }
+main h3 { font-size: 1.1rem; margin-top: 1.6rem; }
+.header-section-number { color: $ncsu-red; margin-right: 0.3em; font-variant-numeric: tabular-nums; }
+
+// The question a section answers, on the line under its heading
+.question {
+  display: block; font-weight: 700; color: #1A1A1A; border-left: 5px solid $ncsu-red;
+  padding: 0.15rem 0 0.15rem 0.8rem; margin: 0.4rem 0 1rem;
+}
 
 .navbar-brand img { max-height: 30px; max-width: 55vw; width: auto; height: auto; }
-// Long paths in table cells, like ~/.claude/projects/<project>/memory/, may break rather than push the page wide.
+// Long cell names and formulas in table cells may break rather than push the page wide.
 td code { overflow-wrap: anywhere; }
-// A long formula has few spaces to wrap at; on a phone it may break anywhere rather than run off the side.
-pre code, pre code > span { overflow-wrap: anywhere; }
-div.sourceCode > pre { padding-right: 2.2rem; }  // room for the copy button, so a wrapped first line doesn't run under it
 .navbar .navbar-title { font-weight: 700; }
 
-// Hero on the home page
-.hero {
-  background: #1A1A1A;
-  color: #FFF;
-  border-radius: 14px;
-  padding: 2.2rem 2.2rem 1.8rem;
-  margin: 0.5rem 0 1.8rem;
-  border-left: 10px solid $ncsu-red;
-  h1, .h1 { color: #FFF; margin: 0 0 0.3rem; font-size: 2.4rem; border: 0; }
-  p { color: #E8E8E8; margin: 0.35rem 0; }
-  .when { font-weight: 700; color: #FFF; }
-  a { color: #FFB3B3; }
-}
-
-// Cards grid
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1rem 0 1.5rem; }
-.card-link {
-  display: block; border: 1px solid $ncsu-lt-gray; border-top: 5px solid $ncsu-red; border-radius: 10px;
-  padding: 1rem 1.1rem; text-decoration: none; color: $ncsu-dk-gray; background: #FFF;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-  &:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.10); transform: translateY(-2px); color: $ncsu-dk-gray; }
-  .card-title { display: block; font-weight: 800; font-size: 1.1rem; color: #1A1A1A; margin-bottom: 0.25rem; }
-  .card-text { display: block; font-size: 0.95rem; }
-}
-
-// "You type" prompt blocks: a fenced div .prompt around a code block
-.prompt {
+// Boxes to copy from. A strip along the top says where the text goes, and the Copy button sits at its right end,
+// so a long first line never runs under the button.
+.prompt, .formula {
   position: relative; margin: 1rem 0 1.2rem;
   &::before {
-    content: "You type"; position: absolute; top: -0.7rem; left: 0.9rem; z-index: 2;
-    background: $ncsu-red; color: #FFF; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
-    text-transform: uppercase; padding: 0.1rem 0.5rem; border-radius: 4px;
+    position: absolute; top: 0.6rem; left: 1rem; z-index: 2;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   }
-  div.sourceCode, pre { background: #111 !important; border-radius: 10px; border: 0; }
-  pre code, pre { color: #F5F5F5 !important; font-size: 0.95rem; }
-  pre { padding: 1.1rem 2.6rem 0.9rem 1rem; }
-  // Prompts are sentences people read and copy: wrap them, and keep them one light color on the dark box.
-  pre, pre code, pre code > span { white-space: pre-wrap !important; word-break: break-word; overflow-x: visible !important; }
-  pre code span, pre code span * { color: #F5F5F5 !important; font-style: normal !important; font-weight: 400 !important; }
-  .code-copy-button, .code-copy-button > .bi { color: #DDD !important; }
+  div.sourceCode { margin: 0; border: 0; border-radius: 10px; }
+  // "pre.sourceCode" outranks Quarto's own padding for code inside a callout; the code's background is cleared
+  // because Quarto tints code inside a list item.
+  pre.sourceCode { margin: 0; padding: 2.6rem 1rem 0.9rem; border-radius: 10px; }
+  pre code { background-color: transparent !important; }
+  // People read these and copy them, so wrap them. A formula has few spaces, so it may break anywhere.
+  pre, pre code, pre code > span { white-space: pre-wrap !important; overflow-wrap: anywhere; overflow-x: visible !important; }
+  pre code span, pre code span * { font-style: normal !important; font-weight: 400 !important; }
 }
-.cards > p { display: contents; }
-.prompt.prompt-shell::before { content: "In your terminal"; background: #444; }
-
-// A note from someone the attendee works for: the rule Claude can't see
-.note-card {
-  background: #FFF8D6; border: 1px solid #E8D68A; border-radius: 6px; padding: 1.1rem 1.3rem 0.9rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: rotate(-0.4deg); margin: 1.2rem 0 1.5rem;
-  font-size: 1.02rem;
-  .note-from { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #7A6400; }
+// A box that opens a callout's body would sit against the callout's title bar; give it room.
+.callout .callout-body > .prompt:first-child, .callout .callout-body > .formula:first-child { margin-top: 0.75rem; }
+.prompt {
+  &::before { content: "Prompt for Gemini"; color: #FFB3B3; }
+  div.sourceCode, pre { background: #111 !important; }
+  pre, pre code, pre code span, pre code span * { color: #F5F5F5 !important; }
+  pre code { font-size: 0.95rem; }
 }
-
-// Big number answer key
-.answer {
-  display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
-  border: 2px solid $ncsu-red; border-radius: 12px; padding: 0.8rem 1.2rem; margin: 1rem 0;
-  .answer-label { font-weight: 700; color: $ncsu-md-gray; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
-  .answer-value { font-size: 2.2rem; font-weight: 800; color: $ncsu-red; font-variant-numeric: tabular-nums; }
+.formula {
+  &::before { content: "Formula for Sheets"; color: $ncsu-md-gray; }  // short enough to clear the Copy button on a phone
+  div.sourceCode, pre { background: #F6F4F0 !important; }
+  pre { border: 1px solid #E6E1DA; }
+  pre, pre code, pre code span, pre code span * { color: #1A1A1A !important; }
+  pre code { font-size: 0.9rem; }
 }
 
-// What to watch for
-.watch { border-left: 5px solid #1A1A1A; background: #F6F6F6; padding: 0.7rem 1rem; border-radius: 0 8px 8px 0; margin: 0.8rem 0 1.2rem; }
-.watch > p:first-child::before { content: "Watch for: "; font-weight: 800; color: #1A1A1A; }
+// The Copy button: a red pill with the word on it, always in view, where Quarto's own is a small gray icon.
+.code-copy-button {
+  top: 0.45rem; right: 0.55rem; margin: 0; padding: 0.12rem 0.85rem; border: 0; border-radius: 999px;
+  background-color: $ncsu-red; color: #FFF; opacity: 1;
+  font-family: $font-family-sans-serif; font-size: 0.8rem; font-weight: 700; line-height: 1.6;
+  &::after { content: "Copy"; }
+  > .bi { display: none; }
+  &:hover, &:focus-visible { background-color: $ncsu-red-dark; }
+  &:focus-visible { outline: 2px solid #FFF; outline-offset: 2px; }
+  &.code-copy-button-checked { background-color: #1A1A1A; &::after { content: "Copied"; } }
+}
+.prompt .code-copy-button.code-copy-button-checked { background-color: #FFF; color: #111; }
+// A code block outside those two boxes keeps Quarto's layout; leave room for the button beside its first line.
+:not(.prompt):not(.formula) > .code-copy-outer-scaffold > div.sourceCode > pre { padding-right: 5.5rem; }
 
-// Finish line checklist
-.finish-line {
-  border: 1px solid $ncsu-lt-gray; border-radius: 12px; padding: 0.6rem 1.2rem 0.4rem; background: #FFF;
-  ul { list-style: none; padding-left: 0; }
-  li { padding: 0.35rem 0; border-bottom: 1px dashed $ncsu-lt-gray; }
-  li:last-child { border-bottom: 0; }
-  input[type=checkbox] { transform: scale(1.25); margin-right: 0.6rem; accent-color: $ncsu-red; }
+// The describe prompt cut into numbered parts (_describe-anatomy.md), and the table of reasons that follows it.
+// The numbers in the figure and in the table's first column are drawn alike, so each reason points at its part.
+.anatomy {
+  background: #F6F4F0; color: #1A1A1A; border: 1px solid #E6E1DA; border-radius: 10px; padding: 0.4rem 1rem;
+  margin: 1rem 0 1.2rem;
+  .part {
+    display: grid; grid-template-columns: 1.8rem minmax(0, 1fr); column-gap: 0.8rem; align-items: start;
+    padding: 0.6rem 0; border-top: 1px solid #DAD4CB;
+  }
+  .part:first-child { border-top: 0; }
+  .part.plain { color: $ncsu-md-gray; border-top: 0; padding-top: 0; }
+  p, pre {
+    grid-column: 2; margin: 0; padding: 0; border: 0; background: transparent; color: inherit;
+    font-family: $font-family-monospace; font-size: 0.82rem; line-height: 1.55;
+    white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible;
+  }
+}
+.num {
+  display: inline-flex; align-items: center; justify-content: center; width: 1.7rem; height: 1.7rem;
+  border-radius: 50%; background: $ncsu-red; color: #FFF; font-family: $font-family-sans-serif;
+  font-weight: 800; font-size: 0.9rem; line-height: 1;
 }
 
-.step-badge {
-  display: inline-block; background: $ncsu-red; color: #FFF; font-weight: 800; border-radius: 999px;
-  padding: 0.05rem 0.65rem; margin-right: 0.4rem; font-size: 0.85em; vertical-align: 0.1em;
+// A drawing for wide screens with the same thing in words for phones, where the drawing's text would be too small
+.on-wide { display: block; margin: 1rem 0 1.5rem; }
+.on-phone { display: none; }
+@media (max-width: 640px) {
+  .on-wide { display: none; }
+  .on-phone { display: block; }
 }
 
 .shot { border: 1px solid $ncsu-lt-gray; border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,0.10); }
@@ -124,33 +140,13 @@ table { font-size: 0.95rem; }
 .table thead th { border-bottom: 2px solid $ncsu-red; }
 
 @media print {
-  .navbar, #quarto-sidebar, .nav-footer, #TOC, .code-copy-button { display: none !important; }
+  .navbar, #quarto-sidebar, #quarto-margin-sidebar, .nav-footer, #TOC, .code-copy-button { display: none !important; }
+  .callout-collapse.collapse { display: block !important; }  // print the answer keys and the extras open
   .prompt div.sourceCode, .prompt pre { background: #FFF !important; border: 1px solid #999; }
-  .prompt pre code { color: #000 !important; }
+  .prompt pre, .prompt pre code, .prompt pre code span { color: #000 !important; }
+  .prompt::before { color: #000; }
 }
 
-// Code fonts draw != <= >= == as single glyphs (ligatures). Beginners copy what they see and type ≠, which Python
-// rejects, so show every character as typed.
+// Code fonts draw != <= >= == as single glyphs (ligatures). People copy what they see, so show every character as
+// typed.
 code, pre, kbd, samp, .sourceCode { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
-
-// The decision guide on Data security: the drawing on wide screens, the same steps in words on phones,
-// where the drawing's text would be too small to read.
-.decision-svg { display: block; margin: 1rem 0 1.5rem; }
-.decision-words { display: none; }
-@media (max-width: 640px) {
-  .decision-svg { display: none; }
-  .decision-words { display: block; }
-}
-
-// "Practice: …" tag under a step heading: names the recommended practice the step shows
-.practice {
-  display: inline-block; background: #F3F1ED; color: #3D3D3D; border: 1px solid #E6E1DA; border-radius: 999px;
-  padding: 0.1rem 0.7rem; font-size: 0.85rem; font-weight: 600; margin: -0.4rem 0 0.6rem;
-}
-
-// The walkthrough video (tools/record-tour.mjs): the full tour on Home, a clip per step on Explore
-video.tour, video.clip { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,0.12); background: #161616; }
-.chapters { display: flex; flex-wrap: wrap; gap: 6px; margin: .6rem 0 1rem; }
-.chapters button { border: 1px solid $ncsu-lt-gray; background: #fff; border-radius: 999px; padding: 3px 12px; font-size: .85rem; cursor: pointer; }
-.chapters button:hover, .chapters button:focus-visible { border-color: $ncsu-red; color: $ncsu-red; }
-.chapters button span { color: $ncsu-md-gray; font-variant-numeric: tabular-nums; margin-right: 2px; }

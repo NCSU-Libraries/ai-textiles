@@ -10,10 +10,13 @@ students meet one realistic cleaning problem. The source's other quirks stay in 
 
 Writes:
     site/downloads/knitting-practice.csv    the Data tab as UTF-8 CSV, for other tools
-    site/downloads/knitting-practice.xlsx   Data, Dictionary, Work, Compare and About tabs: the Google Sheet's source
+    site/downloads/knitting-practice.xlsx   Data, Dictionary, Work, Log and About tabs: the Google Sheet's source
     site/_variables.yml                     only the block between the "generated" markers
-    site/_dictionary.md                     the Dictionary tab as a table, included by site/data.qmd
+    site/_dictionary.md, _dictionary-codes.md   the Dictionary tab as tables, included by site/index.qmd
+    site/_key-types.md, _key-range.md, _key-summary.md   the tables inside the page's answer keys
     instructor/answer-key.json, .md         counts, statistics, wrong numbers with their causes (private)
+
+Then it runs tools/extract_prompts.py, so the prompt list and the annotated prompt follow the new numbers.
 
 It's deterministic: run it twice and every output is byte-identical.
 """
@@ -26,6 +29,7 @@ import hashlib
 import io
 import json
 import re
+import runpy
 import sys
 import urllib.request
 import zipfile
@@ -112,12 +116,45 @@ FIBERS = [
     ("cotton", r"cotton|\bctn\b|\bcmia\b|\bpima\b|\bcvc\b"),
     ("polyester", r"polyester|polyster|\bpoly\b|\bpes\b|\bcvc\b"),
     ("viscose/modal", r"viscose|rayon|\bmodal\b|\bliva\b|ecovero|ecuvero|seacell|sea-?shell"),
-    ("elastane", r"elast\w*|spandex|lycra|creora|\bly\b"),
+    ("elastane", r"ela+st\w*|spandex|lycra|creora|\bly\b"),  # ela+st: one row group is typed "Elaasthane"
     ("nylon", r"\bmeryl\b|nylon|polyamide"),
     ("acrylic", r"acrylic"),
     ("wool", r"\bwool\b"),
     ("metallic", r"lurex"),
 ]
+# The extra activity "Group fabrics by fiber": two rules Gemini gave us for "has a stretch fiber", as they go into
+# REGEXMATCH(LOWER(...)). The long one came with the list of distinct values pasted in (2026-11-11); the short one
+# is what a colleague got. Both ran in Sheets.
+STRETCH_RULE = r"ela|spand|lycra|creor|\bly\b"
+STRETCH_RULE_SHORT = r"elast|spandex|lycra"
+POLYESTER_RULE_SHORT = r"poly|pes"
+
+TEXT_COLUMNS = ("Lot", "Machine", "Construction", "Composition (as recorded)", "Yarn Count (as recorded)")
+
+# The Work tab. Single numbers sit at the top: a name, Gemini's formula, the number you found yourself, and whether
+# they match. Tables go below, each under its name. The page names these cells through the "work" variables.
+WORK_HEADER_ROW = 3
+WORK_NUMBERS = [  # (variable key, the name in column A), one row each from WORK_HEADER_ROW + 1
+    ("rows", "Rows of data"),
+    ("reject-blank", "Blank cells in Reject Qty"),
+    ("reject-mean", "Mean Reject Qty, blanks skipped"),
+    ("reject-mean-zero", "Mean Reject Qty, blanks as zero"),
+    ("copies", "Rows that are an exact copy of an earlier row"),
+    ("machines", "Different values in Machine"),
+    ("constructions", "Different values in Construction"),
+    ("compositions", "Different values in Composition"),
+    ("own-1", ""),
+    ("own-2", ""),
+]
+WORK_COLUMNS = 4  # A to D: the name, Gemini's formula, your own number, Match?
+WORK_TABLES_NOTE_ROW = 15
+WORK_TABLES = [  # (variable key, the name in column A, its row); the formula goes in column A of the next row
+    ("profile", "Every column: blank cells, numbers and text", 17),   # 14 rows
+    ("range", "Smallest and largest value of each number column", 34),  # 8 rows
+    ("summary", "Rows and mean GSM for each construction", 46),         # 9 rows
+    ("own", "Your own tables", 60),
+]
+
 AUTHOR_FIBERS = {  # the source author's six categories, as fiber sets (other_cotton_blend can't be compared)
     "Cotton": {"cotton"},
     "Cotton_Polyester": {"cotton", "polyester"},
@@ -177,6 +214,11 @@ def fmt(x: float, places: int) -> str:
 
 def r(x: float, places: int = 4) -> float:
     return round(float(x), places)
+
+
+def plain(x: float) -> str:
+    """A number as a person would write it: 2,468 and 5,068.2 and 0.87."""
+    return f"{x:,.2f}".rstrip("0").rstrip(".")
 
 
 # ---------------------------------------------------------------------------------------------------------- build
@@ -332,6 +374,87 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         },
     }
 
+    # The page's data preparation checks: each column as Sheets counts it. COUNT takes numbers and dates, COUNTA
+    # minus COUNT is the text, and the five text columns are stored as text whatever they look like.
+    profile = []
+    for name in NAMES:
+        s = d[name]
+        filled = s[s != ""]
+        as_number = pd.to_numeric(filled, errors="coerce")
+        numbers = len(filled) if name == DATE else 0 if name in TEXT_COLUMNS else int(as_number.notna().sum())
+        row = {"column": name, "blank": int((s == "").sum()), "numbers": numbers, "text": len(filled) - numbers,
+               "distinct": int(filled.nunique())}
+        if name != DATE and name not in TEXT_COLUMNS:
+            row["min"], row["max"] = r(as_number.min(), 2), r(as_number.max(), 2)
+        profile.append(row)
+    assert sum(p["blank"] + p["numbers"] + p["text"] for p in profile) == ROWS * len(NAMES)
+    gauges = sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique())
+    over = d.index[reject > qty]  # more rejected than knitted; the note row isn't a number, so it isn't here
+    ends = {}  # each number column's three smallest and three largest values, with their rows: which are typos?
+    for name in NAMES:
+        if name != DATE and name not in TEXT_COLUMNS:
+            counts = num(name).value_counts().sort_index()
+            pairs = lambda part: [{"value": r(v, 2), "rows": int(n)} for v, n in part.items()]
+            ends[name] = {"smallest": pairs(counts.head(3)), "largest": pairs(counts.tail(3))}
+    prep = {
+        "profile": profile,
+        "ends": ends,
+        "gauge_next_largest": gauges[-2],
+        "gauge_max_sheet_row": int(pd.to_numeric(d[GAUGE]).idxmax()) + 2,
+        "gauge_max_row_fabric_diameter": d.at[pd.to_numeric(d[GAUGE]).idxmax(), FABRIC_DIA],
+        "fabric_dia_any_first_sheet_row": int(d.index[d[FABRIC_DIA] == "any"][0]) + 2,
+        "stitch_length": {"median": r(stitch.median(), 2), "max": r(stitch.max(), 2),
+                          "rows_above_10_mm": int((stitch > 10).sum())},
+        "production_qty": {"zero_rows": int((qty == 0).sum()), "under_1_kg_rows": int(((qty > 0) & (qty < 1)).sum()),
+                           "exactly_0_01_rows": int((qty == 0.01).sum())},
+        "reject_over_production": {
+            "rows": int(len(over)),
+            "sheets_formula_counts": int(len(over)) + 1,  # (M > L) is TRUE for the note: text sorts above numbers
+            "examples": [{"sheet_row": int(i) + 2, "production_qty": d.at[i, QTY], "reject_qty": d.at[i, REJECT]}
+                         for i in over],
+        },
+        "lots_on_more_than_one_row": int(d[LOT].map(d[LOT].value_counts()).gt(1).sum()),
+    }
+
+    # The extra activity "Group fabrics by fiber": a stretch fiber or not, by two rules
+    low = d[COMPOSITION].str.lower()
+    stretch, stretch_short = low.str.contains(STRETCH_RULE), low.str.contains(STRETCH_RULE_SHORT)
+    assert (stretch == rule.str.contains("elastane")).all(), "the stretch rule and the reference rule disagree"
+    assert not (stretch_short & ~stretch).any()
+    missed = d.loc[stretch & ~stretch_short, COMPOSITION].value_counts()
+    poly_short = low.str.contains(POLYESTER_RULE_SHORT)
+    poly_missed = d.loc[rule.str.contains("polyester") & ~poly_short, COMPOSITION].value_counts()
+    assert list(poly_missed.index) == ["60/40 CVC %"], poly_missed.to_dict()  # the page's hint names this entry
+    def group_name(g: str) -> str:  # "cotton + viscose/modal + elastane" -> "Cotton, viscose or modal, and elastane"
+        parts = [f.replace("viscose/modal", "viscose or modal") for f in g.split(" + ")]
+        text = parts[0] + " only" if len(parts) == 1 else " and ".join(parts) if len(parts) == 2 \
+            else ", ".join(parts[:-1]) + ", and " + parts[-1]
+        return text[0].upper() + text[1:]
+    named = rule[rule != "Not recorded"].value_counts()
+    fiber_groups = [{"name": group_name(g), "rows": int(n)} for g, n in named.head(6).items()]
+    by_group = gsm.groupby([con, stretch]).agg(["count", "mean"])
+    group = lambda c, yes: {"rows": int(by_group.loc[(c, yes), "count"]), "mean_gsm": r(by_group.loc[(c, yes), "mean"], 3)}
+    stretch_key = {
+        "rule": STRETCH_RULE,
+        "rows": int(stretch.sum()),
+        "short_rule": STRETCH_RULE_SHORT,
+        "short_rule_rows": int(stretch_short.sum()),
+        "short_rule_misses": {t: int(n) for t, n in missed.items()},
+        "blank_rows": int((d[COMPOSITION] == "").sum()),
+        "rows_false_with_only_percent": int((d[COMPOSITION] == "%").sum()),
+        "lsj_rows": int((con == "LS/J").sum()),
+        "lsj_rows_without_stretch": int(((con == "LS/J") & ~stretch).sum()),
+        "lsj_without_stretch_texts": {t: int(n) for t, n in
+                                      d.loc[(con == "LS/J") & ~stretch, COMPOSITION].value_counts().items()},
+        "sj_rows_with_stretch": int(((con == "S/J") & stretch).sum()),
+        "mean_gsm": {"stretch": r(gsm[stretch].mean(), 3), "the_rest": r(gsm[~stretch].mean(), 3)},
+        "by_construction": {c: {"stretch": group(c, True), "the_rest": group(c, False)} for c in order},
+        "largest_fiber_groups": fiber_groups,
+        "polyester_short_rule": POLYESTER_RULE_SHORT,
+        "polyester_short_rule_rows": int(poly_short.sum()),
+        "polyester_short_rule_misses": {t: int(n) for t, n in poly_missed.items()},
+    }
+
     key = {
         "source": {"citation": CITATION, "license": "CC BY 4.0", "doi": DOI},
         "rows": ROWS,
@@ -340,6 +463,8 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "dates": {"first": d[DATE].min(), "last": d[DATE].max()},
         "blanks": {c: int((d[c] == "").sum()) for c in NAMES if (d[c] == "").any()},
         "repeated_rows": repeated,
+        "rows_sharing_lot_and_day": int(d.duplicated(subset=[DATE, LOT], keep=False).sum()),
+        "lots_on_several_dates": int((d.groupby(LOT)[DATE].nunique() > 1).sum()),
         "distinct_specs": int(first.sum()),
         "spec_columns": spec_cols,
         "constructions": int(con.nunique()),
@@ -353,6 +478,7 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
             "max": r(reject.max(), 2),
             "note_sheet_row": note_index + 2,
             "note_text": d.at[note_index, REJECT],
+            "sum": r(reject.sum(), 2),
             "mean_blanks_skipped": r(reject.mean(), 4),
             "mean_blanks_as_zero": r(reject.fillna(0).mean(), 4),
         },
@@ -371,6 +497,8 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "gsm": {"overall": stats(con == con), "by_construction": by_construction},
         "correlation": correlation,
         "extras": extras,
+        "prep": prep,
+        "stretch": stretch_key,
         "compare": {
             "data_rows": {"right": ROWS, "decimals": 0},
             "sj_mean_gsm": {"right": r(sj.mean(), 3), "decimals": 1},
@@ -402,6 +530,10 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
             f"{sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique())[0]} to "
             f"{sorted(int(v) for v in pd.to_numeric(d[GAUGE]).unique())[-2]}",
             "Yarn Count mixes notations: cotton count (30/1), denier (20/D), filament yarns (75D/72F), several yarns",
+            f"Production Qty is 0 in {prep['production_qty']['zero_rows']} rows and exactly 0.01 kg in "
+            f"{prep['production_qty']['exactly_0_01_rows']}: a placeholder, perhaps",
+            f"Reject Qty is larger than Production Qty in {prep['reject_over_production']['rows']} rows. More "
+            "rejected than knitted, or two different units? Reject Qty has no stated unit",
         ],
         "composition_rule": {
             "fibers": {name: pattern for name, pattern in FIBERS},
@@ -517,32 +649,41 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
         for cell in line:
             cell.alignment = WRAP
 
-    # Work
+    # Work: single numbers at the top, each with a name; tables below, each under its name
     work = wb.create_sheet("Work")
-    work["A1"] = "Put your formulas on this tab, starting in A3, so their results never spill onto the Data tab."
-    work["A1"].font = Font(italic=True, color="6D6E71")
-    work.column_dimensions["A"].width = 20
+    note = Font(italic=True, color="6D6E71")
+    work["A1"] = "Gemini's formulas go on this tab, never on the Data tab."
+    work["A1"].font = note
+    header(work, WORK_HEADER_ROW, ["What it is", "AI-assisted: paste Gemini's formula", "Do it yourself: type what you found",
+                                   "Match?"])
+    for i, (_, label) in enumerate(WORK_NUMBERS, start=WORK_HEADER_ROW + 1):
+        work.cell(row=i, column=1, value=label or None)
+        work.cell(row=i, column=4,  # the two agree when they're within 0.05, so 152.82 matches 152.8245
+                  value=f'=IF(OR(B{i}="",C{i}=""),"",IFERROR(IF(ABS(B{i}-C{i})<0.05,"match","differs"),"check"))')
+    work.cell(row=WORK_TABLES_NOTE_ROW, column=1,
+              value="Tables. Paste each formula in the cell under its name. A table fills the cells below it and to "
+                    "its right, so leave them empty.").font = note
+    for _, label, row in WORK_TABLES:
+        work.cell(row=row, column=1, value=label).font = BOLD
+    for letter, w in zip("ABCD", [48, 36, 36, 10]):
+        work.column_dimensions[letter].width = w
 
-    # Compare
-    cmp_ = wb.create_sheet("Compare")
-    cmp_["A1"], cmp_["A1"].font = "Check each number two ways", TITLE
-    header(cmp_, 3, ["Statistic", "First way", "Second way", "Compare to (decimals)", "Match?"])
-    stats = [("Data rows, not counting the header", 0), ("Mean GSM for single jersey (S/J)", 1),
-             ("Mean Reject Qty", 2), ("Your own:", 2), ("Your own:", 2)]
-    for i, (label, places) in enumerate(stats, start=4):
-        cmp_.cell(row=i, column=1, value=label)
-        cmp_.cell(row=i, column=4, value=places)
-        cmp_.cell(row=i, column=5,
-                  value=f'=IF(OR(B{i}="",C{i}=""),"",IF(ROUND(B{i},D{i})=ROUND(C{i},D{i}),"match","differs"))')
-    cmp_["A10"] = ("Work out each number two ways, such as a formula and a pivot table, and type the results here as "
-                   "numbers. Match? rounds both to the decimals in column D, so 0.23 and 0.2310 match. Use the last "
-                   "two rows for any number of your own. If a row says differs, the Explore page's 'What a wrong "
-                   "number tells you' table usually names the cause.")
-    cmp_["A10"].alignment = WRAP
-    cmp_.merge_cells("A10:E10")
-    cmp_.row_dimensions[10].height = 48
-    for letter, w in zip("ABCDE", [38, 24, 22, 20, 12]):
-        cmp_.column_dimensions[letter].width = w
+    # Log
+    log = wb.create_sheet("Log")
+    log["A1"], log["A1"].font = "Log", TITLE
+    log["A2"] = ("One row for each thing you ask Gemini and each change you make to the data. Today is practice, so "
+                 "you can leave it empty.")
+    header(log, 4, ["Date", "What I asked", "What I used (formula or steps)", "What changed in the data",
+                    "How I checked it"])
+    example = ["(example)", "The mean Reject Qty, and whether a blank counts as zero",
+               "Gemini's AVERAGE formula, in Work!B6",
+               "Nothing. I report the mean with blanks skipped, and I've asked the factory what a blank means.",
+               "Column stats shows the same average."]
+    for i, text in enumerate(example, 1):
+        c = log.cell(row=5, column=i, value=text)
+        c.font, c.alignment = note, WRAP
+    for letter, w in zip("ABCDE", [14, 40, 40, 52, 40]):
+        log.column_dimensions[letter].width = w
 
     # About
     about = wb.create_sheet("About")
@@ -587,20 +728,49 @@ def write_xlsx(d: pd.DataFrame, key: dict, path: Path) -> None:
     path.write_bytes(out.getvalue())
 
 
-def write_dictionary_md(path: Path) -> None:
-    """The site's copy of the Dictionary tab, included by data.qmd, so the two never drift apart."""
-    out = ["<!-- Generated by tools/make_data.py from the same definitions as the Dictionary tab. Don't edit. -->", "",
-           "| | Column | What it holds |", "| --- | --- | --- |"]
-    for i, (name, _, unit, holds, notes) in enumerate(COLUMNS):
+def write_dictionary_md(site: Path) -> None:
+    """The site's copy of the Dictionary tab, so the two never drift apart: the columns for the page's "What's in
+    the workbook", and the two code tables for its Reference section."""
+    note = "<!-- Generated by tools/make_data.py from the same definitions as the Dictionary tab. Don't edit. -->"
+    # The page's table says what each column holds and its unit. The notes stay on the Dictionary tab: several of
+    # them give away what the page's checks are there to find ("some rows say any", "many rows are blank").
+    out = [note, "", "| | Column | What it holds |", "| - | ------- | ------------ |"]  # the dashes set the widths
+    for i, (name, _, unit, holds, _notes) in enumerate(COLUMNS):
         text = holds + (f", in {unit}" if unit and unit not in ("date",) and unit not in name else "") + "."
         if unit == "not stated":
             text = holds + "; the unit isn't stated."
-        out.append(f"| {get_column_letter(i + 1)} | **{name}** | {text} {notes} |".replace(" |", " |"))
-    out += ["", "### Construction codes {#codes}", "", "| Code | Means |", "| --- | --- |"]
+        out.append(f"| {get_column_letter(i + 1)} | **{name}** | {text} |")
+    (site / "_dictionary.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "## Construction codes {#codes .unnumbered}", "", "| Code | Means |", "| ---- | ------------ |"]
     out += [f"| `{code}` | {meaning} |" for code, meaning in CONSTRUCTION_CODES]
-    out += ["", "### Yarn count notation {#yarn}", "", "| Written | Means |", "| --- | --- |"]
+    out += ["", "## Yarn count notation {#yarn .unnumbered}", "", "| Written | Means |", "| ---- | ------------ |"]
     out += [f"| `{code}` | {meaning} |" for code, meaning in YARN_NOTATION]
-    path.write_text("\n".join(out) + "\n", encoding="utf-8")
+    (site / "_dictionary-codes.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+
+def write_page_keys(key: dict, site: Path) -> None:
+    """The tables inside the page's answer keys: what each of Gemini's three table formulas should return."""
+    note = "<!-- Generated by tools/make_data.py. Don't edit. -->"
+    profile = key["prep"]["profile"]
+
+    out = [note, "", "| Column | Blank | Numbers | Text |", "| --- | --: | --: | --: |"]
+    out += [f"| {p['column']} | {p['blank']:,} | {p['numbers']:,} | {p['text']:,} |" for p in profile]
+    (site / "_key-types.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "| Column | Smallest | Largest |", "| --- | --: | --: |"]
+    out += [f"| {p['column']} | {plain(p['min'])} | {plain(p['max'])} |" for p in profile if "min" in p]
+    (site / "_key-range.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    out = [note, "", "| Fibers named in Composition | Rows |", "| --- | --: |"]
+    out += [f"| {g['name']} | {g['rows']:,} |" for g in key["stretch"]["largest_fiber_groups"]]
+    (site / "_key-fibers.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+
+    by_construction = key["gsm"]["by_construction"]
+    out = [note, "", "| Construction | Rows | Mean GSM |", "| --- | --: | --: |"]
+    out += [f"| {c} | {by_construction[c]['per_row']['rows']:,} | {by_construction[c]['per_row']['mean']:.1f} |"
+            for c in sorted(by_construction)]  # the order QUERY returns: capitals first, so "other" is last
+    (site / "_key-summary.md").write_text("\n".join(out) + "\n", encoding="utf-8")
 
 
 def size(path: Path) -> str:
@@ -618,6 +788,24 @@ def write_variables(key: dict) -> None:
     gsm_top = ex["gsm_values"]["most_common"][0]
     special = ex["machine_by_construction"]["most_specialized"]
     by_day, yarn = ex["production_by_day"], ex["yarn_first_count"]
+    prep, st = key["prep"], key["stretch"]
+    gauge = next(p for p in prep["profile"] if p["column"] == GAUGE)
+    ends = prep["ends"]
+    # The page guesses that the impossible gauge is a real one with that row's Fabric Diameter typed after it.
+    gauge_rest = prep["gauge_max_row_fabric_diameter"]
+    assert str(key["gauge"]["max"]).endswith(gauge_rest), "the gauge typo no longer ends with the fabric diameter"
+    gauge_first = str(key["gauge"]["max"])[:-len(gauge_rest)]
+    assert int(gauge_first) in key["gauge"]["values"], "the gauge typo no longer starts with a real gauge"
+    by_con = st["by_construction"]
+    work = {}  # the Work tab's cells and their names, so the page and the sheet can't drift apart
+    for i, (k, label) in enumerate(WORK_NUMBERS, start=WORK_HEADER_ROW + 1):
+        if label:
+            work.update({k: f"B{i}", f"{k}-own": f"C{i}", f"{k}-name": label})
+        else:  # a spare row: its formula cell, and the cell for a name
+            work.update({k: f"B{i}", f"{k}-label": f"A{i}"})
+    for k, label, row in WORK_TABLES:
+        work.update({f"{k}-table": f"A{row + 1}", f"{k}-table-name": label})
+    work["free-column"] = f"{get_column_letter(WORK_COLUMNS + 2)}1"  # past the four columns in use, one left empty
     day = lambda iso: f"{dt.date.fromisoformat(iso):%B} {dt.date.fromisoformat(iso).day}"
     v = {
         "data": {
@@ -626,6 +814,7 @@ def write_variables(key: dict) -> None:
             "range": key["range"],
             "last-row": f"{key['rows'] + 1:,}",
             "last-row-n": str(key["rows"] + 1),  # no comma: for formulas like M2:M12570
+            "rows-n": str(key["rows"]),          # no comma: for a number someone types into a cell
             "first-date": f"{first:%B} {first.day}, {first.year}",
             "last-date": f"{last:%B} {last.day}, {last.year}",
             "csv": "downloads/knitting-practice.csv",
@@ -690,7 +879,40 @@ def write_variables(key: dict) -> None:
             "yarn-date-row": f"{yarn['read_as_a_date'][0]['sheet_row']:,}",
             "sj-ne24-mean": fmt(yarn["sj_mean_gsm"]["24"]["mean"], 1),
             "sj-ne30-mean": fmt(yarn["sj_mean_gsm"]["30"]["mean"], 1),
+            # the data preparation checks
+            "gauge-min": plain(gauge["min"]),
+            "gauge-next": str(prep["gauge_next_largest"]),
+            "gauge-row": f"{prep['gauge_max_sheet_row']:,}",
+            "gauge-typo-first": gauge_first,
+            "gauge-typo-rest": gauge_rest,
+            "any-first-row": str(prep["fabric_dia_any_first_sheet_row"]),
+            "reject-sum-n": f"{rej['sum']:.2f}",
+            "mcdia-min": plain(ends[MC_DIA]["smallest"][0]["value"]),
+            "mcdia-next": plain(ends[MC_DIA]["smallest"][1]["value"]),
+            "stitch-max": plain(prep["stitch_length"]["max"]),
+            "stitch-median": plain(prep["stitch_length"]["median"]),
+            "stitch-over-10": f"{prep['stitch_length']['rows_above_10_mm']:,}",
+            "qty-under-1": str(prep["production_qty"]["under_1_kg_rows"]),
+            "qty-001": str(prep["production_qty"]["exactly_0_01_rows"]),
+            "reject-over-qty": str(prep["reject_over_production"]["rows"]),
+            "reject-over-qty-sheets": str(prep["reject_over_production"]["sheets_formula_counts"]),
+            # the extra activity "Group fabrics by fiber"
+            "stretch-rows": f"{st['rows']:,}",
+            "stretch-short-rows": f"{st['short_rule_rows']:,}",
+            "stretch-short-missed": str(st["rows"] - st["short_rule_rows"]),
+            "lsj-rows": f"{st['lsj_rows']:,}",
+            "lsj-no-stretch": str(st["lsj_rows_without_stretch"]),
+            "sj-stretch": str(st["sj_rows_with_stretch"]),
+            "interlock-stretch-mean": fmt(by_con["Interlock"]["stretch"]["mean_gsm"], 1),
+            "interlock-rest-mean": fmt(by_con["Interlock"]["the_rest"]["mean_gsm"], 1),
+            "fleece-stretch-mean": fmt(by_con["Fleece_terry"]["stretch"]["mean_gsm"], 1),
+            "fleece-rest-mean": fmt(by_con["Fleece_terry"]["the_rest"]["mean_gsm"], 1),
+            "poly-short-rows": f"{st['polyester_short_rule_rows']:,}",
+            "poly-short-missed": str(sum(st["polyester_short_rule_misses"].values())),
+            "fiber-groups": str(len(st["largest_fiber_groups"])),
+            "fiber-groups-rows": f"{sum(g['rows'] for g in st['largest_fiber_groups']):,}",
         },
+        "work": work,
     }
     lines = ["# >>> generated by tools/make_data.py; don't edit this block by hand"]
     for top, values in v.items():
@@ -715,6 +937,9 @@ def write_key_md(key: dict, path: Path) -> None:
         "",
         f"- {key['rows']:,} data rows, {key['columns']} columns, range `{key['range']}`; dates "
         f"{key['dates']['first']} to {key['dates']['last']}.",
+        f"- One row is one lot on one day on one machine. {key['rows_sharing_lot_and_day']:,} rows share their lot "
+        f"and date with another row; {key['lots_on_several_dates']:,} of the {key['lots']['distinct']:,} lots run "
+        "on more than one date.",
         f"- {key['repeated_rows']} rows repeat exactly (all {key['columns']} columns). {key['distinct_specs']:,} "
         f"distinct fabric specs ({', '.join(key['spec_columns'])}).",
         "- Blanks: " + ", ".join(f"{k} {v:,}" for k, v in key["blanks"].items()) + ".",
@@ -723,13 +948,24 @@ def write_key_md(key: dict, path: Path) -> None:
         f"- Reject Qty: {rej['blank']:,} blank, {rej['numeric']:,} numbers ({rej['above_zero']} above zero, max "
         f"{rej['max']}), and in sheet row {rej['note_sheet_row']:,} this note: *{rej['note_text']}*",
         "",
-        "## Compare tab: right answers and the wrong ones",
+        "## The Work tab: right answers and the wrong ones",
         "",
-        "| Statistic | Right | Compare at |",
+        "Column B holds Gemini's formula, column C the number a student found from the menus, and column D says "
+        "match when the two are within 0.05.",
+        "",
+        "| What it is | Right | Do it yourself |",
         "| --- | --- | --- |",
-        f"| Data rows | {key['rows']:,} | 0 decimals |",
-        f"| Mean GSM, S/J | {key['compare']['sj_mean_gsm']['right']} | 1 decimal |",
-        f"| Mean Reject Qty | {key['compare']['reject_mean']['right']} | 2 decimals |",
+        f"| Rows of data | {key['rows']:,} | Ctrl + ↓ in column A: the last row is {key['rows'] + 1:,} |",
+        f"| Blank cells in Reject Qty | {rej['blank']:,} | Data → Column stats: Empty cells |",
+        f"| Mean Reject Qty, blanks skipped | {rej['mean_blanks_skipped']} | Column stats: Average |",
+        f"| Mean Reject Qty, blanks as zero | {rej['mean_blanks_as_zero']} | Column stats: Sum ÷ Total rows, "
+        f"{rej['sum']:.2f} / {key['rows']} |",
+        f"| Rows that are an exact copy of an earlier row | {key['repeated_rows']} | None: Remove duplicates deletes "
+        "them |",
+        f"| Different values in Machine, Construction, Composition | {key['extras']['machine_by_construction']['machines']}, "
+        f"{key['constructions']}, {key['composition_spellings']} | Column stats: Unique values |",
+        f"| Mean GSM, S/J | {key['compare']['sj_mean_gsm']['right']} | A pivot table: Construction in Rows, AVERAGE of "
+        "GSM in Values |",
         "",
         "| Wrong value | Statistic | What happened |",
         "| --- | --- | --- |",
@@ -737,6 +973,40 @@ def write_key_md(key: dict, path: Path) -> None:
     out += [f"| {w['value']:,} | {w['stat']} | {w['cause']} |" for w in key["wrong_values"]]
     out += ["", "## The problems in this data (students find them with formulas)", ""]
     out += [f"{i}. {q}" for i, q in enumerate(key["quality_issues"], 1)]
+    prep = key["prep"]
+    over = prep["reject_over_production"]
+    out += ["", "## Data preparation: every column", "",
+            "As Google Sheets counts it. A date counts as a number; the five text columns are stored as text.", "",
+            "| | Column | Blank | Numbers | Text | Different values | Smallest | Largest |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |"]
+    for i, p in enumerate(prep["profile"]):
+        lo, hi = (plain(p["min"]), plain(p["max"])) if "min" in p else ("", "")
+        out.append(f"| {get_column_letter(i + 1)} | {p['column']} | {p['blank']:,} | {p['numbers']:,} | {p['text']:,} | "
+                   f"{p['distinct']:,} | {lo} | {hi} |")
+    out += ["", "The ends of each number column, as value (rows). Which are typos is a question for the room:", "",
+            "| Column | Three smallest | Three largest |", "| --- | --- | --- |"]
+    out += [f"| {name} | " + ", ".join(f"{plain(e['value'])} ({e['rows']:,})" for e in v["smallest"]) + " | "
+            + ", ".join(f"{plain(e['value'])} ({e['rows']:,})" for e in v["largest"]) + " |"
+            for name, v in prep["ends"].items()]
+    out += ["",
+            f"- **Machine Gauge:** the values are {', '.join(str(v) for v in key['gauge']['values'])}. The largest "
+            f"real one is {prep['gauge_next_largest']}; the {key['gauge']['max']:,} is in sheet row "
+            f"{prep['gauge_max_sheet_row']:,}.",
+            f"- **Stitch Length:** the median is {prep['stitch_length']['median']} mm, yet "
+            f"{prep['stitch_length']['rows_above_10_mm']:,} rows are above 10 mm (the largest is "
+            f"{prep['stitch_length']['max']}). That many rows isn't a typo. A sum over several feeders, or another "
+            "way of measuring? Ask the room; don't claim to know.",
+            f"- **Production Qty:** 0 in {prep['production_qty']['zero_rows']} rows, above 0 and under 1 kg in "
+            f"{prep['production_qty']['under_1_kg_rows']}, and exactly 0.01 in "
+            f"{prep['production_qty']['exactly_0_01_rows']}. Column stats lists 0.01 as the most common value.",
+            f"- **Reject Qty above Production Qty:** {over['rows']} rows, in sheet rows "
+            + ", ".join(f"{e['sheet_row']:,} ({e['reject_qty']} against {e['production_qty']})"
+                        for e in over["examples"])
+            + f". Gemini's `SUMPRODUCT((M > L) * (M <> \"\"))` returns {over['sheets_formula_counts']}: it counts the "
+            "note too, because Sheets ranks text above every number.",
+            f"- **Duplicate lots, the check Gemini offers every time:** rows minus distinct lots is "
+            f"{key['lots']['rows_minus_distinct']:,}; rows whose lot appears on more than one row is "
+            f"{prep['lots_on_more_than_one_row']:,}. Two formulas, two numbers, and neither is a problem."]
     out += ["", "## GSM by construction", "",
             "| Construction | Rows | Mean | Median | SD | Min | Max | Specs | Mean per spec |",
             "| --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
@@ -761,7 +1031,7 @@ def write_key_md(key: dict, path: Path) -> None:
     gv, mc, bd, yc = (ex["gsm_values"], ex["machine_by_construction"], ex["production_by_day"],
                       ex["yarn_first_count"])
     sp, gap = mc["most_specialized"], bd["longest_gap"]
-    out += ["", "## The Explore page's extra examples", "",
+    out += ["", "## The extra activities", "",
             f"- **GSM values:** {gv['distinct']} distinct values in {key['rows']:,} rows. Most common: "
             + ", ".join(f"{m['gsm']} ({m['rows']:,} rows)" for m in gv["most_common"]) + f". Only "
             f"{gv['rows_not_a_multiple_of_5']} rows aren't a multiple of 5, so it reads like an ordered weight, not "
@@ -783,6 +1053,31 @@ def write_key_md(key: dict, path: Path) -> None:
             + ", most likely a 12/1 that a spreadsheet read as a date.", "",
             "| S/J rows, first yarn's count | Rows | Mean GSM |", "| --- | --- | --- |"]
     out += [f"| {k} | {s['rows']:,} | {s['mean']:.1f} |" for k, s in yc["sj_mean_gsm"].items()]
+    st = key["stretch"]
+    out += ["", "## Composition: a stretch fiber or not (the first extra activity)", "",
+            f"- **The rule on the page:** `{st['rule']}` inside `REGEXMATCH(LOWER(...))`. Gemini wrote it with the "
+            f"list of distinct entries pasted in. TRUE for {st['rows']:,} rows, the same rows as the reference rule "
+            "below.",
+            f"- **A shorter rule Gemini gave a colleague:** `{st['short_rule']}`. TRUE for {st['short_rule_rows']:,} "
+            f"rows. It misses {st['rows'] - st['short_rule_rows']}: "
+            + ", ".join(f"`{t}` ({n})" for t, n in st["short_rule_misses"].items()) + ".",
+            f"- **Blank Composition:** {st['blank_rows']} rows. A plain `REGEXMATCH` calls them FALSE; Gemini's `MAP` "
+            f"version leaves them blank. The {st['rows_false_with_only_percent']} rows that say only `%` are FALSE "
+            "either way.",
+            f"- **Two columns that should agree:** LS/J means Lycra single jersey, yet {st['lsj_rows_without_stretch']} "
+            f"of the {st['lsj_rows']:,} LS/J rows name no stretch fiber: "
+            + ", ".join(f"`{t}` ({n})" for t, n in st["lsj_without_stretch_texts"].items())
+            + f". And {st['sj_rows_with_stretch']} S/J rows do name one. Which column is right is a question for "
+            "the room; they're the fiber experts.",
+            f"- **Polyester, the same colleague's second rule:** `{st['polyester_short_rule']}` is TRUE for "
+            f"{st['polyester_short_rule_rows']:,} rows and misses "
+            + ", ".join(f"`{t}` ({n})" for t, n in st["polyester_short_rule_misses"].items())
+            + ". CVC is a cotton and polyester blend.",
+            f"- **Mean GSM:** {st['mean_gsm']['stretch']:.1f} with a stretch fiber, {st['mean_gsm']['the_rest']:.1f} "
+            "for the rest. Inside a construction it can go either way:", "",
+            "| Construction | Rows with stretch | Mean GSM | The rest | Mean GSM |", "| --- | --- | --- | --- | --- |"]
+    out += [f"| {c} | {s['stretch']['rows']:,} | {s['stretch']['mean_gsm']:.1f} | {s['the_rest']['rows']:,} | "
+            f"{s['the_rest']['mean_gsm']:.1f} |" for c, s in st["by_construction"].items()]
     out += ["", "## Composition: the reference rule", "",
             "Groups by which fibers the text names; ignores percentages and labels (BCI, CmiA, organic, recycled, "
             "combed, compact, SD/CD, MVS). Sea-shell is read as SeaCell, a lyocell. A reference, not the one right "
@@ -815,13 +1110,16 @@ def main() -> None:
     (INSTRUCTOR / "answer-key.json").write_text(json.dumps(key, indent=2, ensure_ascii=False) + "\n",
                                                 encoding="utf-8")
     write_key_md(key, INSTRUCTOR / "answer-key.md")
-    write_dictionary_md(ROOT / "site" / "_dictionary.md")
+    write_dictionary_md(ROOT / "site")
+    write_page_keys(key, ROOT / "site")
     write_variables(key)
     sj = key["gsm"]["by_construction"]["S/J"]["per_row"]
     print(f"{key['rows']:,} rows x {key['columns']} columns, {key['repeated_rows']} repeated, "
           f"S/J mean GSM {sj['mean']}, mean Reject Qty {key['reject']['mean_blanks_skipped']}")
     for p in (DOWNLOADS / "knitting-practice.csv", DOWNLOADS / "knitting-practice.xlsx"):
         print(f"  {p.relative_to(ROOT)}  {size(p)}  sha256 {hashlib.sha256(p.read_bytes()).hexdigest()[:12]}")
+    # The prompts carry numbers from the variables just written, so refresh what's built from them.
+    runpy.run_path(str(ROOT / "tools" / "extract_prompts.py"), run_name="__main__")
 
 
 if __name__ == "__main__":
