@@ -40,7 +40,10 @@ folder is `textiles-seminar`.
   No other pages, no video. The deck is five slides.
 - **Describe the data; never upload it** (2026-11-05). Students describe the practice data to Gemini (tab and range,
   what a row is, the header row, 5 made-up rows, notes on codes and units) and ask for formulas they run in their own
-  copy. Gemini never sees a real row. It's what you'd do with data you can't upload.
+  copy. Gemini never sees a real row. It's what you'd do with data you can't upload. Uploading appears once, in
+  section 6.2, as one more check for data you're allowed to upload: compare Gemini's numbers from the file with the
+  numbers from your formulas. When we tried it, Gemini couldn't return a spreadsheet with formulas, and one of its
+  counts was wrong.
 - **The describe prompt asks for each formula "on one line, in its own code block".** The code block gives the
   formula a Copy button. The one line matters more: a formula written on several lines lands in several cells when
   it's pasted into a selected cell, and shows `#ERROR!`.

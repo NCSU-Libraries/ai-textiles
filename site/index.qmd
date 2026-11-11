@@ -299,8 +299,10 @@ Explain that formula one piece at a time, in plain words, for someone who has ne
 ::: {.callout-warning}
 ## Gotcha: the cell shows an error
 
-`#REF!` means the result has no room. It needs empty cells below it and to its right, so clear the cells in its way
-or move the formula. For any other error, paste the formula and the error into Gemini and ask for a fix. One of ours
+`#REF!` means the formula points at something Sheets can't use. Hover over the cell to read the reason. Most often
+here, a table has no room. It needs empty cells below it and to its right, so clear the cells in its way or move the
+formula. `#REF!` can also mean that the formula names a tab your workbook doesn't have. For any other error, paste
+the formula and the error into Gemini and ask for a fix. One of ours
 showed `#NAME?`, because Gemini had used a function that doesn't exist. It fixed the formula when we told it.
 :::
 
@@ -704,7 +706,13 @@ The same steps work on your own data, in the same order.
 5. Run the five checks in @sec-prepare. For each one, find a number of your own to compare.
 6. Summarize, and check one number another way (@sec-summary).
 
-If you may upload the data, the checks stay the same. Upload only the columns you need.
+If you may upload the data, you can also use an upload as one more check. Upload the file to Gemini, ask for the
+same numbers, and compare them with the ones from your formulas. Where the two differ, look at the rows before you
+trust either. Upload only the columns you need.
+
+We tried this with the practice data. Gemini's table of GSM by construction matched our formulas. It also counted
+114 "any" cells in Fabric Diameter, where there are {{< var key.any-rows >}}. We asked for a spreadsheet with the
+formulas in it, and Gemini couldn't make the file. It wrote the formulas out in the chat instead.
 
 ## What we did {#sec-did}
 
