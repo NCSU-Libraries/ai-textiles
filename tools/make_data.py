@@ -273,6 +273,65 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
               .sort_values(["rows", "text"], ascending=[False, True]))
 
     yarn = d[YARN]
+
+    # The Explore page's extra examples: what each formula should show
+    qty = num(QTY)
+    days = pd.to_datetime(d[DATE])
+    by_day = qty.groupby(days).sum()
+    span = pd.date_range(days.min(), days.max())
+    no_rows = [t for t in span if t not in by_day.index]
+    gaps: list[list] = []  # runs of days in a row with no rows
+    for t in no_rows:
+        if gaps and (t - gaps[-1][-1]).days == 1:
+            gaps[-1].append(t)
+        else:
+            gaps.append([t])
+    longest_gap = max(gaps, key=len)
+    friday = by_day.index.day_of_week == 4
+    table = pd.crosstab(d[MACHINE], con)
+    share = table.div(table.sum(axis=1), axis=0)
+    special_machine = share.max(axis=1).idxmax()
+    special_construction = share.loc[special_machine].idxmax()
+    YARN_FIRST_COUNT = r"^(\d+)/1"  # the first yarn's cotton count; the same pattern works in REGEXEXTRACT
+    first_count = pd.to_numeric(yarn.str.extract(YARN_FIRST_COUNT)[0])
+    sj_by_count = gsm[con == "S/J"].groupby(first_count[con == "S/J"]).agg(["count", "mean"])
+    read_as_date = yarn[yarn.str.fullmatch(r"\d+-[A-Z][a-z]{2}")]
+    assert len(span) - by_day.size == len(no_rows) and first_count.notna().sum() + first_count.isna().sum() == ROWS
+    extras = {
+        "gsm_values": {
+            "distinct": int(gsm.nunique()),
+            "most_common": [{"gsm": int(v), "rows": int(n)} for v, n in gsm.value_counts().head(5).items()],
+            "rows_not_a_multiple_of_5": int((gsm % 5 != 0).sum()),
+        },
+        "machine_by_construction": {
+            "machines": int(table.shape[0]),
+            "cells": int(table.size),
+            "empty_cells": int((table == 0).sum().sum()),
+            "most_specialized": {"machine": special_machine, "construction": special_construction,
+                                 "rows": int(table.at[special_machine, special_construction]),
+                                 "machine_rows": int(table.loc[special_machine].sum())},
+            "table": {m: {c: int(n) for c, n in row.items()} for m, row in table.iterrows()},
+        },
+        "production_by_day": {
+            "days_in_span": len(span),
+            "dates_with_rows": int(by_day.size),
+            "days_without_rows": [f"{t:%Y-%m-%d}" for t in no_rows],
+            "longest_gap": {"first": f"{longest_gap[0]:%Y-%m-%d}", "last": f"{longest_gap[-1]:%Y-%m-%d}",
+                            "days": len(longest_gap)},
+            "total_kg": r(qty.sum(), 2),
+            "friday_mean_kg": r(by_day[friday].mean(), 0),
+            "other_day_mean_kg": r(by_day[~friday].mean(), 0),
+        },
+        "yarn_first_count": {
+            "pattern": YARN_FIRST_COUNT,
+            "rows_with_a_count": int(first_count.notna().sum()),
+            "rows_without": int(first_count.isna().sum()),
+            "read_as_a_date": [{"text": t, "sheet_row": int(i) + 2} for i, t in read_as_date.items()],
+            "sj_mean_gsm": {str(int(k)): {"rows": int(v["count"]), "mean": r(v["mean"], 3)}
+                            for k, v in sj_by_count.iterrows()},
+        },
+    }
+
     key = {
         "source": {"citation": CITATION, "license": "CC BY 4.0", "doi": DOI},
         "rows": ROWS,
@@ -311,6 +370,7 @@ def answer_key(d: pd.DataFrame, src: pd.DataFrame) -> dict:
         "production_qty_zero_rows": int((pd.to_numeric(d[QTY]) <= 0).sum()),
         "gsm": {"overall": stats(con == con), "by_construction": by_construction},
         "correlation": correlation,
+        "extras": extras,
         "compare": {
             "data_rows": {"right": ROWS, "decimals": 0},
             "sj_mean_gsm": {"right": r(sj.mean(), 3), "decimals": 1},
@@ -554,6 +614,11 @@ def write_variables(key: dict) -> None:
     first = dt.date.fromisoformat(key["dates"]["first"])
     last = dt.date.fromisoformat(key["dates"]["last"])
     wrong = {(w["stat"], w["cause"][:20]): w["value"] for w in key["wrong_values"]}
+    ex = key["extras"]
+    gsm_top = ex["gsm_values"]["most_common"][0]
+    special = ex["machine_by_construction"]["most_specialized"]
+    by_day, yarn = ex["production_by_day"], ex["yarn_first_count"]
+    day = lambda iso: f"{dt.date.fromisoformat(iso):%B} {dt.date.fromisoformat(iso).day}"
     v = {
         "data": {
             "rows": f"{key['rows']:,}",
@@ -600,6 +665,31 @@ def write_variables(key: dict) -> None:
             "r-pique": fmt(c["Pique"]["per_row"]["gsm_stitch"], 2),
             "r-interlock-spec": fmt(c["Interlock"]["per_spec"]["gsm_stitch"], 2),
             "r-pique-spec": fmt(c["Pique"]["per_spec"]["gsm_stitch"], 2),
+            # the Explore page's extra examples
+            "gsm-distinct": str(ex["gsm_values"]["distinct"]),
+            "gsm-top": str(gsm_top["gsm"]),
+            "gsm-top-rows": f"{gsm_top['rows']:,}",
+            "gsm-not-5": str(ex["gsm_values"]["rows_not_a_multiple_of_5"]),
+            "machines": str(ex["machine_by_construction"]["machines"]),
+            "table-cells": str(ex["machine_by_construction"]["cells"]),
+            "table-empty": str(ex["machine_by_construction"]["empty_cells"]),
+            "special-machine": special["machine"],
+            "special-construction": special["construction"],
+            "special-rows": f"{special['rows']:,}",
+            "special-of": f"{special['machine_rows']:,}",
+            "days-span": str(by_day["days_in_span"]),
+            "dates-with-rows": str(by_day["dates_with_rows"]),
+            "gap-first": day(by_day["longest_gap"]["first"]),
+            "gap-last": day(by_day["longest_gap"]["last"]),
+            "qty-total": fmt(by_day["total_kg"], 0),
+            "friday-mean": fmt(by_day["friday_mean_kg"], 0),
+            "other-day-mean": fmt(by_day["other_day_mean_kg"], 0),
+            "yarn-count-rows": f"{yarn['rows_with_a_count']:,}",
+            "yarn-no-count": f"{yarn['rows_without']:,}",
+            "yarn-date-text": yarn["read_as_a_date"][0]["text"],
+            "yarn-date-row": f"{yarn['read_as_a_date'][0]['sheet_row']:,}",
+            "sj-ne24-mean": fmt(yarn["sj_mean_gsm"]["24"]["mean"], 1),
+            "sj-ne30-mean": fmt(yarn["sj_mean_gsm"]["30"]["mean"], 1),
         },
     }
     lines = ["# >>> generated by tools/make_data.py; don't edit this block by hand"]
@@ -667,6 +757,32 @@ def write_key_md(key: dict, path: Path) -> None:
         p, q = s["per_row"], s["per_spec"]
         out.append(f"| {name} | {p['gsm_stitch']:+.2f} | {q['gsm_stitch']:+.2f} | {p['stitch_tex']:+.2f} | "
                    f"{p['tex_gsm']:+.2f} |")
+    ex = key["extras"]
+    gv, mc, bd, yc = (ex["gsm_values"], ex["machine_by_construction"], ex["production_by_day"],
+                      ex["yarn_first_count"])
+    sp, gap = mc["most_specialized"], bd["longest_gap"]
+    out += ["", "## The Explore page's extra examples", "",
+            f"- **GSM values:** {gv['distinct']} distinct values in {key['rows']:,} rows. Most common: "
+            + ", ".join(f"{m['gsm']} ({m['rows']:,} rows)" for m in gv["most_common"]) + f". Only "
+            f"{gv['rows_not_a_multiple_of_5']} rows aren't a multiple of 5, so it reads like an ordered weight, not "
+            "one measured on each lot. The table can't say which; it's a question for the room.",
+            f"- **Machine by construction:** {mc['machines']} machines by {key['constructions']} constructions is "
+            f"{mc['cells']} cells, {mc['empty_cells']} of them empty; the cells add up to {key['rows']:,}. "
+            f"{sp['machine']} is the most specialized: {sp['rows']:,} of its {sp['machine_rows']:,} rows are "
+            f"{sp['construction']}. `QUERY` fails with `#VALUE!` if the formula counts the column it pivots on.",
+            f"- **Production by day:** {bd['dates_with_rows']} dates have rows, in a span of {bd['days_in_span']} "
+            f"days. No rows on: {', '.join(bd['days_without_rows'])}. The longest gap is {gap['first']} to "
+            f"{gap['last']} ({gap['days']} days). Total {bd['total_kg']:,.2f} kg. A Friday with rows averages "
+            f"{bd['friday_mean_kg']:,.0f} kg, any other day {bd['other_day_mean_kg']:,.0f}. The table doesn't say "
+            "where the factory is. The dataset's author is at Daffodil International University in Bangladesh, "
+            "where Friday is the weekly day off and Eid al-Adha fell on July 10, 2022, so a holiday shutdown is the "
+            "likely reason for the gap. Say it as a guess.",
+            f"- **First yarn's cotton count** (`{yc['pattern']}`): {yc['rows_with_a_count']:,} rows give a number, "
+            f"{yc['rows_without']:,} don't. Those start with a yarn in denier, except "
+            + ", ".join(f"`{x['text']}` in sheet row {x['sheet_row']:,}" for x in yc["read_as_a_date"])
+            + ", most likely a 12/1 that a spreadsheet read as a date.", "",
+            "| S/J rows, first yarn's count | Rows | Mean GSM |", "| --- | --- | --- |"]
+    out += [f"| {k} | {s['rows']:,} | {s['mean']:.1f} |" for k, s in yc["sj_mean_gsm"].items()]
     out += ["", "## Composition: the reference rule", "",
             "Groups by which fibers the text names; ignores percentages and labels (BCI, CmiA, organic, recycled, "
             "combed, compact, SD/CD, MVS). Sea-shell is read as SeaCell, a lyocell. A reference, not the one right "

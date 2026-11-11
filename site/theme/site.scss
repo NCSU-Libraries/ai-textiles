@@ -29,6 +29,9 @@ h3 { margin-top: 1.8rem; }
 .navbar-brand img { max-height: 30px; max-width: 55vw; width: auto; height: auto; }
 // Long paths in table cells, like ~/.claude/projects/<project>/memory/, may break rather than push the page wide.
 td code { overflow-wrap: anywhere; }
+// A long formula has few spaces to wrap at; on a phone it may break anywhere rather than run off the side.
+pre code, pre code > span { overflow-wrap: anywhere; }
+div.sourceCode > pre { padding-right: 2.2rem; }  // room for the copy button, so a wrapped first line doesn't run under it
 .navbar .navbar-title { font-weight: 700; }
 
 // Hero on the home page

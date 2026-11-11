@@ -74,7 +74,7 @@ folder is `textiles-seminar`.
 | `site/_variables.yml` | Facts used on several pages. The block between the "generated" markers is written by `tools/make_data.py`; edit the rest by hand |
 | `site/_dictionary.md` | The data dictionary, generated; `data.qmd` includes it |
 | `site/_decision-guide.md` | The decision-guide SVG, included by `data-security.qmd` and the deck. Its words are also in `data-security.qmd`'s phone-only list: change both |
-| `site/explore.qmd` | The session page, eight steps: look first, data security, describe, problems, summary, second way, blanks, your own data |
+| `site/explore.qmd` | The session page, eight steps: look first, data security, describe, problems, summary, second way, blanks, your own data. Then the Extras: eight collapsed examples, each a prompt, what to look for, and a formula that works |
 | `site/slides/index.qmd` | The deck: framing, data security, what Gemini sees, then reference slides after "Your turn" |
 | `site/downloads/knitting-practice.{csv,xlsx}` | The practice data, generated. The XLSX has Data, Dictionary, Work, Compare and About tabs |
 | `site/theme/` | NC State theme, copied from `../local-llms` |
@@ -124,7 +124,12 @@ node tools/record-tour.mjs       # the video and step clips (render the site fir
 - **The harness:**
   - Google's upload dialog (the Picker) is a cross-origin frame that Claude in Chrome can't upload into; Alp does
     uploads.
-  - The Google Drive connector may be signed in to a different account than Chrome and can't see the practice sheet.
+  - The Google Drive and Sheets connectors follow the claude.ai organization. On NC State University Libraries they
+    are signed in as Alp's NC State account, so they can read the shared sheet and write to the test copy ("Copy of
+    Knitting production data (practice copy)"). That's how to run a formula in real Sheets without Chrome: write it
+    to an empty part of the copy's Work tab, read the result, clear it. Never write to the shared sheet. Charts and
+    pivot tables still need Chrome. On another organization the connectors may not see either file.
+  - A page's "formula that works" must have run in Sheets first. `QUERY` can't count the column it pivots on.
   - WebFetch rejects lib.ncsu.edu's certificate; `curl -sL` works.
   - macOS has no `timeout`; quote zsh globs; `gh` isn't installed.
 

@@ -285,6 +285,8 @@ Fill in the [plan for your own data](practices.qmd#own-data), on a new tab or on
 
 ## Extras
 
+More examples for when you have time. Click one to open it.
+
 ::: {.callout-note collapse="true" appearance="simple"}
 ## Clean up Composition with a list of values
 
@@ -314,6 +316,105 @@ One that works:
 
 ```default
 =LET(c, SORT(UNIQUE(Data!F2:F{{< var data.last-row-n >}})), g, Data!K2:K{{< var data.last-row-n >}}, k, Data!F2:F{{< var data.last-row-n >}}, HSTACK(c, MAP(c, LAMBDA(x, AVERAGE(FILTER(g, k = x)))), MAP(c, LAMBDA(x, MEDIAN(FILTER(g, k = x)))), MAP(c, LAMBDA(x, STDEV(FILTER(g, k = x))))))
+```
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## How many different GSM values?
+
+::: {.prompt}
+```default
+Give me a formula that counts how many different GSM values there are, and one that lists each value with its number of rows, most common first. Then tell me how to make a histogram of GSM.
+```
+:::
+
+{{< var data.rows >}} rows hold only {{< var key.gsm-distinct >}} different values. {{< var key.gsm-top-rows >}} rows
+say exactly {{< var key.gsm-top >}}, and all but {{< var key.gsm-not-5 >}} are a multiple of 5. Is that a weight
+measured on each lot, or the weight that was ordered? Formulas that work, for the count and for the list:
+
+```default
+=COUNTUNIQUE(Data!K2:K{{< var data.last-row-n >}})
+```
+
+```default
+=QUERY(Data!K2:K{{< var data.last-row-n >}}, "SELECT K, COUNT(K) WHERE K IS NOT NULL GROUP BY K ORDER BY COUNT(K) DESC LABEL K 'GSM', COUNT(K) 'Rows'")
+```
+
+Histogram: select column K on the Data tab, **Insert → Chart**, then pick **Histogram chart** as the chart type.
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Machines by construction, in one table
+
+::: {.prompt}
+```default
+Give me one formula that makes a table with one row per Machine and one column per Construction, showing the number of rows in each cell.
+```
+:::
+
+The cells should add up to {{< var data.rows >}}. {{< var key.table-empty >}} of the {{< var key.table-cells >}} cells
+are empty, because that machine never knitted that construction. {{< var key.special-machine >}} knitted
+{{< var key.special-construction >}} in {{< var key.special-rows >}} of its {{< var key.special-of >}} rows, so
+comparing machines also compares fabrics. One that works:
+
+```default
+=QUERY(Data!C2:F{{< var data.last-row-n >}}, "SELECT C, COUNT(D) WHERE C IS NOT NULL GROUP BY C PIVOT F LABEL C 'Machine'")
+```
+
+`QUERY` fails with `#VALUE!` if it counts the column it pivots on. Paste the error back.
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Production day by day, and the days with no rows
+
+::: {.prompt}
+```default
+Give me one formula that lists each Production Date with its total Production Qty, in date order. Then tell me how to make a line chart of it.
+```
+:::
+
+The table has {{< var key.dates-with-rows >}} dates, but {{< var data.first-date >}} to {{< var data.last-date >}} is
+{{< var key.days-span >}} days. There are no rows from {{< var key.gap-first >}} to {{< var key.gap-last >}}, and the
+line chart draws straight across them. Fridays average {{< var key.friday-mean >}} kg, against
+{{< var key.other-day-mean >}} on other days. Did the factory make nothing on the missing days, or were they not
+recorded? Ask before you fill them in. One that works:
+
+```default
+=QUERY(Data!A2:L{{< var data.last-row-n >}}, "SELECT A, SUM(L) WHERE A IS NOT NULL GROUP BY A ORDER BY A LABEL A 'Date', SUM(L) 'Production (kg)'")
+```
+
+The daily totals should add up to `=SUM(Data!L2:L{{< var data.last-row-n >}})`, which is {{< var key.qty-total >}} kg.
+:::
+
+::: {.callout-note collapse="true" appearance="simple"}
+## Get a number out of Yarn Count
+
+::: {.prompt}
+```default
+Yarn Count is text. Write a formula that pulls the first yarn's cotton count out of each cell as a number, such as 30 from 30/1 or from "30/1,20/D", and leaves the cell blank when it starts with anything else. Then give me a formula that counts the blanks.
+```
+:::
+
+It leaves {{< var key.yarn-no-count >}} rows blank. Look at them before you go on. They start with a yarn in denier,
+such as 75D/72F, which is a different unit. Row {{< var key.yarn-date-row >}} says "{{< var key.yarn-date-text >}}",
+most likely a 12/1 that a spreadsheet once read as a date. With the number, S/J rows whose first yarn is 24/1 average
+{{< var key.sj-ne24-mean >}} GSM, and 30/1 rows {{< var key.sj-ne30-mean >}}. A higher count is a finer yarn, and the
+fabric is lighter. Formulas that work. The number, for the top of an empty column:
+
+```default
+=ARRAYFORMULA(IFERROR(VALUE(REGEXEXTRACT(Data!H2:H{{< var data.last-row-n >}}, "^(\d+)/1")), ""))
+```
+
+The count of blanks:
+
+```default
+=SUMPRODUCT(--NOT(REGEXMATCH(Data!H2:H{{< var data.last-row-n >}}, "^\d+/1")))
+```
+
+Mean GSM of the S/J rows for each count:
+
+```default
+=ARRAYFORMULA(QUERY({Data!F2:F{{< var data.last-row-n >}}, Data!K2:K{{< var data.last-row-n >}}, IFERROR(VALUE(REGEXEXTRACT(Data!H2:H{{< var data.last-row-n >}}, "^(\d+)/1")))}, "SELECT Col3, COUNT(Col2), AVG(Col2) WHERE Col1 = 'S/J' AND Col3 IS NOT NULL GROUP BY Col3 ORDER BY Col3 LABEL Col3 'Yarn count', COUNT(Col2) 'Rows', AVG(Col2) 'Mean GSM'"))
 ```
 :::
 
