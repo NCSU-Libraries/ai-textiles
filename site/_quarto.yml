@@ -14,7 +14,7 @@ website:
   bread-crumbs: false
   search: false   # one page: the browser's own find does the job
   # The whole session is one page, index.qmd, so the navbar has no page links. The deck (slides/index.qmd) holds only
-  # the opening and closing slides, and nothing links to it.
+  # the opening and closing slides; a small icon beside the GitHub one opens it.
   navbar:
     background: "#CC0000"
     foreground: "#FFFFFF"
@@ -24,6 +24,10 @@ website:
     right:
       - href: "https://go.ncsu.edu/getdatahelp"
         text: Get data help
+      - icon: easel
+        href: slides/index.qmd
+        text: " "             # without this, Quarto prints the deck's title beside the icon
+        aria-label: "Slides"
       - icon: github
         href: "https://github.com/NCSU-Libraries/ai-textiles"
         aria-label: "Source on GitHub"
